@@ -554,6 +554,7 @@
     `;
         console.log("[INDEX] Account button restored");
       }
+
       function updateAuthUI(user) {
         console.log("[INDEX] updateAuthUI called with user:", user);
         if (!authButtonsDiv) {
@@ -562,117 +563,20 @@
         }
 
         if (user) {
-          authButtonsDiv.innerHTML = `
-      <div class="dropdown" style="margin-right: -3px; margin-top: 10px">
-        <button id="dropdownToggle" class="login-button dropdown-toggle">
-          User <i class="fa fa-caret-down" style="margin-left: 5px;"></i>
-        </button>
-        <div id="dropdownMenu" class="dropdown-menu">
-          <button class="dropdown-user" id="openDashboardBtn">Dashboard</button>
-          <button class="dropdown-user" id="toggleThemeInMenu">Theme: ...</button>
-          <button id="logoutBtn" class="dropdown-logout">Logout</button>
-        </div>
-      </div>
-    `;
-
-          const dropdownToggle = document.getElementById("dropdownToggle");
-          const dropdownMenu = document.getElementById("dropdownMenu");
-
-          const closeDropdown = () => {
-            dropdownMenu.classList.remove("show");
-            dropdownToggle.classList.remove("dropdown-open");
-          };
-
-          // Open Dashboard
-          const openDashboardBtn = document.getElementById("openDashboardBtn");
-          openDashboardBtn?.addEventListener("click", () => {
-            console.log("[INDEX] Dashboard button clicked");
-            loadDashboard();
-            updateNavActiveState("dashboard"); // 👈 Add this line to sync sidebar
-            closeDropdown(); // 👈 closes menu after click
-          });
-
-          // Logout
-          const logoutBtn = document.getElementById("logoutBtn");
-          logoutBtn?.addEventListener("click", () => {
-            console.log("[INDEX] Logout clicked");
-            signOut(auth)
-              .then(() => {
-                console.log("[INDEX] Signed out successfully");
-                restoreAccountButton();
-                loadDefaultPage().then(() => {
-                  updateNavActiveState("bau");
-                });
-                closeDropdown(); // 👈 closes menu after click
-              })
-              .catch((err) => {
-                console.error("[INDEX] Sign out error:", err);
-              });
-          });
-
-          // Toggle dropdown on toggle click
-          dropdownToggle?.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle("show");
-            dropdownToggle.classList.toggle("dropdown-open");
-          });
-
-          // Theme toggle wiring inside dropdown
-          const toggleThemeInMenu =
-            document.getElementById("toggleThemeInMenu");
-          const getCurrentTheme = () => {
-            const fromAttr =
-              document.documentElement.getAttribute("data-theme");
-            const fromStorage = localStorage.getItem("theme");
-            return (fromAttr || fromStorage || "light").toLowerCase();
-          };
-          const setToggleLabel = (theme) => {
-            if (toggleThemeInMenu) {
-              const pretty = theme.charAt(0).toUpperCase() + theme.slice(1);
-              toggleThemeInMenu.textContent = `Theme: ${pretty}`;
-            }
-          };
-          // Init label
-          setToggleLabel(getCurrentTheme());
-
-          // Listen for theme changes from theme.js
-          const themeChangedHandler = (e) => {
-            const t =
-              e && e.detail && e.detail.theme
-                ? e.detail.theme
-                : getCurrentTheme();
-            setToggleLabel(t);
-          };
-          window.addEventListener("theme-changed", themeChangedHandler);
-
-          // Toggle theme on click
-          toggleThemeInMenu?.addEventListener("click", () => {
-            if (typeof window.toggleTheme === "function") {
-              window.toggleTheme();
-            }
-            closeDropdown();
-          });
-
-          // Close on outside click
-          document.addEventListener("click", () => {
-            closeDropdown();
-          });
-
-          // Close on scroll
-          window.addEventListener("scroll", () => {
-            closeDropdown();
-          });
-
-          // Prevent closing when clicking inside dropdown
-          dropdownMenu?.addEventListener("click", (e) => {
-            e.stopPropagation();
-          });
+          // Hide auth buttons when logged in - user functions now in sidebar
+          authButtonsDiv.innerHTML = ``;
         } else {
           console.log("[INDEX] No user logged in, restoring Account button");
           restoreAccountButton();
           loadDefaultPage();
         }
       }
+
+      // Expose functions globally
+      window.loadDashboard = loadDashboard;
+      window.loadDefaultPage = loadDefaultPage;
+      window.restoreAccountButton = restoreAccountButton;
+      window.updateNavActiveState = updateNavActiveState;
 
       window.addEventListener("DOMContentLoaded", () => {
         onAuthStateChanged(auth, (user) => {

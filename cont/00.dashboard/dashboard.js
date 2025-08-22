@@ -408,7 +408,8 @@ function initTodoDashboard() {
       li.dataset.index = String(idx);
       if (canEditOwner && state.editing) {
         li.draggable = false;
-        li.style.transition = "border 120ms ease, background-color 120ms ease, transform 150ms ease-out, box-shadow 150ms ease-out";
+        li.style.transition =
+          "border 120ms ease, background-color 120ms ease, transform 150ms ease-out, box-shadow 150ms ease-out";
         li.style.willChange = "transform, box-shadow";
         li.style.borderTop = "2px solid transparent";
         li.style.borderBottom = "2px solid transparent";
@@ -667,9 +668,10 @@ function initTodoDashboard() {
         const rawPos = e.clientY < midY ? "above" : "below";
         // Apply hysteresis near the midpoint to avoid rapid flipping
         const withinDeadzone = Math.abs(e.clientY - midY) < deadzone;
-        const nextPos = withinDeadzone && lastHoverEl === li && lastHoverPos
-          ? lastHoverPos
-          : rawPos;
+        const nextPos =
+          withinDeadzone && lastHoverEl === li && lastHoverPos
+            ? lastHoverPos
+            : rawPos;
 
         // Only update if target or position changed
         if (lastHoverEl === li && lastHoverPos === nextPos) return;
@@ -1055,10 +1057,12 @@ function initTodoDashboard() {
       backdrop-filter: blur(6px);`;
     const msg = document.createElement("p");
     msg.textContent = "Reset To-Do list? This will clear all items.";
-    msg.style.cssText = "font-size: 12px; opacity: 0.9; margin: 0 0 6px 0; text-align: left; width: 100%;";
+    msg.style.cssText =
+      "font-size: 12px; opacity: 0.9; margin: 0 0 6px 0; text-align: left; width: 100%;";
 
     const btnRow = document.createElement("div");
-    btnRow.style.cssText = "display: flex; gap: 6px; justify-content: flex-start; width: 100%;";
+    btnRow.style.cssText =
+      "display: flex; gap: 6px; justify-content: flex-start; width: 100%;";
 
     const confirmBtn = document.createElement("button");
     confirmBtn.textContent = "Confirm";
