@@ -2133,10 +2133,39 @@ async function renderHistorySidebar() {
     fontSize: "16px",
     fontWeight: "bold",
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    transition: "opacity 300ms ease"
+    transition: "opacity 300ms ease",
+    opacity: "1",
+    visibility: "visible",
+    display: "block",
+    pointerEvents: "auto",
   });
-  
+
+  // Force visibility with important declarations
+  externalToggleBtn.style.setProperty("opacity", "1", "important");
+  externalToggleBtn.style.setProperty("visibility", "visible", "important");
+  externalToggleBtn.style.setProperty("display", "block", "important");
+  externalToggleBtn.style.setProperty("z-index", "999999", "important");
+
   document.body.appendChild(externalToggleBtn);
+
+  // Add debug logging to verify button creation and positioning
+  console.log("[BAU] External toggle button created:", externalToggleBtn);
+  console.log("[BAU] Button styles:", {
+    position: externalToggleBtn.style.position,
+    top: externalToggleBtn.style.top,
+    left: externalToggleBtn.style.left,
+    opacity: externalToggleBtn.style.opacity,
+    zIndex: externalToggleBtn.style.zIndex,
+    display: externalToggleBtn.style.display,
+  });
+
+  // Ensure button is visible after a short delay
+  setTimeout(() => {
+    console.log(
+      "[BAU] Button position after delay:",
+      externalToggleBtn.getBoundingClientRect()
+    );
+  }, 100);
 
   // No overlay needed - remove it entirely
 
@@ -2151,37 +2180,40 @@ async function renderHistorySidebar() {
     width: "300px",
     transform: "translateX(-100%)",
     transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-    background: "var(--header-bg, #ffffff)",
-    borderRight: "1px solid var(--all-text)",
+    background: "rgba(150, 150, 150, 0.205)",
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+    borderRadius: "12px",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+    border: "none",
     color: "var(--all-text)",
     zIndex: "1000000",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
   });
-  
+
   // Force sidebar z-index
-  drawer.style.setProperty('z-index', '1000000', 'important');
+  drawer.style.setProperty("z-index", "1000000", "important");
 
   const header = document.createElement("div");
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
   header.style.padding = "16px";
-  
+
   // Create left section with close button and title
   const leftSection = document.createElement("div");
   leftSection.style.display = "flex";
   leftSection.style.alignItems = "center";
   leftSection.style.gap = "12px";
-  
+
   // Internal close button (part of sidebar header)
   const internalCloseBtn = document.createElement("button");
   internalCloseBtn.type = "button";
   internalCloseBtn.textContent = "✕";
   Object.assign(internalCloseBtn.style, {
     padding: "8px",
-    border: "1px solid var(--all-text)",
+    border: "none",
     borderRadius: "6px",
     background: "transparent",
     color: "var(--all-text)",
@@ -2190,20 +2222,20 @@ async function renderHistorySidebar() {
     lineHeight: "1",
     position: "relative",
     zIndex: "1000001",
-    pointerEvents: "auto"
+    pointerEvents: "auto",
   });
-  
+
   // Force high z-index with important
-  internalCloseBtn.style.setProperty('z-index', '1000001', 'important');
-  internalCloseBtn.style.setProperty('pointer-events', 'auto', 'important');
-  
+  internalCloseBtn.style.setProperty("z-index", "1000001", "important");
+  internalCloseBtn.style.setProperty("pointer-events", "auto", "important");
+
   const hTitle = document.createElement("div");
   hTitle.textContent = "Recent Histories";
   hTitle.style.fontWeight = "600";
-  
+
   leftSection.appendChild(internalCloseBtn);
   leftSection.appendChild(hTitle);
-  
+
   const actionsWrap = document.createElement("div");
   actionsWrap.style.display = "flex";
   actionsWrap.style.gap = "8px";
@@ -2213,19 +2245,19 @@ async function renderHistorySidebar() {
   clearBtn.textContent = "Clear";
   Object.assign(clearBtn.style, {
     padding: "6px 10px",
-    border: "1px solid var(--all-text)",
+    border: "none",
     borderRadius: "6px",
     background: "transparent",
     color: "var(--all-text)",
     cursor: "pointer",
     position: "relative",
     zIndex: "1000001",
-    pointerEvents: "auto"
+    pointerEvents: "auto",
   });
-  
+
   // Force high z-index with important
-  clearBtn.style.setProperty('z-index', '1000001', 'important');
-  clearBtn.style.setProperty('pointer-events', 'auto', 'important');
+  clearBtn.style.setProperty("z-index", "1000001", "important");
+  clearBtn.style.setProperty("pointer-events", "auto", "important");
 
   actionsWrap.appendChild(clearBtn);
   header.appendChild(leftSection);
@@ -2320,7 +2352,7 @@ async function renderHistorySidebar() {
 
   // Open/Close helpers with responsive main content
   let isOpen = false;
-  
+
   const close = () => {
     drawer.style.transform = "translateX(-100%)";
     externalToggleBtn.style.opacity = "1";
@@ -2350,7 +2382,7 @@ async function renderHistorySidebar() {
     // Load or refresh histories each time drawer opens
     loadHistories();
   };
-  
+
   const toggle = () => {
     if (isOpen) {
       close();
@@ -2363,20 +2395,20 @@ async function renderHistorySidebar() {
   internalCloseBtn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[BAU] Internal close button clicked');
+    console.log("[BAU] Internal close button clicked");
     close();
   });
-  
+
   // Add additional event listeners for better compatibility
   internalCloseBtn.addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
   });
-  
+
   internalCloseBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[BAU] Internal close button touched');
+    console.log("[BAU] Internal close button touched");
     close();
   });
   document.addEventListener("keydown", (e) => {
@@ -2491,7 +2523,7 @@ async function renderHistorySidebar() {
   clearBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[BAU] Clear button clicked');
+    console.log("[BAU] Clear button clicked");
     try {
       const auth = window.auth;
       const user = auth?.currentUser || null;
@@ -2534,17 +2566,17 @@ async function renderHistorySidebar() {
       inlineMessage("Failed to clear histories.");
     }
   });
-  
+
   // Add additional event listeners for Clear button
   clearBtn.addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
   });
-  
+
   clearBtn.addEventListener("touchstart", async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[BAU] Clear button touched');
+    console.log("[BAU] Clear button touched");
     // Trigger the same clear functionality
     clearBtn.click();
   });
