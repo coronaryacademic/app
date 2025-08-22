@@ -132,40 +132,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.error {
-  text-align: center;
-  /* Always present in the layout */
-  opacity: 0;
-  /* Start invisible */
-  transform: translateY(-10px);
-  /* Slightly shifted up */
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
-  /* Prevent interactions when hidden */
-}
-
-/* When screen is 1000px or smaller, animate to visible */
-@media (max-width: 1000px) {
-  .error {
-    opacity: 1;
-    /* Fade in */
-    transform: translateY(0);
-    /* Slide into place */
-    pointer-events: auto;
-    /* Allow interactions */
-    text-align: center;
-    padding: 10px;
-  }
-
-  #dashboard {
-    display: none;
-  }
-
-  .end-margin {
-    display: none;
-  }
-}
-
 #main-content {
   padding: 30px;
   padding-top: 10px;

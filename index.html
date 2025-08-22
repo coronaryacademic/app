@@ -128,73 +128,31 @@
   >
     <header class="header-container" style="position: relative">
       <div class="left-section">
-        <!--
-         <nav>
-          <button
-            class="nav-button"
-            style="padding-left: 0px; padding-top: 5px"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 100 100"
-              id="icon"
-            >
-              <rect
-                id="topBar"
-                x="5"
-                y="20"
-                width="90"
-                height="10"
-                rx="1"
-              ></rect>
-              <rect
-                id="middleBar"
-                x="5"
-                y="44"
-                width="90"
-                height="10"
-                rx="1"
-              ></rect>
-              <rect
-                id="bottomBar"
-                x="5"
-                y="68"
-                width="90"
-                height="10"
-                rx="1"
-              ></rect>
-            </svg>
-          </button>
-        </nav>-->
-
-        <!-- Theme toggle moved into user dropdown; header icon removed -->
+        <h1
+          id="page-title"
+          style="
+            font-size: 29px;
+            position: relative;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 1;
+            user-select: none;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.15s ease;
+          "
+          role="button"
+          tabindex="0"
+          onclick="window.location.reload();"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
+          onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
+          onmouseleave="this.style.transform=''; this.style.color='';"
+        >
+          Socrates Beta
+        </h1>
       </div>
 
-      <h1
-        id="page-title"
-        style="
-          font-size: 29px;
-          position: relative;
-          top: 10px;
-          left: 0;
-          right: 0;
-          text-align: center;
-          z-index: 1;
-          user-select: none;
-          cursor: pointer;
-          transition: color 0.2s ease, transform 0.15s ease;
-        "
-        role="button"
-        tabindex="0"
-        onclick="window.location.reload();"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
-        onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
-        onmouseleave="this.style.transform=''; this.style.color='';"
-      >
-        Socrates Beta
-      </h1>
       <div class="right-section">
         <div id="auth-buttons" class="right-section" style="padding-right: 5px">
           <a href="cont/011215071914/Login.html">
@@ -539,7 +497,10 @@
               window.ensureHistorySidebar();
             }
           } catch (e) {
-            console.warn("[INDEX] ensureHistorySidebar failed or unavailable", e);
+            console.warn(
+              "[INDEX] ensureHistorySidebar failed or unavailable",
+              e
+            );
           }
         } catch (err) {
           console.error("[INDEX] Error loading dashboard:", err);
