@@ -4,9 +4,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coronary Academic</title>
     <!-- Favicons: provide 16x16 and 32x32 PNG with cache-busting -->
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/header-logo-16x16.png?v=1" />
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/header-logo-32x32.png?v=1" />
-    <link rel="shortcut icon" type="image/png" href="icons/header-logo-32x32.png?v=1" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/header-logo-16x16.png?v=1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/header-logo-32x32.png?v=1"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="icons/header-logo-32x32.png?v=1"
+    />
     <link rel="stylesheet" href="css/header04.css" />
     <link rel="stylesheet" href="css/Beta.css" />
     <link rel="stylesheet" href="css/theme.css" />
@@ -200,6 +214,7 @@
 
         <section class="logo-container" style="margin-right: 5.5px">
           <svg
+            id="header-home-svg"
             width="30"
             height="30"
             viewBox="0 0 20 20"
@@ -214,7 +229,7 @@
               position: relative;
               top: 17px;
               right: 15px;
-              transition: color 0.3s, transform 0.2s;
+              transition: color 0.3s, transform 0.2s, opacity 0.3s ease-out;
               color: var(--all-text);
             "
           >
@@ -517,6 +532,14 @@
           sessionStorage.setItem("currentPage", "dashboard");
           if (typeof window.setHeaderTitleByPage === "function") {
             window.setHeaderTitleByPage("dashboard");
+          }
+          // Ensure BAU history sidebar exists on dashboard
+          try {
+            if (typeof window.ensureHistorySidebar === "function") {
+              window.ensureHistorySidebar();
+            }
+          } catch (e) {
+            console.warn("[INDEX] ensureHistorySidebar failed or unavailable", e);
           }
         } catch (err) {
           console.error("[INDEX] Error loading dashboard:", err);

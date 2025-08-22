@@ -2111,28 +2111,61 @@ onHistoryFormInjected();
 // Build and mount a slide-in recent-history sidebar with overlay and toggle button
 async function renderHistorySidebar() {
   const root = document.getElementById("history-form-container");
-  if (!root) return;
+  // Allow sidebar to render even if the history form container is not present
   if (document.getElementById("bau-history-drawer")) return; // already added
 
   // Create external toggle button for when sidebar is closed
   const externalToggleBtn = document.createElement("button");
   externalToggleBtn.id = "bau-history-external-toggle";
   externalToggleBtn.type = "button";
-  externalToggleBtn.textContent = "☰";
+  externalToggleBtn.innerHTML = `
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="23"
+      height="23"
+      viewBox="0 0 100 100"
+      style="color: var(--all-text);"
+    >
+      <rect
+        x="5"
+        y="20"
+        width="90"
+        height="8"
+        rx="1"
+        fill="currentColor"
+      ></rect>
+      <rect
+        x="5"
+        y="44"
+        width="90"
+        height="8"
+        rx="1"
+        fill="currentColor"
+      ></rect>
+      <rect
+        x="5"
+        y="68"
+        width="90"
+        height="8"
+        rx="1"
+        fill="currentColor"
+      ></rect>
+    </svg>
+  `;
   Object.assign(externalToggleBtn.style, {
     position: "fixed",
     top: "20px",
     left: "20px",
     padding: "10px 12px",
-    border: "1px solid var(--all-text)",
+    border: "none",
     borderRadius: "6px",
-    background: "var(--header-bg, #ffffff)",
+    background: "transparent",
     color: "var(--all-text)",
     cursor: "pointer",
     zIndex: "999999",
     fontSize: "16px",
     fontWeight: "bold",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    boxShadow: "none",
     transition: "opacity 300ms ease",
     opacity: "1",
     visibility: "visible",
@@ -2345,8 +2378,18 @@ async function renderHistorySidebar() {
 
   userSection.appendChild(userDropdown);
 
+  // Add retention notice above user section
+  const note = document.createElement("div");
+  note.style.fontSize = "12px";
+  note.style.opacity = "0.9";
+  note.style.margin = "0";
+  note.style.padding = "16px";
+  note.style.textAlign = "left";
+  note.textContent = "Note: Items here are automatically deleted after 7 days.";
+
   drawer.appendChild(header);
   drawer.appendChild(list);
+  drawer.appendChild(note);
   drawer.appendChild(userSection);
   document.body.appendChild(drawer);
 
@@ -2364,6 +2407,21 @@ async function renderHistorySidebar() {
       mainContainer.style.transition =
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }
+    // Show the form SVG message when sidebar closes
+    const loadHistoryMessage = document.getElementById("load-history-message");
+    if (loadHistoryMessage) {
+      loadHistoryMessage.style.display = "block";
+    }
+    // Show the header SVG when sidebar closes with fade animation
+    const headerSvg = document.getElementById("header-home-svg");
+    if (headerSvg) {
+      headerSvg.style.display = "block";
+      setTimeout(() => {
+        headerSvg.style.opacity = "1";
+      }, 10);
+    }
+    // Remove the click-anywhere-to-close listener
+    document.removeEventListener("click", handleOutsideClick);
     isOpen = false;
   };
 
@@ -2378,9 +2436,41 @@ async function renderHistorySidebar() {
       mainContainer.style.transition =
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }
+    // Hide the form SVG message when sidebar opens
+    const loadHistoryMessage = document.getElementById("load-history-message");
+    if (loadHistoryMessage) {
+      loadHistoryMessage.style.display = "none";
+    }
+    // Hide the header SVG when sidebar opens with fade animation
+    const headerSvg = document.getElementById("header-home-svg");
+    if (headerSvg) {
+      headerSvg.style.opacity = "0";
+      setTimeout(() => {
+        headerSvg.style.display = "none";
+      }, 300);
+    }
     isOpen = true;
     // Load or refresh histories each time drawer opens
     loadHistories();
+
+    // Add click-anywhere-to-close functionality
+    setTimeout(() => {
+      document.addEventListener("click", handleOutsideClick);
+    }, 100);
+  };
+
+  // Handle clicks outside the sidebar to close it
+  const handleOutsideClick = (e) => {
+    if (!isOpen) return;
+
+    // Don't close if clicking on the drawer itself or its children
+    if (drawer.contains(e.target)) return;
+
+    // Don't close if clicking on the external toggle button
+    if (externalToggleBtn.contains(e.target)) return;
+
+    // Close the sidebar
+    close();
   };
 
   const toggle = () => {
@@ -2677,14 +2767,121 @@ async function renderHistorySidebar() {
       const snap = await getDocs(q);
 
       list.innerHTML = "";
-      // Add retention notice
-      const note = document.createElement("div");
-      note.style.fontSize = "12px";
-      note.style.opacity = "0.9";
-      note.style.margin = "0 0 8px 0";
-      note.textContent =
-        "Note: Items here are automatically deleted after 7 days.";
-      list.appendChild(note);
+
+      // Add "New Form" choice above histories
+      const newFormItem = document.createElement("div");
+      Object.assign(newFormItem.style, {
+        display: "grid",
+        gridTemplateColumns: "auto 1fr auto",
+        alignItems: "center",
+        gap: "12px",
+        border: "none",
+        borderRadius: "8px",
+        padding: "12px",
+        marginBottom: "12px",
+        cursor: "pointer",
+        transition: "background-color 0.2s ease",
+      });
+
+      // Add header SVG icon
+      const headerIcon = document.createElement("div");
+      headerIcon.innerHTML = `
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+          style="color: var(--all-text);"
+        >
+          <path
+            d="M2.6687 11.333V8.66699C2.6687 7.74455 2.66841 7.01205 2.71655 6.42285C2.76533 5.82612 2.86699 5.31731 3.10425 4.85156L3.25854 4.57617C3.64272 3.94975 4.19392 3.43995 4.85229 3.10449L5.02905 3.02149C5.44666 2.84233 5.90133 2.75849 6.42358 2.71582C7.01272 2.66769 7.74445 2.66797 8.66675 2.66797H9.16675C9.53393 2.66797 9.83165 2.96586 9.83179 3.33301C9.83179 3.70028 9.53402 3.99805 9.16675 3.99805H8.66675C7.7226 3.99805 7.05438 3.99834 6.53198 4.04102C6.14611 4.07254 5.87277 4.12568 5.65601 4.20313L5.45581 4.28906C5.01645 4.51293 4.64872 4.85345 4.39233 5.27149L4.28979 5.45508C4.16388 5.7022 4.08381 6.01663 4.04175 6.53125C3.99906 7.05373 3.99878 7.7226 3.99878 8.66699V11.333C3.99878 12.2774 3.99906 12.9463 4.04175 13.4688C4.08381 13.9833 4.16389 14.2978 4.28979 14.5449L4.39233 14.7285C4.64871 15.1465 5.01648 15.4871 5.45581 15.7109L5.65601 15.7969C5.87276 15.8743 6.14614 15.9265 6.53198 15.958C7.05439 16.0007 7.72256 16.002 8.66675 16.002H11.3337C12.2779 16.002 12.9461 16.0007 13.4685 15.958C13.9829 15.916 14.2976 15.8367 14.5447 15.7109L14.7292 15.6074C15.147 15.3511 15.4879 14.9841 15.7117 14.5449L15.7976 14.3447C15.8751 14.128 15.9272 13.8546 15.9587 13.4688C16.0014 12.9463 16.0017 12.2774 16.0017 11.333V10.833C16.0018 10.466 16.2997 10.1681 16.6667 10.168C17.0339 10.168 17.3316 10.4659 17.3318 10.833V11.333C17.3318 12.2555 17.3331 12.9879 17.2849 13.5771C17.2422 14.0993 17.1584 14.5541 16.9792 14.9717L16.8962 15.1484C16.5609 15.8066 16.0507 16.3571 15.4246 16.7412L15.1492 16.8955C14.6833 17.1329 14.1739 17.2354 13.5769 17.2842C12.9878 17.3323 12.256 17.332 11.3337 17.332H8.66675C7.74446 17.332 7.01271 17.3323 6.42358 17.2842C5.90135 17.2415 5.44665 17.1577 5.02905 16.9785L4.85229 16.8955C4.19396 16.5601 3.64271 16.0502 3.25854 15.4238L3.10425 15.1484C2.86697 14.6827 2.76534 14.1739 2.71655 13.5771C2.66841 12.9879 2.6687 12.2555 2.6687 11.333ZM13.4646 3.11328C14.4201 2.334 15.8288 2.38969 16.7195 3.28027L16.8865 3.46485C17.6141 4.35685 17.6143 5.64315 16.8867 6.53515L16.7197 6.71973C15.829 7.61031 14.4203 7.666 13.4648 6.88672L13.2978 6.70215C12.5702 5.81015 12.57 4.52385 13.2976 3.63185L13.4646 3.11328Z"
+          ></path>
+        </svg>
+      `;
+
+      const newFormLabel = document.createElement("div");
+      newFormLabel.textContent = "New Form";
+      newFormLabel.style.fontWeight = "600";
+      newFormLabel.style.color = "var(--all-text)";
+
+      const newFormButton = document.createElement("button");
+      newFormButton.type = "button";
+      newFormButton.textContent = "Start";
+      Object.assign(newFormButton.style, {
+        padding: "6px 10px",
+        border: "1px solid var(--all-text)",
+        borderRadius: "6px",
+        background: "transparent",
+        color: "var(--all-text)",
+        cursor: "pointer",
+      });
+
+      newFormButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        // Clear the form
+        const form = document.getElementById("history-form-container");
+        if (form) {
+          const inputs = form.querySelectorAll("input, select, textarea");
+          inputs.forEach((input) => {
+            if (input.type === "checkbox" || input.type === "radio") {
+              input.checked = false;
+            } else if (input.tagName === "SELECT") {
+              input.selectedIndex = 0;
+            } else {
+              input.value = "";
+            }
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+        }
+        // Show success message in the load-history-message div with smooth animation
+        const loadHistoryMessage = document.getElementById(
+          "load-history-message"
+        );
+        if (loadHistoryMessage) {
+          loadHistoryMessage.textContent = "New form is loaded successfully.";
+          // Show with smooth animation
+          loadHistoryMessage.style.display = "block";
+          loadHistoryMessage.style.marginBottom = "10px";
+          // Small delay to ensure display change is processed
+          setTimeout(() => {
+            loadHistoryMessage.style.opacity = "1";
+            loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+          }, 10);
+          // Hide the message after 3 seconds with smooth animation
+          setTimeout(() => {
+            loadHistoryMessage.style.opacity = "0";
+            loadHistoryMessage.style.transform =
+              "translateY(-20px) scale(0.95)";
+            loadHistoryMessage.style.marginBottom = "0";
+            // Hide display after animation completes
+            setTimeout(() => {
+              loadHistoryMessage.style.display = "none";
+            }, 500);
+          }, 3000);
+        }
+        close();
+      });
+
+      // Make the whole item clickable
+      newFormItem.addEventListener("click", () => {
+        newFormButton.click();
+      });
+
+      // Hover effect
+      newFormItem.addEventListener("mouseenter", () => {
+        newFormItem.style.backgroundColor =
+          "rgba(var(--all-text-rgb, 0, 0, 0), 0.05)";
+      });
+      newFormItem.addEventListener("mouseleave", () => {
+        newFormItem.style.backgroundColor = "transparent";
+      });
+
+      newFormItem.appendChild(headerIcon);
+      newFormItem.appendChild(newFormLabel);
+      newFormItem.appendChild(newFormButton);
+      list.appendChild(newFormItem);
 
       const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
       const toMillis = (ts) =>
@@ -2784,7 +2981,33 @@ async function renderHistorySidebar() {
         loadBtn.addEventListener("click", () => {
           try {
             applySnapshotToForm(data.data || {});
-            inlineMessage("Loaded saved history into the form.");
+            const patientName = data.patientName || "Unknown";
+            // Show success message in the load-history-message div with smooth animation
+            const loadHistoryMessage = document.getElementById(
+              "load-history-message"
+            );
+            if (loadHistoryMessage) {
+              loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
+              // Show with smooth animation
+              loadHistoryMessage.style.display = "block";
+              loadHistoryMessage.style.marginBottom = "10px";
+              // Small delay to ensure display change is processed
+              setTimeout(() => {
+                loadHistoryMessage.style.opacity = "1";
+                loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+              }, 10);
+              // Hide the message after 3 seconds with smooth animation
+              setTimeout(() => {
+                loadHistoryMessage.style.opacity = "0";
+                loadHistoryMessage.style.transform =
+                  "translateY(-20px) scale(0.95)";
+                loadHistoryMessage.style.marginBottom = "0";
+                // Hide display after animation completes
+                setTimeout(() => {
+                  loadHistoryMessage.style.display = "none";
+                }, 500);
+              }, 3000);
+            }
             close();
           } catch (e) {
             console.warn("[BAU] Failed to apply snapshot:", e);

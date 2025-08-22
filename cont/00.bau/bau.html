@@ -289,13 +289,37 @@
 </div>
 
 <div id="history-form-container" class="form-wrapper" style="width: 80%">
+  <!-- Load saved history message -->
+  <div
+    id="load-history-message"
+    style="
+      background: rgba(150, 150, 150, 0.205);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: none;
+      padding: 16px 20px;
+      margin-bottom: 0;
+      text-align: center;
+      color: var(--all-text);
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    "
+  >
+    New form is loaded
+  </div>
+
   <h2
     style="
       font-weight: 600;
       border-bottom: 1px solid var(--all-text);
       margin-left: 0; /* optional */
       padding-bottom: 30px;
-      padding-top: 25px;
+      padding-top: 10px;
       margin-bottom: 40px;
       text-align: center;
       font-family: Nunito, Arial, sans-serif;
@@ -1899,7 +1923,7 @@
       affects the AI summary/plan generator.
     </div>
     <div id="ai-token-section" class="form-subsection" style="margin-top: 10px">
-      <div style="font-size: 12px; color: var(--all-text);">
+      <div style="font-size: 12px; color: var(--all-text)">
         No token required — secrets are handled on the server.
       </div>
     </div>

@@ -433,6 +433,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Rest of your functions remain the same...
 function goHome() {
+  // Clear form and show success message when header SVG is clicked
+  const form = document.getElementById("history-form-container");
+  if (form) {
+    const inputs = form.querySelectorAll("input, select, textarea");
+    inputs.forEach((input) => {
+      if (input.type === "checkbox" || input.type === "radio") {
+        input.checked = false;
+      } else if (input.tagName === "SELECT") {
+        input.selectedIndex = 0;
+      } else {
+        input.value = "";
+      }
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    // Show success message in the load-history-message div with smooth animation
+    const loadHistoryMessage = document.getElementById("load-history-message");
+    if (loadHistoryMessage) {
+      loadHistoryMessage.textContent = "New form is loaded successfully.";
+      // Show with smooth animation
+      loadHistoryMessage.style.display = "block";
+      loadHistoryMessage.style.marginBottom = "10px";
+      // Small delay to ensure display change is processed
+      setTimeout(() => {
+        loadHistoryMessage.style.opacity = "1";
+        loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+      }, 10);
+      // Hide the message after 3 seconds with smooth animation
+      setTimeout(() => {
+        loadHistoryMessage.style.opacity = "0";
+        loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+        loadHistoryMessage.style.marginBottom = "0";
+        // Hide display after animation completes
+        setTimeout(() => {
+          loadHistoryMessage.style.display = "none";
+        }, 500);
+      }, 3000);
+    }
+    return; // Don't navigate away, just clear the form
+  }
+
   try {
     // Ensure BAU is the remembered page
     sessionStorage.setItem("currentPage", "bau");
@@ -553,6 +594,13 @@ function loadContent(page) {
               }
               if (typeof window.initHomeScroll === "function") {
                 window.initHomeScroll();
+              }
+            }
+            // If dashboard page, ensure BAU sidebar exists
+            if (page === "dashboard") {
+              if (typeof window.ensureHistorySidebar === "function") {
+                window.ensureHistorySidebar().then(() => resolve());
+                return;
               }
             }
             resolve();
@@ -767,7 +815,44 @@ function loadDashboardFromSidebar() {
       if (typeof window.animateDashboardActiveSection === "function") {
         window.animateDashboardActiveSection();
       }
-
-      return Promise.resolve();
+      // Ensure BAU sidebar is present on dashboard
+      return ensureHistorySidebar().catch(() => {});
     });
+}
+
+// Ensure BAU history sidebar exists: load BAU script if needed and render sidebar
+function ensureHistorySidebar() {
+  return new Promise((resolve) => {
+    // If sidebar already added, resolve immediately
+    if (document.getElementById("bau-history-drawer") ||
+        document.getElementById("bau-history-external-toggle")) {
+      try {
+        if (typeof window.renderHistorySidebar === "function") {
+          window.renderHistorySidebar();
+        }
+      } catch (_) {}
+      return resolve();
+    }
+
+    const hasBauScript = !!document.querySelector('script[src="cont/00.bau/bau.js"]');
+    const afterReady = () => {
+      try {
+        if (typeof window.renderHistorySidebar === "function") {
+          window.renderHistorySidebar();
+        }
+      } catch (_) {}
+      resolve();
+    };
+
+    if (hasBauScript) {
+      afterReady();
+    } else {
+      const s = document.createElement("script");
+      s.src = "cont/00.bau/bau.js";
+      s.dataset.pageScript = "true";
+      s.onload = afterReady;
+      s.onerror = () => resolve();
+      document.body.appendChild(s);
+    }
+  });
 }
