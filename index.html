@@ -3,7 +3,10 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coronary Academic</title>
-    <link rel="icon" href="icons/header-logo-32x32.png" type="image/x-icon" />
+    <!-- Favicons: provide 16x16 and 32x32 PNG with cache-busting -->
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/header-logo-16x16.png?v=1" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/header-logo-32x32.png?v=1" />
+    <link rel="shortcut icon" type="image/png" href="icons/header-logo-32x32.png?v=1" />
     <link rel="stylesheet" href="css/header04.css" />
     <link rel="stylesheet" href="css/Beta.css" />
     <link rel="stylesheet" href="css/theme.css" />
@@ -109,28 +112,8 @@
       -webkit-overflow-scrolling: touch;
     "
   >
-    <header class="header-container">
+    <header class="header-container" style="position: relative">
       <div class="left-section">
-        <h1
-          id="page-title"
-          style="
-            font-size: 29px;
-            position: relative;
-            top: 10px;
-            left: 20px;
-            user-select: none;
-            cursor: pointer;
-            transition: color 0.2s ease, transform 0.15s ease;
-          "
-          role="button"
-          tabindex="0"
-          onclick="window.location.reload();"
-          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
-          onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
-          onmouseleave="this.style.transform=''; this.style.color='';"
-        >
-          Socrates Beta
-        </h1>
         <!--
          <nav>
           <button
@@ -174,9 +157,33 @@
 
         <!-- Theme toggle moved into user dropdown; header icon removed -->
       </div>
+
+      <h1
+        id="page-title"
+        style="
+          font-size: 29px;
+          position: relative;
+          top: 10px;
+          left: 0;
+          right: 0;
+          text-align: center;
+          z-index: 1;
+          user-select: none;
+          cursor: pointer;
+          transition: color 0.2s ease, transform 0.15s ease;
+        "
+        role="button"
+        tabindex="0"
+        onclick="window.location.reload();"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
+        onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
+        onmouseleave="this.style.transform=''; this.style.color='';"
+      >
+        Socrates Beta
+      </h1>
       <div class="right-section">
         <div id="auth-buttons" class="right-section" style="padding-right: 5px">
-          <a href="cont/011215071914/login01.html">
+          <a href="cont/011215071914/Login.html">
             <button class="login-button">
               Account
               <i style="font-size: 17px; padding-left: 10px" class="fa"
@@ -301,7 +308,6 @@
       </span>
     </footer>
 
-   
     <script>
       function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -318,6 +324,11 @@
         });
       }
     </script>
+
+    <!-- Load jsPDF globally, before your dynamic JS loads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-arabic/dist/jspdf-arabic.umd.min.js"></script>
     <script src="script.js" defer></script>
     <script src="theme.js"></script>
 
@@ -388,6 +399,7 @@
         setDoc,
         updateDoc,
         onSnapshot,
+        deleteDoc,
       } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
       // Firebase App Check (reCAPTCHA v3)
@@ -411,7 +423,9 @@
       // Initialize App Check
       try {
         initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider("6LfG0K4rAAAAAF3KHHvWhBhnzakAXIRBsOXgiOsM"),
+          provider: new ReCaptchaV3Provider(
+            "6LfG0K4rAAAAAF3KHHvWhBhnzakAXIRBsOXgiOsM"
+          ),
           isTokenAutoRefreshEnabled: true,
         });
         console.log("[INDEX] Firebase App Check initialized");
@@ -439,6 +453,7 @@
       window.setDoc = setDoc;
       window.updateDoc = updateDoc;
       window.onSnapshot = onSnapshot;
+      window.deleteDoc = deleteDoc;
 
       window.firebaseApp = app;
       window.auth = auth;
@@ -530,7 +545,7 @@
           return;
         }
         authButtonsDiv.innerHTML = `
-      <a href="cont/011215071914/login01.html">
+      <a href="cont/011215071914/Login.html">
         <button class="login-button" style="margin-right: 10px; margin-top: 11px">
           Account
           <i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i>
@@ -676,11 +691,12 @@
               });
             }
           } else {
-            restoreAccountButton();
-
-            // If no user, load saved page or default bau page
-            const savedPage = sessionStorage.getItem("currentPage") || "bau";
-            loadContent(savedPage).catch(() => loadDefaultPage());
+            // Enforce login-first: redirect immediately to login page
+            try {
+              window.location.href = "cont/011215071914/Login.html";
+            } catch (e) {
+              console.warn("[INDEX] Redirect to login failed:", e);
+            }
           }
         });
       });

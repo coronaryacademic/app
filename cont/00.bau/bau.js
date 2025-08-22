@@ -111,6 +111,8 @@
           btn.title = text;
         }
 
+  
+
         function buildPanel() {
           rows.innerHTML = "";
           const currentVal = modelSel.value;
@@ -324,7 +326,33 @@
   }
 })();
 
-document.getElementById("submit-and-download").addEventListener("click", () => {
+document.getElementById("submit-and-download").addEventListener("click", async () => {
+  // Enforce login before proceeding
+  const auth = window.auth;
+  const user = auth?.currentUser || null;
+  if (!user) {
+    try {
+      // Inline themed message instead of alert/popout
+      const msgHost =
+        document.getElementById("history-form-container") || document.body;
+      let msg = document.getElementById("bau-inline-msg");
+      if (!msg) {
+        msg = document.createElement("p");
+        msg.id = "bau-inline-msg";
+        msg.style.margin = "12px 0";
+        msg.style.color = "var(--all-text)";
+        // place it just above the submit section if possible
+        const submitBtn = document.getElementById("submit-and-download");
+        if (submitBtn && submitBtn.parentElement) {
+          submitBtn.parentElement.insertBefore(msg, submitBtn);
+        } else {
+          msgHost.prepend(msg);
+        }
+      }
+      msg.textContent = "Please login to submit and download the PDF.";
+    } catch {}
+    return;
+  }
   if (!window.jspdf) {
     console.error("jsPDF library not found.");
     return;
@@ -719,6 +747,75 @@ document.getElementById("submit-and-download").addEventListener("click", () => {
   if (!form) {
     console.error("Form container not found!");
     return;
+  }
+
+  // Save submission to Firestore under the logged-in user before generating PDF
+  try {
+    const db = window.db;
+    const { collection, doc, setDoc } = window;
+
+    // Collect a simple snapshot of form values (id -> value)
+    function collectFormSnapshot(root) {
+      const data = {};
+      const elements = root.querySelectorAll("input, select, textarea");
+      elements.forEach((el) => {
+        const key = el.id || el.name || null;
+        if (!key) return;
+        // Exclude AI prompt/response and any AI token fields from snapshot
+        const k = String(key).toLowerCase();
+        const skipKeys = new Set([
+          'aiprompt',
+          'airesult',
+          'ai-gh-token',
+          'aipromptpreview'
+        ]);
+        if (skipKeys.has(k)) return;
+        // Skip file inputs and PDF-related controls
+        if (el.type === 'file') return;
+        if (el.tagName === "SELECT") {
+          if (el.hasAttribute("multiple")) {
+            data[key] = Array.from(el.selectedOptions).map((o) => o.text.trim());
+          } else {
+            data[key] = el.options[el.selectedIndex]?.text || "";
+          }
+        } else if (el.type === "checkbox") {
+          if (el.checked) {
+            if (!Array.isArray(data[key])) data[key] = [];
+            data[key].push(el.value || true);
+          } else if (!(key in data)) {
+            data[key] = false;
+          }
+        } else if (el.type === "radio") {
+          if (el.checked) data[key] = el.value;
+          else if (!(key in data)) data[key] = data[key] || "";
+        } else {
+          data[key] = (el.value || "").trim();
+        }
+      });
+      return data;
+    }
+
+    const snapshot = collectFormSnapshot(form);
+    const patientNameRaw = (document.getElementById("patient-name")?.value || "").trim();
+    const studentNameRaw = (document.getElementById("student-name")?.value || "").trim();
+    const historiesCol = collection(db, "users", user.uid, "histories");
+    const historyDocRef = doc(historiesCol);
+    // Add timestamps for client-side pruning and future TTL
+    const { serverTimestamp, Timestamp } = window;
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const expMs = Date.now() + SEVEN_DAYS_MS;
+    await setDoc(historyDocRef, {
+      patientName: patientNameRaw || "Unknown",
+      studentName: studentNameRaw || "Unknown Student",
+      createdAt: new Date().toISOString(), // keep ISO for UI/back-compat
+      createdAtTs: typeof serverTimestamp === 'function' ? serverTimestamp() : null,
+      expiresAt: (Timestamp && typeof Timestamp.fromMillis === 'function') ? Timestamp.fromMillis(expMs) : null,
+      data: snapshot,
+    });
+    console.log("[BAU] History saved to Firestore:", historyDocRef?.id || "(auto-id)");
+  } catch (e) {
+    console.error("[BAU] Failed to save history to Firestore:", e);
+    // Proceed with PDF generation even if save fails
   }
 
   function getLabelText(input) {
@@ -1974,11 +2071,508 @@ function onHistoryFormInjected() {
   enhanceDropdownCheckboxesInFlow();
   // Apply same dropdown style to SOCRATES single-selects
   enhanceSocratesSelectsInFlow();
+  // Render recent history sidebar
+  try { renderHistorySidebar(); } catch (e) { console.warn("[BAU] history sidebar init failed:", e); }
 }
 
 // Example usage:
 // After injecting your HTML dynamically, call:
 onHistoryFormInjected();
+
+// Build and mount a slide-in recent-history sidebar with overlay and toggle button
+async function renderHistorySidebar() {
+  const root = document.getElementById("history-form-container");
+  if (!root) return;
+  if (document.getElementById('bau-history-drawer')) return; // already added
+
+  // Toggle button (place in index header left of the title)
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'bau-history-toggle';
+  toggleBtn.type = 'button';
+  toggleBtn.textContent = 'History';
+  Object.assign(toggleBtn.style, {
+    padding: '6px 12px',
+    border: '1px solid var(--all-text)',
+    borderRadius: '6px',
+    background: 'transparent',
+    color: 'var(--all-text)',
+    cursor: 'pointer',
+    margin: '0 10px 0 0',
+    position: 'relative',
+    zIndex: '1'
+  });
+  // Insert before the H1#page-title inside header .left-section
+  const headerLeft = document.querySelector('.header-container .left-section');
+  const pageTitle = document.getElementById('page-title');
+  if (headerLeft && pageTitle && pageTitle.parentElement === headerLeft) {
+    headerLeft.insertBefore(toggleBtn, pageTitle);
+  } else if (headerLeft) {
+    headerLeft.prepend(toggleBtn);
+  } else {
+    // Fallback: keep button near the form if header not found
+    const titleAnchorFallback = root.querySelector('h2');
+    if (titleAnchorFallback && titleAnchorFallback.parentElement === root) {
+      titleAnchorFallback.insertAdjacentElement('afterend', toggleBtn);
+    } else {
+      root.prepend(toggleBtn);
+    }
+  }
+
+  // Overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'bau-history-overlay';
+  Object.assign(overlay.style, {
+    position: 'fixed',
+    inset: '0',
+    background: 'rgba(0,0,0,0.75)',
+    backdropFilter: 'blur(1px)',
+    opacity: '0',
+    pointerEvents: 'none',
+    transition: 'opacity 200ms ease',
+    zIndex: '99999'
+  });
+
+  // Drawer
+  const drawer = document.createElement('aside');
+  drawer.id = 'bau-history-drawer';
+  Object.assign(drawer.style, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    height: '100vh',
+    width: 'min(88vw, 360px)',
+    maxWidth: '420px',
+    transform: 'translateX(-100%)',
+    transition: 'transform 220ms ease',
+    background: 'rgba(0,0,0,0.06)',
+    borderRight: '1px solid var(--all-text)',
+    color: 'var(--all-text)',
+    zIndex: '100000',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '2px 0 18px rgba(0,0,0,0.35)'
+  });
+
+  const header = document.createElement('div');
+  header.style.display = 'flex';
+  header.style.alignItems = 'center';
+  header.style.justifyContent = 'space-between';
+  header.style.padding = '16px';
+  const hTitle = document.createElement('div');
+  hTitle.textContent = 'Recent Histories';
+  hTitle.style.fontWeight = '600';
+  const actionsWrap = document.createElement('div');
+  actionsWrap.style.display = 'flex';
+  actionsWrap.style.gap = '8px';
+
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.textContent = 'Clear';
+  Object.assign(clearBtn.style, {
+    padding: '6px 10px',
+    border: '1px solid var(--all-text)',
+    borderRadius: '6px',
+    background: 'transparent',
+    color: 'var(--all-text)',
+    cursor: 'pointer'
+  });
+
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.textContent = 'Close';
+  Object.assign(closeBtn.style, {
+    padding: '6px 10px',
+    border: '1px solid var(--all-text)',
+    borderRadius: '6px',
+    background: 'transparent',
+    color: 'var(--all-text)',
+    cursor: 'pointer'
+  });
+
+  actionsWrap.appendChild(clearBtn);
+  actionsWrap.appendChild(closeBtn);
+  header.appendChild(hTitle);
+  header.appendChild(actionsWrap);
+
+  const list = document.createElement('div');
+  list.id = 'bau-history-list';
+  Object.assign(list.style, {
+    padding: '8px 16px 20px 16px',
+    overflow: 'auto',
+    display: 'grid',
+    gap: '8px'
+  });
+
+  drawer.appendChild(header);
+  drawer.appendChild(list);
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+
+  // Open/Close helpers
+  const close = () => {
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    drawer.style.transform = 'translateX(-100%)';
+    // Re-enable toggle button interactions when closed
+    toggleBtn.style.visibility = '';
+    toggleBtn.style.pointerEvents = '';
+    toggleBtn.disabled = false;
+  };
+  const open = () => {
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'auto';
+    drawer.style.transform = 'translateX(0)';
+    // Prevent toggle button from sitting above/stealing clicks
+    toggleBtn.style.visibility = 'hidden';
+    toggleBtn.style.pointerEvents = 'none';
+    toggleBtn.disabled = true;
+    // Load or refresh histories each time drawer opens
+    loadHistories();
+  };
+  toggleBtn.addEventListener('click', open);
+  overlay.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+  // Clear histories for current user (INSIDE sidebar scope)
+  clearBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    try {
+      const auth = window.auth;
+      const user = auth?.currentUser || null;
+      if (!user) {
+        inlineMessage('Please sign in to manage histories.');
+        return;
+      }
+      const confirmClear = window.confirm('Clear all saved histories? This cannot be undone.');
+      if (!confirmClear) return;
+
+      const db = window.db;
+      const { collection, getDocs, query } = window;
+      const { deleteDoc } = window;
+      if (!deleteDoc) {
+        console.warn('[BAU] deleteDoc not available on window');
+        inlineMessage('Clear failed: delete API unavailable.');
+        return;
+      }
+
+      const col = collection(db, 'users', user.uid, 'histories');
+      const q = query(col);
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        inlineMessage('No histories to clear.');
+        return;
+      }
+
+      const deletions = [];
+      snap.forEach((docSnap) => {
+        // Use ref when available for correctness
+        if (docSnap.ref) deletions.push(deleteDoc(docSnap.ref));
+      });
+      await Promise.allSettled(deletions);
+      inlineMessage('All histories cleared.');
+      await loadHistories();
+    } catch (err) {
+      console.warn('[BAU] Failed to clear histories:', err);
+      inlineMessage('Failed to clear histories.');
+    }
+  });
+
+  // Helper: prune old histories (>5 days) and cap total per user
+  async function pruneOldHistories() {
+    try {
+      const auth = window.auth;
+      const user = auth?.currentUser || null;
+      if (!user) return;
+      const db = window.db;
+      const { collection, query, getDocs } = window;
+      const { deleteDoc } = window;
+      if (!db || !collection || !query || !getDocs || !deleteDoc) return;
+
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+      const MAX_KEEP = 50; // cap per user
+      const MAX_DELETE_PER_RUN = 100; // safety cap
+      const now = Date.now();
+
+      const col = collection(db, 'users', user.uid, 'histories');
+      const snap = await getDocs(query(col)); // reads all docs in the subcollection
+      if (snap.empty) return;
+
+      const docs = [];
+      snap.forEach((docSnap) => {
+        const d = docSnap.data() || {};
+        // derive timestamps
+        const toMillis = (ts) => (ts && typeof ts.toMillis === 'function') ? ts.toMillis() : null;
+        let createdMs = toMillis(d.createdAtTs);
+        if (!createdMs && d.createdAt) {
+          const dt = new Date(d.createdAt);
+          createdMs = isNaN(dt.getTime()) ? null : dt.getTime();
+        }
+        const expMs = toMillis(d.expiresAt) ?? (createdMs ? createdMs + SEVEN_DAYS_MS : null);
+        docs.push({ ref: docSnap.ref, createdMs: createdMs ?? 0, expMs: expMs ?? 0 });
+      });
+
+      // Determine deletions
+      const toDelete = [];
+      // 1) Expired
+      docs.forEach((it) => {
+        if (it.expMs && it.expMs < now) toDelete.push(it.ref);
+      });
+      // 2) Cap oldest beyond MAX_KEEP
+      const sorted = docs
+        .slice()
+        .sort((a, b) => (b.createdMs || 0) - (a.createdMs || 0));
+      if (sorted.length > MAX_KEEP) {
+        for (let i = MAX_KEEP; i < sorted.length; i++) {
+          toDelete.push(sorted[i].ref);
+        }
+      }
+
+      if (!toDelete.length) return;
+      const limited = toDelete.slice(0, MAX_DELETE_PER_RUN);
+      await Promise.allSettled(limited.map((ref) => deleteDoc(ref)));
+      console.log(`[BAU] Pruned histories: ${limited.length} doc(s)`);
+    } catch (e) {
+      console.warn('[BAU] pruneOldHistories failed:', e);
+    }
+  }
+
+  // Load histories function, called on open and on auth changes
+  async function loadHistories() {
+    try {
+      const auth = window.auth;
+      const user = auth?.currentUser || null;
+      if (!user) {
+        const p = document.createElement('p');
+        p.textContent = 'Sign in to view your recent histories.';
+        p.style.margin = '4px 0 0 0';
+        list.replaceChildren(p);
+        return;
+      }
+
+      const db = window.db;
+      const { collection, query, orderBy, limit, getDocs } = window;
+      const col = collection(db, 'users', user.uid, 'histories');
+
+      // Prune expired/old docs before loading
+      await pruneOldHistories();
+
+      // Prefer server timestamp ordering if available; fallback to string
+      let q;
+      try {
+        q = query(col, orderBy('createdAtTs', 'desc'), limit(20));
+      } catch {
+        q = query(col, orderBy('createdAt', 'desc'), limit(20));
+      }
+      const snap = await getDocs(q);
+
+      list.innerHTML = '';
+      // Add retention notice
+      const note = document.createElement('div');
+      note.style.fontSize = '12px';
+      note.style.opacity = '0.9';
+      note.style.margin = '0 0 8px 0';
+      note.textContent = 'Note: Items here are automatically deleted after 7 days.';
+      list.appendChild(note);
+
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+      const toMillis = (ts) => (ts && typeof ts.toMillis === 'function') ? ts.toMillis() : null;
+      const fmtRemaining = (ms) => {
+        if (ms <= 0) return 'expired';
+        const days = Math.floor(ms / (24*60*60*1000));
+        const hrs = Math.floor((ms % (24*60*60*1000)) / (60*60*1000));
+        if (days > 0) return `${days}d ${hrs}h left`;
+        const mins = Math.floor((ms % (60*60*1000)) / (60*1000));
+        if (hrs > 0) return `${hrs}h ${mins}m left`;
+        const secs = Math.floor((ms % (60*1000)) / 1000);
+        if (mins > 0) return `${mins}m ${secs}s left`;
+        return `${secs}s left`;
+      };
+
+      if (snap.empty) {
+        const p = document.createElement('p');
+        p.textContent = 'No saved histories yet.';
+        list.appendChild(p);
+        return;
+      }
+
+      snap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        const item = document.createElement('div');
+        Object.assign(item.style, {
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          alignItems: 'center',
+          gap: '8px',
+          border: '1px solid var(--all-text)',
+          borderRadius: '8px',
+          padding: '8px'
+        });
+
+        const meta = document.createElement('div');
+        const dt = parseDateSafe(data.createdAt);
+        const when = dt ? `${dt.toLocaleDateString()} ${dt.toLocaleTimeString()}` : (data.createdAt || '');
+        // Remaining time
+        const createdMs = toMillis(data.createdAtTs) || (dt ? dt.getTime() : null) || 0;
+        const expMs = (toMillis(data.expiresAt) || (createdMs ? createdMs + SEVEN_DAYS_MS : 0));
+        const rem = Math.max(0, expMs - Date.now());
+        const remainingText = fmtRemaining(rem);
+        // Two-line meta: Name, then date/time below
+        const nameLine = document.createElement('div');
+        nameLine.textContent = `${data.patientName || 'Unknown'}`;
+        nameLine.style.fontWeight = '600';
+        const dateLine = document.createElement('div');
+        dateLine.textContent = when;
+        dateLine.style.fontSize = '12px';
+        dateLine.style.opacity = '0.85';
+        meta.replaceChildren(nameLine, dateLine);
+        meta.title = `${data.patientName || 'Unknown'} — ${when} • ${remainingText}`;
+        meta.style.overflow = 'hidden';
+        meta.style.textOverflow = 'ellipsis';
+        meta.style.whiteSpace = 'normal';
+        meta.style.display = 'flex';
+        meta.style.flexDirection = 'column';
+        meta.style.gap = '2px';
+
+        const actions = document.createElement('div');
+        actions.style.display = 'flex';
+        actions.style.gap = '8px';
+
+        // Right badge: remaining time
+        const remainBadge = document.createElement('span');
+        remainBadge.textContent = remainingText;
+        Object.assign(remainBadge.style, {
+          fontSize: '12px',
+          opacity: '0.85',
+          border: '1px solid var(--all-text)',
+          borderRadius: '999px',
+          padding: '2px 8px',
+          whiteSpace: 'nowrap',
+          alignSelf: 'center'
+        });
+
+        const loadBtn = document.createElement('button');
+        loadBtn.type = 'button';
+        loadBtn.textContent = 'Load';
+        Object.assign(loadBtn.style, {
+          padding: '6px 10px',
+          border: '1px solid var(--all-text)',
+          borderRadius: '6px',
+          background: 'transparent',
+          color: 'var(--all-text)',
+          cursor: 'pointer'
+        });
+        loadBtn.addEventListener('click', () => {
+          try {
+            applySnapshotToForm(data.data || {});
+            inlineMessage('Loaded saved history into the form.');
+            close();
+          } catch (e) {
+            console.warn('[BAU] Failed to apply snapshot:', e);
+            inlineMessage('Failed to load history.');
+          }
+        });
+
+        actions.appendChild(remainBadge);
+        actions.appendChild(loadBtn);
+        item.appendChild(meta);
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    } catch (e) {
+      console.warn('[BAU] Failed to load histories:', e);
+      const p = document.createElement('p');
+      p.textContent = 'Unable to load history.';
+      list.replaceChildren(p);
+    }
+  }
+
+  // Refresh list if auth state changes while the drawer is open
+  try {
+    const { onAuthStateChanged } = window;
+    if (typeof onAuthStateChanged === 'function' && window.auth) {
+      onAuthStateChanged(window.auth, () => {
+        // Only refresh if visible
+        if (drawer.style.transform === 'translateX(0)') {
+          loadHistories();
+        }
+      });
+    }
+  } catch {}
+
+  function parseDateSafe(v) {
+    try {
+      if (!v) return null;
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? null : d;
+    } catch { return null; }
+  }
+}
+
+// Set form fields from a saved snapshot { id/text -> value(s) }
+function applySnapshotToForm(snapshot) {
+  const root = document.getElementById('history-form-container') || document.body;
+  if (!snapshot || typeof snapshot !== 'object') return;
+
+  const setSelectByText = (sel, text) => {
+    if (!sel) return;
+    const opts = Array.from(sel.options || []);
+    const match = opts.find(o => (o.text || '').trim() === String(text).trim());
+    if (match) sel.value = match.value;
+    else if (opts.length) sel.selectedIndex = 0; // fallback to first
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    sel.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  Object.entries(snapshot).forEach(([key, val]) => {
+    const el = root.querySelector(`#${CSS.escape(key)}`) || root.querySelector(`[name="${key}"]`);
+    if (!el) return;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'select') {
+      if (el.hasAttribute('multiple')) {
+        const texts = Array.isArray(val) ? val.map(String) : [String(val)].filter(Boolean);
+        const set = new Set(texts.map(s => s.trim()));
+        Array.from(el.options).forEach(o => (o.selected = set.has((o.text || '').trim())));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      } else {
+        setSelectByText(el, val);
+      }
+    } else if (el.type === 'checkbox') {
+      el.checked = !!val;
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (el.type === 'radio') {
+      const radios = root.querySelectorAll(`input[type="radio"][name="${el.name}"]`);
+      radios.forEach(r => (r.checked = (r.value === String(val))));
+      radios.forEach(r => {
+        r.dispatchEvent(new Event('change', { bubbles: true }));
+        r.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    } else {
+      el.value = Array.isArray(val) ? val.join(', ') : String(val ?? '').trim();
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+}
+
+function inlineMessage(text) {
+  try {
+    const host = document.getElementById('history-form-container') || document.body;
+    let msg = document.getElementById('bau-inline-msg');
+    if (!msg) {
+      msg = document.createElement('p');
+      msg.id = 'bau-inline-msg';
+      msg.style.margin = '12px 0';
+      msg.style.color = 'var(--all-text)';
+      const submitBtn = document.getElementById('submit-and-download');
+      if (submitBtn && submitBtn.parentElement) submitBtn.parentElement.insertBefore(msg, submitBtn);
+      else host.prepend(msg);
+    }
+    msg.textContent = text;
+  } catch {}
+}
 
 function toggleFAQ() {
   const faq = document.getElementById("faqSection");

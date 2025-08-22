@@ -123,7 +123,7 @@ function restoreAccountButton() {
     return;
   }
   authButtonsDiv.innerHTML = `
-    <a href="cont/011215071914/login01.html">
+    <a href="cont/011215071914/Login.html">
       <button class="login-button" style="margin-top: 8px; margin-right: 10px">
         Account
         <i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i>

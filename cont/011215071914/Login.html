@@ -6,8 +6,19 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>Corornary Academic Login</title>
-    <link rel="icon" href="header-logo-32x32.png" type="image/x-icon" />
+    <title>Coronary Academic Login</title>
+    <!-- Favicon: provide 16x16 and 32x32 with cache-busting -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../../icons/header-logo-32x32.png?v=1"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="../../icons/header-logo-32x32.png?v=1"
+    />
     <link rel="stylesheet" href="login01.css" />
     <link rel="stylesheet" href="theme.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,24 +36,24 @@
       rel="stylesheet"
     />
     <style>
-      a {
-        text-decoration: none; /* remove underline if you prefer */
+      .legal-text {
+        font-family: Arial, sans-serif;
+        font-weight: 200; /* makes it thinner */
+        text-align: center;
       }
 
-      a:hover {
-        color: rgb(52, 164, 162);
-        text-decoration: underline;
-        text-decoration: underline;
-        cursor: pointer;
+      .legal-links a {
+        display: block; /* put them below each other */
+        font-size: 0.85em;
+        color: var(--all-text); /* muted gray for legal style */
+        text-decoration: none;
+        margin-top: 6px;
+        transition: color 0.2s ease;
       }
 
-      a {
-        font-weight: 1000;
-        transition: color 0.25s ease;
-      }
-
-      .hover-logo {
-        cursor: pointer;
+      .legal-links a:hover {
+        color: var(--scrl); /* darker on hover */
+        text-decoration: underline; /* underline only on hover */
       }
 
       body {
@@ -57,7 +68,8 @@
       <div class="login-box">
         <div class="container">
           <div class="flex">
-            <div class="header">
+            <!--
+             <div class="header">
               <section class="logo-container">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -81,10 +93,20 @@
                   />
                 </svg>
               </section>
-            </div>
-
+            </div>-->
             <div class="content">
-              <h1 class="h1" style="font-weight: 500">Hello Doctor!</h1>
+              <h1
+                class="h1"
+                style="
+                  font-weight: 300;
+                  font-size: 22px;
+                  margin-bottom: 20px;
+                  margin-top: -20px;
+                "
+              >
+                Hello Doctor! <br />To Use this app, and other related features,
+                please login in.
+              </h1>
               <!--
             <h1
               class="h1"
@@ -156,7 +178,7 @@
             --></div>
             <div class="card">
               <section class="auth-card">
-                <div class="google-login-wrapper">
+                <div class="google-login-wrapper" style="margin-bottom: 30px">
                   <button id="google-login">
                     <img
                       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -166,20 +188,26 @@
                     Sign in with Google
                   </button>
                 </div>
+
                 <div
+                  class="legal-text"
                   style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    margin-bottom: -30px;
+                    font-weight: 300;
+                    font-family: Nunito, sans-serif;
                   "
                 >
-                  <p style="margin-top: 0; font-weight: 100">
-                    Sign in quickly using your Google account. <br />
-                    Your accounts info are protected by Google.
+                  <p>
+                    Your account information is securely managed through
+                    Firebase Authentication. <br />(Google LLC). <br />
                   </p>
                 </div>
-                <p class="right00" style="font-size: 12px; margin-bottom: 35px">
-                  v1.12.3. LS
+
+                <p
+                  class="right00"
+                  style="font-size: 12px; margin-bottom: 20px; margin-top: 70px"
+                >
+                  v1.13. LS
                 </p>
               </section>
             </div>

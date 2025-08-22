@@ -2347,7 +2347,7 @@ function initDashboard() {
       console.log("[DASHBOARD] No user logged in");
       currentUser = null;
       mainContent.innerHTML =
-        '<p style="font-size:19px; margin-top: -30px; text-align:center;   background: rgba(150, 150, 150, 0.205); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);  border-radius: 25px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border: none; padding: 35px; width: 80%; margin: 0 auto;">Please log in to view dashboard.<br/> Press on the <a href="cont/011215071914/login01.html" style="text-decoration: none; color: inherit; font-weight: bold;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">&nbsp;Account<i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i></a>&nbsp;&nbsp;to&nbsp;login&nbsp;in.</p>';
+        '<p style="font-size:19px; margin-top: -30px; text-align:center;   background: rgba(150, 150, 150, 0.205); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);  border-radius: 25px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border: none; padding: 35px; width: 80%; margin: 0 auto;">Please log in to view dashboard.<br/> Press on the <a href="cont/011215071914/Login.html" style="text-decoration: none; color: inherit; font-weight: bold;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">&nbsp;Account<i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i></a>&nbsp;&nbsp;to&nbsp;login&nbsp;in.</p>';
 
       // Hide all nav buttons
       navButtons.forEach((btn) => {
