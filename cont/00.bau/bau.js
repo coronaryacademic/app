@@ -19,13 +19,11 @@
     };
 
     const updateTokenVisibility = () => {
-      const val = modelSel ? modelSel.value : "";
-      const needsToken =
-        val === "mistral-large-2411" || val === "openai/gpt-5-nano";
+      // Tokens are no longer needed in the browser; all AI calls are proxied server-side.
       const hint = document.getElementById("ai-token-hint");
       const section = document.getElementById("ai-token-section");
-      if (hint) hint.style.display = needsToken ? "" : "none";
-      if (section) section.style.display = needsToken ? "" : "none";
+      if (hint) hint.style.display = "none";
+      if (section) section.style.display = "none";
     };
 
     // Restore saved model selection
@@ -279,24 +277,19 @@
       }
     }
 
-    // Do not prefill any token from localStorage (tokens are not stored client-side)
+    // Tokens are not used client-side; clear UI state if present
+    if (tokenInput) {
+      tokenInput.value = "";
+      tokenInput.readOnly = true;
+      tokenInput.placeholder = "No token needed";
+    }
 
     // Toggle Edit/Save behavior
     if (editBtn && tokenInput) {
-      const setEditing = (editing) => {
-        tokenInput.readOnly = !editing;
-        editBtn.textContent = editing ? "Save token" : "Edit token";
-        if (editing) tokenInput.focus();
-      };
-      editBtn.addEventListener("click", () => {
-        const editing = tokenInput.readOnly; // if readonly -> enter edit mode
-        if (editing) {
-          setEditing(true);
-        } else {
-          // No-op save; we no longer persist tokens client-side
-          setEditing(false);
-        }
-      });
+      // Disable edit/save; no tokens required client-side
+      editBtn.disabled = true;
+      editBtn.textContent = "Token not required";
+      tokenInput.readOnly = true;
     }
 
     // Expose helpers globally for other modules
@@ -306,14 +299,14 @@
       return saved || "gemini-1.5-flash";
     };
     window.getGitHubModelsToken = function () {
-      // Kept for backward compatibility; tokens are not used on client anymore
+      // No token needed in browser; proxy uses server-side env vars
       return "";
     };
 
     // Simple fetch wrapper for GitHub Models Azure Inference endpoint
     // Usage: await window.githubModelsChat(model, token, messages)
-    window.githubModelsChat = async function (model, _tokenIgnored, messages) {
-      // Route via serverless proxy; no client-side token required
+    window.githubModelsChat = async function (model, token, messages) {
+      // NOTE: token is ignored; calls are proxied server-side to avoid exposing secrets.
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -321,10 +314,10 @@
       });
       if (!res.ok) {
         const errText = await res.text().catch(() => "");
-        throw new Error(`GitHub Models error ${res.status}: ${errText}`);
+        throw new Error(`GitHub Models proxy error ${res.status}: ${errText}`);
       }
-      const data = await res.json().catch(() => ({}));
-      return (data && data.content) || "";
+      const data = await res.json();
+      return data?.content || "";
     };
   } catch (e) {
     console.warn("[BAU] AI model/token init error:", e);
@@ -3296,38 +3289,41 @@ Clinical history:\n${
               let text = "";
 
               if (selectedModel === "mistral-large-2411") {
-                // Secure path: call our proxy, no browser tokens
-                const body = {
-                  provider: "mistral",
-                  model: "mistral-large-2411",
-                  messages: [
-                    { role: "system", content: "" },
-                    { role: "user", content: finalPrompt },
-                  ],
-                  temperature: 0.3,
-                  max_tokens: 512,
-                  top_p: 0.9,
-                };
+                // Secure path: route via serverless proxy; no tokens in frontend.
                 const resp = await fetch("/api/ai/chat", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(body),
+                  body: JSON.stringify({
+                    provider: "github",
+                    model: "mistral-large-2411",
+                    messages: [
+                      { role: "system", content: "" },
+                      { role: "user", content: finalPrompt },
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 512,
+                    top_p: 0.9,
+                  }),
                 });
                 if (!resp.ok) {
                   const errTxt = await resp.text().catch(() => "");
-                  throw new Error(`AI proxy error (${resp.status}): ${errTxt}`);
+                  throw new Error(`Proxy error (${resp.status}): ${errTxt}`);
                 }
-                const data = await resp.json().catch(() => ({}));
-                text = (data && data.content) || "";
+                const data = await resp.json();
+                text = data?.content || "";
               } else if (selectedModel === "openai/gpt-5-nano") {
                 // Route GPT-5 Nano via GitHub Models Azure Inference
                 try {
                   // As of now GPT-5 Nano may not be enabled in your account; fallback to gpt-4o-mini
                   const fallbackModel = "gpt-4o-mini";
-                  const reply = await window.githubModelsChat(fallbackModel, null, [
-                    { role: "system", content: "" },
-                    { role: "user", content: finalPrompt },
-                  ]);
+                  const reply = await window.githubModelsChat(
+                    fallbackModel,
+                    null,
+                    [
+                      { role: "system", content: "" },
+                      { role: "user", content: finalPrompt },
+                    ]
+                  );
                   const note =
                     "Note: 'gpt-5-nano' unavailable; used 'gpt-4o-mini' via GitHub Models.";
                   text = reply ? `${note}\n\n${reply}` : note;
@@ -3467,66 +3463,15 @@ Clinical history:\n${
 
           const tokenInput = document.getElementById("ai-gh-token");
           if (tokenInput) {
-            // Hint common password managers to ignore
-            tokenInput.setAttribute("autocomplete", "new-password");
-            tokenInput.setAttribute("data-lpignore", "true");
-            tokenInput.setAttribute("data-1p-ignore", "true");
-            tokenInput.setAttribute("autocapitalize", "off");
-            tokenInput.setAttribute("spellcheck", "false");
-            tokenInput.setAttribute(
-              "placeholder",
-              "No token required. Calls are proxied via server."
-            );
-
-            // Do not load any cached token; we no longer store tokens client-side
-
-            // Keep readonly by default to deter autofill; enable only on explicit user interaction
-            const enableEdit = () => {
-              try {
-                tokenInput.removeAttribute("readonly");
-              } catch {}
-              tokenInput.__allowSet = true;
-            };
-            const disableEdit = () => {
-              try {
-                tokenInput.setAttribute("readonly", "");
-              } catch {}
-              tokenInput.__allowSet = false;
-            };
-
-            tokenInput.addEventListener("pointerdown", enableEdit, {
-              once: true,
-            });
-            tokenInput.addEventListener("focus", enableEdit, { once: true });
-            tokenInput.addEventListener("blur", () => {
-              // Do not persist; simply re-lock
-              disableEdit();
-            });
-
-            // Intercept programmatic value changes (scripted autofill)
-            const inProto = Object.getPrototypeOf(tokenInput);
-            const valDesc = Object.getOwnPropertyDescriptor(inProto, "value");
-            try {
-              Object.defineProperty(tokenInput, "value", {
-                configurable: true,
-                get() {
-                  return valDesc.get.call(this);
-                },
-                set(v) {
-                  if (this.__allowSet === true)
-                    return valDesc.set.call(this, v);
-                  // ignore unexpected programmatic sets
-                },
-              });
-            } catch {}
-
-            // Bind explicit edit button, if present
+            // Fully disable client-side token usage; proxy handles secrets server-side
+            try { localStorage.removeItem("gh_models_token"); } catch {}
+            tokenInput.value = "";
+            tokenInput.setAttribute("readonly", "");
+            tokenInput.placeholder = "No token needed";
             const editBtn = document.getElementById("ai-gh-token-edit");
             if (editBtn) {
-              editBtn.addEventListener("click", () => {
-                enableEdit();
-                setTimeout(() => tokenInput.focus({ preventScroll: true }), 0);
-              });
+              editBtn.disabled = true;
+              editBtn.textContent = "Token not required";
             }
           }
         } catch {}

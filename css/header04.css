@@ -1,0 +1,385 @@
+.arabic-font {
+  font-family: "Baloo Bhaijaan 2", Arial, sans-serif;
+}
+
+.header-container {
+  background-color: #ffffff;
+  color: #505050;
+  font-family: Nunito;
+  position: static;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100px; /* force same height */
+  min-height: 100px; /* ensures flex doesn’t shrink */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-bottom: none;
+  border-bottom-color: gray;
+  border-bottom-width: 0.1px;
+  z-index: 10000; /* higher than sidebar and overlay */
+}
+
+.header-container {
+  /* other styles */
+  transition: box-shadow 0.3s ease; /* Adjust duration and easing as needed */
+}
+
+.header-container.no-shadow {
+  box-shadow: none; /* Or adjust to your default shadow */
+}
+
+.left-section {
+  max-width: 450px;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  position: relative;
+}
+
+nav {
+  margin-left: 8px;
+}
+
+.nav {
+  height: 30px;
+  opacity: 0.7;
+}
+
+.nav-button {
+  position: relative;
+  z-index: 10000; /* higher than sidebar and overlay */
+  transform: none !important; /* remove transform if any */
+  will-change: auto; /* prevent stacking context */
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  touch-action: manipulation;
+}
+
+.nav-button:hover {
+  opacity: 0.8;
+}
+
+.nav-button:active {
+  opacity: 1;
+}
+
+.right-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-button {
+  background-color: rgba(52, 164, 162, 0);
+}
+
+.register-button {
+  background-color: rgba(120, 204, 196, 0);
+  margin-right: 10px;
+  transition: background-color 0.3s;
+}
+
+.right-section {
+  display: flex;
+  justify-content: space-between; /* distributes space evenly */
+  gap: 25px; /* optional: adds uniform spacing between buttons */
+}
+
+.right-section button {
+  white-space: nowrap;
+  touch-action: manipulation;
+  border: none;
+  font-size: 18px;
+  font-family: "Nunito", Arial, sans-serif;
+  padding-top: 5px;
+}
+
+.lang-button:focus,
+.lang-button.active {
+  color: rgb(52, 164, 162);
+  /* Active color */
+}
+
+.lang-button:hover,
+.register-button:hover {
+  cursor: pointer;
+  color: rgb(52, 164, 162);
+}
+
+/* Make hamburger X arms (top & bottom bars) white when active */
+#icon.active #topBar,
+#icon.active #bottomBar {
+  fill: rgb(243, 243, 243) !important;
+}
+
+/* Account button: remove blue hover color, scale on hover */
+.login-button:hover {
+  cursor: pointer;
+  color: inherit; /* keep current text color */
+  transform: scale(1.03); /* requested scale */
+}
+
+/* Account button: no transform/scale on hover */
+.login-button {
+  transform-origin: center;
+  will-change: transform;
+  transition: transform 0.18s ease, color 0.3s; /* smooth and subtle */
+}
+
+.login-button:active,
+.register-button:active {
+  color: rgba(57, 57, 57, 0.696);
+}
+
+.login-button:focus,
+.register-button:focus {
+  background-color: rgba(52, 164, 162, 0.002);
+}
+
+.right-section .header-logo {
+  cursor: pointer;
+  transition: opacity 0.25s;
+  margin-right: 5px;
+}
+
+.header-logo:hover {
+  opacity: 0.7;
+}
+
+.header-logo:active {
+  opacity: 1;
+}
+
+.header-logo {
+  height: 50px;
+}
+
+/* Default transition settings */
+.header-container,
+.login-button,
+.register-button,
+.header-logo {
+  transition: all 0.3s ease-in-out;
+}
+
+.logo-container {
+  position: relative;
+  margin-left: 0px; /* Pushes the logo container to the right */
+  height: 50px; /* Ensures the container matches the header height */
+}
+
+.header-logo,
+.hover-logo {
+  position: absolute;
+  top: 0;
+  right: 0; /* Align to the right */
+  transition: opacity 0.1s ease; /* Smooth transition with ease-out */
+}
+
+.hover-logo {
+  opacity: 0.15; /* Hide the second image by default */
+}
+
+.logo-container:hover .header-logo {
+  opacity: 1;
+}
+
+.logo-container:hover .hover-logo {
+  opacity: 1; /* Fade in the second image */
+}
+
+.lang-button {
+  margin-left: 9.7px;
+  margin-right: 8px;
+}
+
+/* For max-width 580px */
+@media (max-width: 580px) {
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .login-button,
+  .register-button {
+    margin-right: 0px;
+    padding: 10px 0px 10px 30px;
+  }
+
+  .lang-button {
+    margin-right: 0;
+  }
+}
+
+/* For max-width 454.55px */
+@media (max-width: 454.55px) {
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    position: fixed;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .right-section {
+    position: relative;
+  }
+  /* Instead of display: none, transition opacity for smooth disappearance */
+  .header-logo {
+    opacity: 0;
+    visibility: hidden; /* Makes it invisible but keeps space */
+    position: absolute;
+  }
+
+  .logo-container {
+    margin-left: 0px;
+  }
+
+  .login-button,
+  .register-button {
+    margin-right: 0px;
+    padding: 10px 0px 10px 30px;
+  }
+
+  .lang-button {
+    display: none;
+  }
+}
+
+/* For max-width 340.50px */
+@media (max-width: 340.5px) {
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .nav {
+    margin: 0px 0px 0px 0px !important;
+  }
+
+  .register-button {
+    padding: 0px 24px 0px 19px !important;
+  }
+
+  .login-button {
+    padding: 0px 19px 0px 19px !important;
+  }
+}
+
+/* For max-width 272.40px */
+@media (max-width: 272.4px) {
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+  }
+
+  .left-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+  }
+
+  .right-section {
+    position: relative;
+  }
+
+  .login-button,
+  .register-button {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden; /* Use this instead of display: none for smooth transition */
+  }
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  min-width: 150px;
+  box-shadow: 0 0px 16px rgba(0, 0, 0, 0.089);
+  z-index: 1;
+  padding: 10px;
+}
+
+.dropdown-content button {
+  background-color: white;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #555555;
+}
+
+.nested-dropdown-content {
+  position: absolute;
+  background-color: white;
+  min-width: 100px;
+  left: -110px;
+  /* Position the nested dropdown to the left */
+  top: 0;
+  box-shadow: 0 0px 16px rgba(0, 0, 0, 0.089);
+  z-index: 2;
+}
+
+.nested-dropdown-content button {
+  background-color: white;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.nested-dropdown-content button:hover {
+  background-color: #555555;
+}
+
+#pageLoadingBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    rgb(173, 232, 244),
+    /* pastel light blue */ rgb(144, 224, 239),
+    /* soft aqua */ rgb(123, 217, 243),
+    /* calm cyan */ rgb(152, 228, 255),
+    /* sky blue */ rgb(144, 224, 239),
+    /* soft aqua (repeat) */ rgb(173, 232, 244) /* pastel light blue (repeat) */
+  );
+  z-index: 9999;
+  opacity: 1;
+  transition: width 0.8s ease, opacity 0.6s ease 0.2s;
+}
+
+.nav-button.svg-rect-white svg rect {
+  fill: rgb(243, 243, 243) !important;
+}
+
+.svg-secondBar-white {
+  fill: rgb(243, 243, 243) !important;
+}

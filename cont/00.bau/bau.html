@@ -1,0 +1,2047 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  /* BAU scoped overrides: make dropdown/select panels transparent and text colored */
+  #history-form-container select,
+  #overall select,
+  #socrates-wrapper select {
+    background: transparent !important;
+    color: var(--all-text) !important;
+  }
+
+  /* Options (note: OS/browser limitations may apply) */
+  #history-form-container select option,
+  #history-form-container select optgroup,
+  #overall select option,
+  #overall select optgroup {
+    background: transparent !important;
+    color: var(--all-text) !important;
+  }
+
+  /* Panels for custom single/multi selects (common class names) */
+  #history-form-container .dropdown-single-panel,
+  #history-form-container .multi-select-panel,
+  #history-form-container .dropdown-panel,
+  #history-form-container .dropdown-menu,
+  #history-form-container .dropdown-content,
+  #history-form-container [data-dropdown-panel] {
+    background: transparent !important;
+    color: var(--all-text) !important;
+    border-color: var(--all-text) !important;
+  }
+
+  /* Buttons inside those panels */
+  #history-form-container .dropdown-single-panel button,
+  #history-form-container .multi-select-panel button,
+  #history-form-container .dropdown-panel button,
+  #history-form-container .dropdown-menu button,
+  #history-form-container .dropdown-content button {
+    background: transparent !important;
+    color: var(--all-text) !important;
+  }
+
+  /* Attribute-based targeting for BAU enhanced multi-selects */
+  #history-form-container select[multiple],
+  #history-form-container select[data-dropdown-checkbox] {
+    background: transparent !important;
+    color: var(--all-text) !important;
+  }
+
+  /* Defensive override: any element inside history form that explicitly used white-ish bg */
+  #history-form-container * {
+    /* neutralize hard-coded white backgrounds without affecting layout */
+    background-color: transparent !important;
+    color: var(--all-text);
+  }
+
+  /* Force inline black text to use theme color inside BAU form */
+  #history-form-container [style*="color: black"],
+  #history-form-container [style*="color:black"],
+  #history-form-container [style*="color: Black"],
+  #history-form-container [style*="color:#000"],
+  #history-form-container [style*="color: #000"],
+  #history-form-container [style*="color:#000000"],
+  #history-form-container [style*="color: #000000"],
+  #history-form-container [style*="color: rgb(0, 0, 0)"],
+  #history-form-container [style*="color:rgb(0,0,0)"] {
+    color: var(--all-text) !important;
+  }
+</style>
+
+<div
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    background: radial-gradient(
+        circle at 20% 30%,
+        rgba(52, 164, 162, 0.35),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(173, 216, 230, 0.25),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 70% 80%,
+        rgba(186, 85, 211, 0.168),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 30% 70%,
+        rgba(255, 182, 193, 0.123),
+        transparent 60%
+      );
+    background-blend-mode: screen;
+    z-index: -1;
+  "
+></div>
+
+<div id="overall">
+  <!-- Help Icon Button -->
+  <div class="help-container">
+    <button
+      id="helpButton"
+      class="btnhelp"
+      style="background-color: transparent; border: none; cursor: pointer"
+      title="Help"
+      onclick="toggleFAQ()"
+    >
+      <i class="fa" id="helpicon" style="padding-bottom: 10px; font-size: 22px">
+        &#xf059;
+      </i>
+    </button>
+
+    <!-- Tooltip -->
+    <span id="helpLabel"> Click for more information. </span>
+  </div>
+
+  <!-- Expandable FAQ Section -->
+  <div class="FAQ">
+    <div
+      id="faqSection"
+      style="
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.5s ease;
+        margin-top: 15px;
+        text-align: left;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      "
+    >
+      <div
+        style="
+          background: rgba(150, 150, 150, 0.152);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px); /* for Safari */
+          border-radius: 25px;
+          border: none;
+          padding: 20px;
+        "
+      >
+        <h3
+          style="
+            margin: 0 0 15px 0;
+            color: var(--all-text);
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+          "
+        >
+          How to Use This Form
+        </h3>
+
+        <div
+          style="display: grid; gap: 12px; font-size: 14px; line-height: 1.5"
+        >
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              style="
+                background: rgba(150, 150, 150, 0.205);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px); /* for Safari */
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.077);
+                color: var(--all-text);
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                font-weight: bold;
+                flex-shrink: 0;
+                margin-top: 2px;
+              "
+              >1</span
+            >
+            <span
+              >Fill out the form fields below - empty fields will remain blank
+              in your generated PDF</span
+            >
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              style="
+                background: rgba(150, 150, 150, 0.205);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px); /* for Safari */
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.077);
+                color: var(--all-text);
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                font-weight: bold;
+                flex-shrink: 0;
+                margin-top: 2px;
+              "
+              >2</span
+            >
+            <span
+              >Click <strong>"Submit & Download PDF"</strong> to generate your
+              clinical history report</span
+            >
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: 12px">
+            <span
+              style="
+                background: rgba(150, 150, 150, 0.205);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px); /* for Safari */
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.077);
+                color: var(--all-text);
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                font-weight: bold;
+                flex-shrink: 0;
+                margin-top: 2px;
+              "
+              >3</span
+            >
+            <span
+              >If signed in, your file will be automatically saved to your
+              <strong>Dashboard</strong></span
+            >
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+            color: rgba(var(--all-text-rgb), 0.7);
+            text-align: center;
+          "
+        >
+          All information entered is included in the final documentation
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="history-form-container" class="form-wrapper" style="width: 80%">
+  <h2
+    style="
+      font-weight: 600;
+      border-bottom: 1px solid var(--all-text);
+      margin-left: 0; /* optional */
+      padding-bottom: 30px;
+      padding-top: 25px;
+      margin-bottom: 40px;
+      text-align: center;
+      font-family: Nunito, Arial, sans-serif;
+    "
+  >
+    Practical History Taking Form
+  </h2>
+
+  <!-- Student Info at the Top -->
+  <div class="form-section flex-row">
+    <div class="form-subsection">
+      <label for="student-name">Student Name</label>
+      <input type="text" id="student-name" />
+    </div>
+
+    <div class="form-section">
+      <label for="student-number">Student Number</label>
+      <input
+        type="text"
+        id="student-number"
+        name="student-number"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          padding: 11px;
+          font-size: 14px;
+        "
+      />
+    </div>
+
+    <div class="form-section">
+      <label for="rotation">Rotation</label>
+      <input
+        type="text"
+        id="rotation"
+        name="rotation"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          padding: 11px;
+          font-size: 14px;
+        "
+      />
+    </div>
+    <div class="form-subsection">
+      <label for="group-number">Group Number</label>
+      <input type="text" id="group-number" />
+    </div>
+  </div>
+
+  <!-- Patient Info in One Row -->
+  <div class="form-section flex-row">
+    <div class="form-subsection">
+      <label for="patient-name">Patient Name</label>
+      <input type="text" id="patient-name" />
+    </div>
+
+    <div class="form-subsection">
+      <label for="age">Age</label>
+      <input type="number" id="age" />
+    </div>
+  </div>
+
+  <!-- Gender -->
+  <div class="form-section">
+    <label for="gender">Gender</label>
+    <select id="gender" style="width: 100%; box-sizing: border-box">
+      <option>Male</option>
+      <option>Female</option>
+    </select>
+  </div>
+
+  <div class="form-section">
+    <label>Social History (SH)</label>
+    <div class="boxed-section">
+      <div class="form-subsection">
+        <label for="smoking">Smoking</label>
+        <select
+          id="smoking"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            font-size: 14px;
+          "
+        >
+          <option value="never">Never smoker</option>
+          <option value="ex">Ex-smoker</option>
+          <option value="current-light">Current smoker (1–10 cigs/day)</option>
+          <option value="current-moderate">
+            Current smoker (11–20 cigs/day)
+          </option>
+          <option value="current-heavy">Current smoker (>20 cigs/day)</option>
+          <option value="vape">Vapes/e-cigarettes</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="alcohol">Alcohol Use</label>
+        <select
+          id="alcohol"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            font-size: 14px;
+          "
+        >
+          <option value="none">None</option>
+          <option value="occasional">Occasional</option>
+          <option value="moderate">Moderate</option>
+          <option value="heavy">Heavy</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="occupation">Occupation</label>
+        <select
+          id="occupation"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            font-size: 14px;
+          "
+        >
+          <option value="student">Student</option>
+          <option value="manual">Manual labor</option>
+          <option value="office">Office/Clerical</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="education">Education</option>
+          <option value="service">Service industry</option>
+          <option value="unemployed">Unemployed</option>
+          <option value="retired">Retired</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="living">Living Situation & Support</label>
+        <select
+          id="living"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            font-size: 14px;
+          "
+        >
+          <option value="alone">Lives alone</option>
+          <option value="family">With family</option>
+          <option value="partner">With partner</option>
+          <option value="shared">Shared housing</option>
+          <option value="care-home">Care home</option>
+          <option value="homeless">Homeless/unstable</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="travel">Recent Travel</label>
+        <select
+          id="travel"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            font-size: 14px;
+          "
+        >
+          <option value="none">No recent travel</option>
+          <option value="domestic">Domestic travel</option>
+          <option value="international">International travel</option>
+          <option value="endemic">Travel to endemic area</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CC -->
+  <div class="form-section">
+    <label for="chief-complaint">Chief Complaint (CC)</label>
+    <select
+      id="chief-complaint"
+      style="
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px;
+        font-size: 14px;
+      "
+    >
+      <optgroup label="Cardiovascular">
+        <option value="chest-pain">Chest Pain</option>
+        <option value="palpitations">Palpitations</option>
+        <option value="syncope">Syncope/Fainting</option>
+        <option value="leg-swelling">Leg Swelling</option>
+        <option value="claudication">Claudication</option>
+      </optgroup>
+      <optgroup label="Respiratory">
+        <option value="shortness-breath">Shortness of Breath</option>
+        <option value="cough">Cough</option>
+        <option value="wheeze">Wheeze</option>
+        <option value="hemoptysis">Coughing Blood</option>
+        <option value="chest-tightness">Chest Tightness</option>
+      </optgroup>
+      <optgroup label="Gastrointestinal">
+        <option value="abdominal-pain">Abdominal Pain</option>
+        <option value="nausea-vomiting">Nausea/Vomiting</option>
+        <option value="diarrhea">Diarrhea</option>
+        <option value="constipation">Constipation</option>
+        <option value="dysphagia">Difficulty Swallowing</option>
+        <option value="heartburn">Heartburn/GERD</option>
+        <option value="gi-bleeding">GI Bleeding</option>
+        <option value="jaundice">Jaundice</option>
+      </optgroup>
+      <optgroup label="Neurological">
+        <option value="headache">Headache</option>
+        <option value="dizziness">Dizziness/Vertigo</option>
+        <option value="seizure">Seizure</option>
+        <option value="weakness">Weakness</option>
+        <option value="numbness">Numbness/Tingling</option>
+        <option value="memory-loss">Memory Loss</option>
+        <option value="confusion">Confusion</option>
+        <option value="speech-difficulty">Speech Difficulty</option>
+      </optgroup>
+      <optgroup label="Musculoskeletal">
+        <option value="joint-pain">Joint Pain</option>
+        <option value="back-pain">Back Pain</option>
+        <option value="neck-pain">Neck Pain</option>
+        <option value="muscle-pain">Muscle Pain</option>
+        <option value="stiffness">Stiffness</option>
+        <option value="swelling">Joint Swelling</option>
+      </optgroup>
+      <optgroup label="Genitourinary">
+        <option value="dysuria">Painful Urination</option>
+        <option value="frequency">Urinary Frequency</option>
+        <option value="urgency">Urinary Urgency</option>
+        <option value="hematuria">Blood in Urine</option>
+        <option value="incontinence">Incontinence</option>
+        <option value="discharge">Genital Discharge</option>
+      </optgroup>
+      <optgroup label="Constitutional">
+        <option value="fever">Fever</option>
+        <option value="fatigue">Fatigue</option>
+        <option value="weight-loss">Weight Loss</option>
+        <option value="weight-gain">Weight Gain</option>
+        <option value="night-sweats">Night Sweats</option>
+        <option value="appetite-loss">Loss of Appetite</option>
+      </optgroup>
+      <optgroup label="Dermatological">
+        <option value="rash">Rash</option>
+        <option value="itching">Itching</option>
+        <option value="skin-lesions">Skin Lesions</option>
+        <option value="hair-loss">Hair Loss</option>
+      </optgroup>
+      <optgroup label="ENT">
+        <option value="sore-throat">Sore Throat</option>
+        <option value="hearing-loss">Hearing Loss</option>
+        <option value="tinnitus">Tinnitus</option>
+        <option value="vision-changes">Vision Changes</option>
+        <option value="eye-pain">Eye Pain</option>
+        <option value="nasal-congestion">Nasal Congestion</option>
+      </optgroup>
+      <optgroup label="Ophthalmology">
+        <option value="red-eye">Red Eye</option>
+        <option value="eye-discharge">Eye Discharge</option>
+        <option value="vision-loss">Acute Vision Loss</option>
+        <option value="photophobia">Photophobia</option>
+        <option value="floaters">Floaters/Flashes</option>
+      </optgroup>
+      <optgroup label="Obstetric/Gynecologic">
+        <option value="amenorrhea">Amenorrhea</option>
+        <option value="vaginal-bleeding">Vaginal Bleeding</option>
+        <option value="pelvic-pain">Pelvic Pain</option>
+        <option value="dyspareunia">Dyspareunia</option>
+        <option value="pregnancy-concerns">Pregnancy-related Concerns</option>
+        <option value="vaginal-discharge">Vaginal Discharge</option>
+      </optgroup>
+      <optgroup label="Endocrine">
+        <option value="polyuria-polydipsia">Polyuria/Polydipsia</option>
+        <option value="heat-cold-intolerance">Heat/Cold Intolerance</option>
+        <option value="hair-skin-changes">Hair/Skin Changes</option>
+      </optgroup>
+      <optgroup label="Hematologic/Oncology">
+        <option value="easy-bruising">Easy Bruising/Bleeding</option>
+        <option value="lymphadenopathy">Lymph Node Swelling</option>
+        <option value="unexplained-fever">Unexplained Fever</option>
+      </optgroup>
+      <optgroup label="Renal/Urologic">
+        <option value="flank-pain">Flank Pain</option>
+        <option value="edema">Edema</option>
+        <option value="urinary-retention">Urinary Retention</option>
+      </optgroup>
+      <optgroup label="Infectious Disease">
+        <option value="sore-lesion">Skin/Soft Tissue Infection</option>
+        <option value="exposure-risk">Exposure/Needlestick</option>
+        <option value="travel-illness">Fever after Travel</option>
+      </optgroup>
+      <optgroup label="Dental/Oral">
+        <option value="tooth-pain">Tooth Pain</option>
+        <option value="oral-ulcers">Oral Ulcers</option>
+        <option value="jaw-swelling">Jaw Swelling</option>
+      </optgroup>
+      <optgroup label="Psychiatric">
+        <option value="depression">Depression</option>
+        <option value="anxiety">Anxiety</option>
+        <option value="sleep-disturbance">Sleep Disturbance</option>
+        <option value="mood-changes">Mood Changes</option>
+      </optgroup>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <!-- SOCRATES Expanded -->
+  <div class="form-section">
+    <label>SOCRATES</label>
+    <div id="socrates-wrapper">
+      <div class="form-subsection">
+        <label for="site">Site</label>
+        <select id="site" style="width: 100%; padding: 8px; font-size: 14px">
+          <optgroup label="Head & Neck">
+            <option value="head-frontal">Head - Frontal</option>
+            <option value="head-temporal">Head - Temporal</option>
+            <option value="head-occipital">Head - Occipital</option>
+            <option value="head-parietal">Head - Parietal</option>
+            <option value="face">Face</option>
+            <option value="jaw">Jaw</option>
+            <option value="neck-anterior">Neck - Anterior</option>
+            <option value="neck-posterior">Neck - Posterior</option>
+            <option value="throat">Throat</option>
+            <option value="ear">Ear</option>
+            <option value="eye">Eye</option>
+            <option value="sinus">Sinus</option>
+          </optgroup>
+          <optgroup label="Chest">
+            <option value="chest-central">Chest - Central/Retrosternal</option>
+            <option value="chest-left">Chest - Left sided</option>
+            <option value="chest-right">Chest - Right sided</option>
+            <option value="chest-upper">Chest - Upper</option>
+            <option value="chest-lower">Chest - Lower</option>
+            <option value="precordial">Precordial</option>
+            <option value="intercostal">Intercostal</option>
+          </optgroup>
+          <optgroup label="Abdomen">
+            <option value="epigastric">Epigastric</option>
+            <option value="ruq">Right Upper Quadrant</option>
+            <option value="luq">Left Upper Quadrant</option>
+            <option value="rlq">Right Lower Quadrant</option>
+            <option value="llq">Left Lower Quadrant</option>
+            <option value="periumbilical">Periumbilical</option>
+            <option value="suprapubic">Suprapubic</option>
+            <option value="hypochondrium-right">Right Hypochondrium</option>
+            <option value="hypochondrium-left">Left Hypochondrium</option>
+            <option value="lumbar-right">Right Lumbar</option>
+            <option value="lumbar-left">Left Lumbar</option>
+            <option value="iliac-right">Right Iliac</option>
+            <option value="iliac-left">Left Iliac</option>
+          </optgroup>
+          <optgroup label="Back">
+            <option value="cervical">Neck/Cervical</option>
+            <option value="back-upper">Upper Back/Thoracic</option>
+            <option value="back-mid">Mid Back</option>
+            <option value="back-lower">Lower Back/Lumbar</option>
+            <option value="sacral">Sacral</option>
+            <option value="coccyx">Coccyx</option>
+            <option value="flank-left">Left Flank</option>
+            <option value="flank-right">Right Flank</option>
+          </optgroup>
+          <optgroup label="Extremities">
+            <option value="shoulder-left">Left Shoulder</option>
+            <option value="shoulder-right">Right Shoulder</option>
+            <option value="arm-left">Left Arm</option>
+            <option value="arm-right">Right Arm</option>
+            <option value="elbow-left">Left Elbow</option>
+            <option value="elbow-right">Right Elbow</option>
+            <option value="wrist-left">Left Wrist</option>
+            <option value="wrist-right">Right Wrist</option>
+            <option value="hand-left">Left Hand</option>
+            <option value="hand-right">Right Hand</option>
+            <option value="finger-left">Left Finger(s)/Thumb</option>
+            <option value="finger-right">Right Finger(s)/Thumb</option>
+            <option value="hip-left">Left Hip</option>
+            <option value="hip-right">Right Hip</option>
+            <option value="leg-left">Left Leg</option>
+            <option value="leg-right">Right Leg</option>
+            <option value="knee-left">Left Knee</option>
+            <option value="knee-right">Right Knee</option>
+            <option value="ankle-left">Left Ankle</option>
+            <option value="ankle-right">Right Ankle</option>
+            <option value="foot-left">Left Foot</option>
+            <option value="foot-right">Right Foot</option>
+            <option value="toe-left">Left Toe(s)/Great Toe</option>
+            <option value="toe-right">Right Toe(s)/Great Toe</option>
+          </optgroup>
+          <optgroup label="Pelvis & Genitalia">
+            <option value="pelvis">Pelvis</option>
+            <option value="groin-left">Left Groin</option>
+            <option value="groin-right">Right Groin</option>
+            <option value="genitalia">Genitalia</option>
+            <option value="perineum">Perineum</option>
+          </optgroup>
+          <option value="generalized">Generalized</option>
+          <option value="multiple-sites">Multiple Sites</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="onset">Onset</label>
+        <select id="onset" style="width: 100%; padding: 8px; font-size: 14px">
+          <option value="sudden">Sudden (seconds to minutes)</option>
+          <option value="acute">Acute (hours to days)</option>
+          <option value="subacute">Subacute (days to weeks)</option>
+          <option value="chronic">Chronic (weeks to months)</option>
+          <option value="gradual">Gradual progression</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="character">Character</label>
+        <select
+          id="character"
+          style="width: 100%; padding: 8px; font-size: 14px"
+        >
+          <option value="sharp">Sharp/Stabbing</option>
+          <option value="dull">Dull/Aching</option>
+          <option value="burning">Burning</option>
+          <option value="crushing">Crushing/Pressure</option>
+          <option value="cramping">Cramping</option>
+          <option value="throbbing">Throbbing/Pulsating</option>
+          <option value="shooting">Shooting</option>
+          <option value="gnawing">Gnawing</option>
+          <option value="tight">Tight/Constricting</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="radiation">Radiation</label>
+        <select
+          id="radiation"
+          style="width: 100%; padding: 8px; font-size: 14px"
+        >
+          <option value="none">No radiation</option>
+          <option value="left-arm">Left arm</option>
+          <option value="right-arm">Right arm</option>
+          <option value="both-arms">Both arms</option>
+          <option value="jaw">Jaw</option>
+          <option value="neck">Neck</option>
+          <option value="back">Back</option>
+          <option value="shoulder">Shoulder</option>
+          <option value="down-leg">Down leg(s)</option>
+          <option value="groin">Groin</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="associated">Associated Symptoms</label>
+        <select
+          id="associated"
+          name="associated"
+          style="width: 100%; padding: 8px; font-size: 14px; margin-top: 5px"
+        >
+          <optgroup label="General/Constitutional">
+            <option value="fever">Fever</option>
+            <option value="chills">Chills</option>
+            <option value="night-sweats">Night sweats</option>
+            <option value="fatigue">Fatigue</option>
+            <option value="weight-loss">Unintentional weight loss</option>
+            <option value="weight-gain">Weight gain</option>
+            <option value="appetite-loss">Loss of appetite</option>
+          </optgroup>
+          <optgroup label="Cardiovascular">
+            <option value="palpitations">Palpitations</option>
+            <option value="orthopnea">Orthopnea</option>
+            <option value="pnd">Paroxysmal nocturnal dyspnea</option>
+            <option value="leg-swelling">Leg swelling</option>
+            <option value="syncope">Syncope/Fainting</option>
+            <option value="chest-tightness">Chest tightness</option>
+          </optgroup>
+          <optgroup label="Respiratory">
+            <option value="shortness-breath">Shortness of breath</option>
+            <option value="cough">Cough</option>
+            <option value="sputum">Sputum</option>
+            <option value="wheeze">Wheeze</option>
+            <option value="hemoptysis">Coughing blood</option>
+            <option value="pleuritic-pain">Pleuritic chest pain</option>
+          </optgroup>
+          <optgroup label="Gastrointestinal">
+            <option value="nausea">Nausea</option>
+            <option value="vomiting">Vomiting</option>
+            <option value="diarrhea">Diarrhea</option>
+            <option value="constipation">Constipation</option>
+            <option value="abdominal-bloating">Abdominal bloating</option>
+            <option value="heartburn">Heartburn/Acid reflux</option>
+            <option value="dysphagia">Difficulty swallowing</option>
+            <option value="melena">Black stools (melena)</option>
+            <option value="hematochezia">Blood per rectum</option>
+          </optgroup>
+          <optgroup label="Genitourinary">
+            <option value="dysuria">Painful urination</option>
+            <option value="frequency">Frequency</option>
+            <option value="urgency">Urgency</option>
+            <option value="nocturia">Nocturia</option>
+            <option value="hematuria">Blood in urine</option>
+            <option value="incontinence">Incontinence</option>
+            <option value="discharge">Genital discharge</option>
+          </optgroup>
+          <optgroup label="Neurological">
+            <option value="headache">Headache</option>
+            <option value="dizziness">Dizziness/Vertigo</option>
+            <option value="weakness">Weakness</option>
+            <option value="numbness">Numbness/Tingling</option>
+            <option value="vision-changes">Vision changes</option>
+            <option value="speech-difficulty">Speech difficulty</option>
+            <option value="seizure">Seizures</option>
+            <option value="confusion">Confusion</option>
+            <option value="memory-loss">Memory loss</option>
+          </optgroup>
+          <optgroup label="Musculoskeletal">
+            <option value="joint-pain">Joint pain</option>
+            <option value="joint-swelling">Joint swelling</option>
+            <option value="stiffness">Stiffness</option>
+            <option value="muscle-pain">Muscle pain</option>
+            <option value="back-pain">Back pain</option>
+          </optgroup>
+          <optgroup label="Endocrine/Metabolic">
+            <option value="heat-intolerance">Heat intolerance</option>
+            <option value="cold-intolerance">Cold intolerance</option>
+            <option value="polyuria">Polyuria</option>
+            <option value="polydipsia">Polydipsia</option>
+            <option value="polyphagia">Polyphagia</option>
+          </optgroup>
+          <optgroup label="Dermatological">
+            <option value="rash">Rash</option>
+            <option value="itching">Itching</option>
+            <option value="skin-lesions">Skin lesions</option>
+            <option value="hair-loss">Hair loss</option>
+            <option value="sweating">Excessive sweating</option>
+          </optgroup>
+          <optgroup label="ENT">
+            <option value="sore-throat">Sore throat</option>
+            <option value="runny-nose">Runny nose</option>
+            <option value="nasal-congestion">Nasal congestion</option>
+            <option value="ear-pain">Ear pain</option>
+            <option value="tinnitus">Tinnitus</option>
+            <option value="hearing-loss">Hearing loss</option>
+          </optgroup>
+          <optgroup label="Psychiatric">
+            <option value="anxiety">Anxiety</option>
+            <option value="depression">Depression</option>
+            <option value="insomnia">Insomnia</option>
+            <option value="irritability">Irritability</option>
+            <option value="hallucinations">Hallucinations</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="timing">Timing</label>
+        <select id="timing" style="width: 100%; padding: 8px; font-size: 14px">
+          <option value="constant">Constant</option>
+          <option value="intermittent">Intermittent</option>
+          <option value="episodic">Episodic</option>
+          <option value="morning">Worse in morning</option>
+          <option value="evening">Worse in evening</option>
+          <option value="night">Worse at night</option>
+          <option value="activity">Related to activity</option>
+          <option value="meals">Related to meals</option>
+          <option value="stress">Related to stress</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="exacerbating">Exacerbating Factors</label>
+        <select
+          id="exacerbating"
+          style="width: 100%; padding: 8px; font-size: 14px; margin-top: 5px"
+        >
+          <option value="movement">Movement</option>
+          <option value="exercise">Exercise</option>
+          <option value="deep-breathing">Deep breathing</option>
+          <option value="coughing">Coughing</option>
+          <option value="eating">Eating</option>
+          <option value="stress">Stress</option>
+          <option value="on-its-own">On its own</option>
+          <option value="none">None</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="relieving">Relieving Factors</label>
+        <select
+          id="relieving"
+          style="width: 100%; padding: 8px; font-size: 14px; margin-top: 5px"
+        >
+          <option value="rest">Rest</option>
+          <option value="medication">Medication</option>
+          <option value="position-change">Position change</option>
+          <option value="heat">Heat application</option>
+          <option value="cold">Cold application</option>
+          <option value="nothing">Nothing helps</option>
+          <option value="none">None</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="severity">Severity (0–10)</label
+        ><select id="severity">
+          <option value="unknown">Unknown</option>
+          <option value="0">0 – No pain</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 – Moderate</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10 – Worst imaginable</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PMH / PSH -->
+  <div class="form-section">
+    <label for="past-medical">Past Medical History (PMH)</label>
+    <select
+      id="past-medical"
+      multiple
+      size="12"
+      data-dropdown-checkbox
+      style="width: 100%; padding: 8px; font-size: 14px"
+    >
+      <optgroup label="Cardiovascular">
+        <option value="Hypertension">Hypertension</option>
+        <option value="Ischemic heart disease">
+          Ischemic heart disease/MI
+        </option>
+        <option value="Heart failure">Heart failure</option>
+        <option value="Atrial fibrillation">Atrial fibrillation</option>
+        <option value="Valve disease">Valvular heart disease</option>
+        <option value="Peripheral arterial disease">
+          Peripheral arterial disease
+        </option>
+        <option value="Dyslipidemia">Dyslipidemia</option>
+      </optgroup>
+      <optgroup label="Endocrine/Metabolic">
+        <option value="Diabetes mellitus">Diabetes mellitus (Type 1/2)</option>
+        <option value="Hypothyroidism">Hypothyroidism</option>
+        <option value="Hyperthyroidism">Hyperthyroidism</option>
+        <option value="Obesity">Obesity</option>
+      </optgroup>
+      <optgroup label="Respiratory">
+        <option value="Asthma">Asthma</option>
+        <option value="COPD">COPD</option>
+        <option value="Pulmonary embolism">Pulmonary embolism</option>
+      </optgroup>
+      <optgroup label="Renal/Urologic">
+        <option value="CKD">Chronic kidney disease</option>
+        <option value="Nephrolithiasis">Kidney stones</option>
+      </optgroup>
+      <optgroup label="Hepatic/GI">
+        <option value="Chronic liver disease">Chronic liver disease</option>
+        <option value="Peptic ulcer">Peptic ulcer disease</option>
+        <option value="IBD">Inflammatory bowel disease</option>
+      </optgroup>
+      <optgroup label="Neurology">
+        <option value="Stroke/TIA">Stroke/TIA</option>
+        <option value="Epilepsy">Epilepsy</option>
+        <option value="Parkinson's">Parkinson's disease</option>
+      </optgroup>
+      <optgroup label="Rheumatology/Autoimmune">
+        <option value="Rheumatoid arthritis">Rheumatoid arthritis</option>
+        <option value="SLE">SLE</option>
+        <option value="Gout">Gout</option>
+        <option value="Autoimmune disease">Other autoimmune disease</option>
+      </optgroup>
+      <optgroup label="Infectious">
+        <option value="TB">Tuberculosis</option>
+        <option value="HIV">HIV</option>
+        <option value="Hepatitis B/C">Hepatitis B/C</option>
+      </optgroup>
+      <optgroup label="Oncology/Hematology">
+        <option value="Cancer">Cancer</option>
+        <option value="Anemia">Chronic anemia</option>
+        <option value="Clotting disorder">Clotting disorder</option>
+      </optgroup>
+      <optgroup label="Psychiatric">
+        <option value="Depression">Depression</option>
+        <option value="Anxiety">Anxiety</option>
+        <option value="Bipolar">Bipolar disorder</option>
+      </optgroup>
+      <optgroup label="Other">
+        <option value="Pregnancy">Pregnancy</option>
+        <option value="None">None</option>
+        <option value="Unknown">Unknown</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div class="form-section">
+    <label for="past-surgical">Past Surgical History (PSH)</label>
+    <select
+      id="past-surgical"
+      multiple
+      size="10"
+      data-dropdown-checkbox
+      style="width: 100%; padding: 8px; font-size: 14px"
+    >
+      <optgroup label="General Surgery">
+        <option value="Appendectomy">Appendectomy</option>
+        <option value="Cholecystectomy">Cholecystectomy</option>
+        <option value="Hernia repair">Hernia repair</option>
+        <option value="Bowel resection">Bowel resection</option>
+      </optgroup>
+      <optgroup label="Cardiothoracic">
+        <option value="CABG/PCI">CABG/PCI</option>
+        <option value="Valve surgery">Valve surgery</option>
+        <option value="Thoracic surgery">Thoracic surgery</option>
+      </optgroup>
+      <optgroup label="Orthopedic">
+        <option value="Joint replacement">Joint replacement</option>
+        <option value="Fracture fixation">Fracture fixation</option>
+        <option value="Spine surgery">Spine surgery</option>
+      </optgroup>
+      <optgroup label="OB/Gyn">
+        <option value="C-section">Cesarean section</option>
+        <option value="Hysterectomy">Hysterectomy</option>
+        <option value="Oophorectomy">Oophorectomy</option>
+      </optgroup>
+      <optgroup label="ENT">
+        <option value="Tonsillectomy">Tonsillectomy</option>
+        <option value="Thyroidectomy">Thyroidectomy</option>
+      </optgroup>
+      <optgroup label="Urology">
+        <option value="TURP">TURP</option>
+        <option value="Nephrectomy">Nephrectomy</option>
+      </optgroup>
+      <optgroup label="Other">
+        <option value="None">None</option>
+        <option value="Unknown">Unknown</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Drug History Expanded -->
+  <div class="form-section">
+    <label>Drug History (DH)</label>
+    <div class="boxed-section">
+      <div class="form-subsection">
+        <label for="regular-meds">Regular Medications</label>
+        <select
+          id="regular-meds"
+          multiple
+          size="14"
+          data-dropdown-checkbox
+          style="width: 100%; padding: 8px; font-size: 14px"
+        >
+          <optgroup label="Cardiovascular: Antihypertensives">
+            <option value="ACE inhibitor">
+              ACE inhibitors (e.g., enalapril, lisinopril)
+            </option>
+            <option value="ARB">ARBs (e.g., losartan, valsartan)</option>
+            <option value="Beta-blocker">
+              Beta-blockers (e.g., metoprolol, atenolol)
+            </option>
+            <option value="CCB">
+              Calcium channel blockers (e.g., amlodipine, diltiazem)
+            </option>
+            <option value="Thiazide diuretic">
+              Thiazide diuretics (e.g., HCTZ, chlorthalidone)
+            </option>
+            <option value="Loop diuretic">
+              Loop diuretics (e.g., furosemide, bumetanide)
+            </option>
+            <option value="Aldosterone antagonist">
+              Aldosterone antagonists (e.g., spironolactone, eplerenone)
+            </option>
+          </optgroup>
+          <optgroup label="Cardiovascular: Lipids/Platelets/Anticoag">
+            <option value="Statin">
+              Statins (e.g., atorvastatin, rosuvastatin)
+            </option>
+            <option value="Ezetimibe">Ezetimibe</option>
+            <option value="PCSK9 inhibitor">PCSK9 inhibitors</option>
+            <option value="Antiplatelet">
+              Antiplatelets (aspirin, clopidogrel)
+            </option>
+            <option value="Warfarin">Warfarin</option>
+            <option value="DOAC">
+              DOACs (apixaban, rivaroxaban, dabigatran)
+            </option>
+          </optgroup>
+          <optgroup label="Cardiovascular: Antiarrhythmics">
+            <option value="Amiodarone">Amiodarone</option>
+            <option value="Flecainide">Flecainide/Propafenone</option>
+            <option value="Sotalol">Sotalol</option>
+          </optgroup>
+          <optgroup label="Diabetes">
+            <option value="Metformin">Metformin</option>
+            <option value="Sulfonylurea">
+              Sulfonylureas (e.g., gliclazide)
+            </option>
+            <option value="DPP-4 inhibitor">
+              DPP-4 inhibitors (e.g., sitagliptin)
+            </option>
+            <option value="GLP-1 RA">
+              GLP-1 receptor agonists (e.g., semaglutide)
+            </option>
+            <option value="SGLT2 inhibitor">
+              SGLT2 inhibitors (e.g., empagliflozin)
+            </option>
+            <option value="Insulin">Insulin (basal/bolus/mixed)</option>
+          </optgroup>
+          <optgroup label="Respiratory">
+            <option value="SABA">
+              SABA inhalers (e.g., salbutamol/albuterol)
+            </option>
+            <option value="LABA">
+              LABA inhalers (e.g., salmeterol, formoterol)
+            </option>
+            <option value="ICS">Inhaled corticosteroids</option>
+            <option value="LAMA">LAMA (e.g., tiotropium)</option>
+            <option value="Leukotriene antagonist">
+              Leukotriene antagonists (montelukast)
+            </option>
+          </optgroup>
+          <optgroup label="Gastrointestinal">
+            <option value="PPI">
+              Proton pump inhibitors (omeprazole, pantoprazole)
+            </option>
+            <option value="H2RA">H2 blockers (ranitidine/famotidine)</option>
+            <option value="Antiemetic">
+              Antiemetics (ondansetron, metoclopramide)
+            </option>
+            <option value="Laxative">Laxatives (senna, lactulose, PEG)</option>
+            <option value="Antispasmodic">
+              Antispasmodics (hyoscine/mebeverine)
+            </option>
+          </optgroup>
+          <optgroup label="Pain/Neuro">
+            <option value="Paracetamol">Paracetamol/Acetaminophen</option>
+            <option value="NSAIDs">
+              NSAIDs (ibuprofen, naproxen, diclofenac)
+            </option>
+            <option value="Opioids">
+              Opioids (morphine, oxycodone, tramadol)
+            </option>
+            <option value="Antidepressants">
+              Antidepressants (SSRIs/SNRIs/TCAs)
+            </option>
+            <option value="Antiepileptics">
+              Antiepileptics (valproate, levetiracetam)
+            </option>
+            <option value="Antipsychotics">
+              Antipsychotics (quetiapine, risperidone)
+            </option>
+            <option value="Benzodiazepines">
+              Benzodiazepines (diazepam, lorazepam)
+            </option>
+          </optgroup>
+          <optgroup label="Endocrine/Bone">
+            <option value="Thyroxine">Thyroxine (levothyroxine)</option>
+            <option value="Steroids">
+              Systemic corticosteroids (prednisone)
+            </option>
+            <option value="Bisphosphonate">
+              Bisphosphonates (alendronate)
+            </option>
+            <option value="Calcium/Vit D">Calcium/Vitamin D</option>
+          </optgroup>
+          <optgroup label="Anti-infectives: Antibiotics">
+            <option value="Penicillins">
+              Penicillins (amoxicillin, flucloxacillin)
+            </option>
+            <option value="Cephalosporins">
+              Cephalosporins (cefalexin, ceftriaxone)
+            </option>
+            <option value="Macrolides">
+              Macrolides (azithromycin, clarithromycin)
+            </option>
+            <option value="Fluoroquinolones">
+              Fluoroquinolones (ciprofloxacin, levofloxacin)
+            </option>
+            <option value="Tetracyclines">Tetracyclines (doxycycline)</option>
+            <option value="Sulfonamides">
+              Sulfonamides (co-trimoxazole/TMP-SMX)
+            </option>
+            <option value="Glycopeptides">Glycopeptides (vancomycin)</option>
+            <option value="Aminoglycosides">
+              Aminoglycosides (gentamicin)
+            </option>
+            <option value="Nitroimidazoles">
+              Nitroimidazoles (metronidazole)
+            </option>
+            <option value="Nitrofurantoin">Nitrofurantoin</option>
+            <option value="Antituberculars">
+              Antituberculars (isoniazid, rifampicin)
+            </option>
+          </optgroup>
+          <optgroup label="Anti-infectives: Others">
+            <option value="Antifungals">
+              Antifungals (fluconazole, nystatin)
+            </option>
+            <option value="Antivirals">
+              Antivirals (acyclovir, oseltamivir)
+            </option>
+            <option value="Antiparasitics">Antiparasitics (albendazole)</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="None">None</option>
+            <option value="Unknown">Unknown</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="otc">OTC / Herbal / Supplements</label>
+        <select
+          id="otc"
+          multiple
+          size="10"
+          data-dropdown-checkbox
+          style="width: 100%; padding: 8px; font-size: 14px"
+        >
+          <optgroup label="Analgesics/Antipyretics">
+            <option value="Paracetamol">Paracetamol/Acetaminophen</option>
+            <option value="NSAIDs">NSAIDs (ibuprofen, naproxen)</option>
+            <option value="Topical analgesics">
+              Topical analgesics (diclofenac gel)
+            </option>
+          </optgroup>
+          <optgroup label="Gastrointestinal">
+            <option value="Antacids">Antacids</option>
+            <option value="Laxatives">Laxatives (senna, PEG)</option>
+            <option value="Antidiarrheals">Antidiarrheals (loperamide)</option>
+          </optgroup>
+          <optgroup label="Respiratory/Cold">
+            <option value="Decongestants">Decongestants</option>
+            <option value="Antihistamines">Antihistamines</option>
+            <option value="Cough remedies">Cough remedies</option>
+          </optgroup>
+          <optgroup label="Vitamins/Supplements">
+            <option value="Vitamin D">Vitamin D</option>
+            <option value="Vitamin B12">Vitamin B12</option>
+            <option value="Multivitamin">Multivitamins</option>
+            <option value="Iron">Iron</option>
+            <option value="Calcium">Calcium</option>
+            <option value="Omega-3">Omega-3</option>
+          </optgroup>
+          <optgroup label="Herbal/Alternative">
+            <option value="Herbal">Herbal remedies</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="None">None</option>
+            <option value="Unknown">Unknown</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-subsection">
+        <label for="drug-allergies">Drug Allergies</label>
+        <select
+          id="drug-allergies"
+          multiple
+          size="10"
+          data-dropdown-checkbox
+          style="width: 100%; padding: 8px; font-size: 14px"
+        >
+          <optgroup label="General">
+            <option value="NKDA">No known drug allergies (NKDA)</option>
+          </optgroup>
+          <optgroup label="Antibiotics">
+            <option value="Penicillins">Penicillins</option>
+            <option value="Cephalosporins">Cephalosporins</option>
+            <option value="Macrolides">Macrolides</option>
+            <option value="Fluoroquinolones">Fluoroquinolones</option>
+            <option value="Tetracyclines">Tetracyclines</option>
+            <option value="Sulfonamides">Sulfonamides (TMP-SMX)</option>
+            <option value="Glycopeptides">Glycopeptides (vancomycin)</option>
+            <option value="Aminoglycosides">Aminoglycosides</option>
+            <option value="Nitroimidazoles">
+              Nitroimidazoles (metronidazole)
+            </option>
+          </optgroup>
+          <optgroup label="Analgesics">
+            <option value="NSAIDs">NSAIDs</option>
+            <option value="Opioids">Opioids</option>
+            <option value="Paracetamol">Paracetamol</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="Contrast">Iodinated contrast</option>
+            <option value="Latex">Latex</option>
+            <option value="Local anesthetics">Local anesthetics</option>
+            <option value="Other">Other</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Family -->
+  <div class="form-section">
+    <label for="family-history">Family History (FH)</label>
+    <textarea
+      id="family-history"
+      style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px"
+    ></textarea>
+  </div>
+
+  <!-- Social History Expanded -->
+
+  <div
+    style="
+      border: 1px solid var(--all-text);
+      border-radius: 10px;
+      padding: 10px;
+      display: inline-block;
+      width: 100%;
+    "
+  >
+    <table
+      style="
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0px;
+        border: 1px solid var(--all-text);
+        background: transparent;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px); /* for Safari */
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      "
+    >
+      <thead>
+        <tr>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            System
+          </th>
+          <th
+            style="
+              text-align: left;
+              padding: 8px;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            Symptoms
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            General
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="General"
+                value="Weight loss"
+              />
+              Weight loss</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="General"
+                value="Fatigue"
+              />
+              Fatigue</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="General"
+                value="Fever"
+              />
+              Fever</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="General"
+                value="Night sweats"
+              />
+              Night sweats</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            Cardiovascular
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CV"
+                value="Chest pain"
+              />
+              Chest pain</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CV"
+                value="Palpitations"
+              />
+              Palpitations</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CV"
+                value="Orthopnoea"
+              />
+              Orthopnoea</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CV"
+                value="PND"
+              />
+              PND</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            Respiratory
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Resp"
+                value="Cough"
+              />
+              Cough</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Resp"
+                value="Sputum"
+              />
+              Sputum</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Resp"
+                value="Haemoptysis"
+              />
+              Haemoptysis</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Resp"
+                value="Dyspnoea"
+              />
+              Dyspnoea</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            Gastrointestinal
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GI"
+                value="Nausea"
+              />
+              Nausea</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GI"
+                value="Vomiting"
+              />
+              Vomiting</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GI"
+                value="Diarrhea"
+              />
+              Diarrhea</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GI"
+                value="Constipation"
+              />
+              Constipation</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GI"
+                value="Bleeding"
+              />
+              Bleeding</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            Genitourinary
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GU"
+                value="Dysuria"
+              />
+              Dysuria</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GU"
+                value="Nocturia"
+              />
+              Nocturia</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GU"
+                value="Haematuria"
+              />
+              Haematuria</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GU"
+                value="Incontinence"
+              />
+              Incontinence</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="GU"
+                value="Discharge"
+              />
+              Discharge</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            CNS
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Headache"
+              />
+              Headache</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Weakness"
+              />
+              Weakness</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Numbness"
+              />
+              Numbness</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Seizures"
+              />
+              Seizures</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Memory loss"
+              />
+              Memory loss</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              vertical-align: top;
+              padding: 8px;
+              font-weight: bold;
+              border-bottom: 1px solid var(--all-text);
+            "
+          >
+            MSK
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid var(--all-text)">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="MSK"
+                value="Joint pain"
+              />
+              Joint pain</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="MSK"
+                value="Stiffness"
+              />
+              Stiffness</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="MSK"
+                value="Swelling"
+              />
+              Swelling</label
+            >
+          </td>
+        </tr>
+
+        <tr>
+          <td style="vertical-align: top; padding: 8px; font-weight: bold">
+            Endocrine
+          </td>
+          <td style="padding: 8px">
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Endocrine"
+                value="Heat intolerance"
+              />
+              Heat intolerance</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Endocrine"
+                value="Cold intolerance"
+              />
+              Cold intolerance</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Endocrine"
+                value="Polyuria"
+              />
+              Polyuria</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="Endocrine"
+                value="Polydipsia"
+              />
+              Polydipsia</label
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ICE -->
+  <div class="form-section" style="margin-top: 20px">
+    <label for="ice">ICE (Ideas, Concerns, Expectations)</label>
+    <textarea
+      id="ice"
+      style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px"
+    ></textarea>
+  </div>
+
+  <!-- Separator between AI section and history form -->
+  <hr
+    id="ai-section-separator"
+    style="
+      margin: 20px 0 30px 0;
+      border: 0;
+      border-top: 1px solid var(--all-text);
+      opacity: 1;
+      width: 100%;
+      margin-top: 30px;
+    "
+  />
+
+  <!-- Submit -->
+  <div
+    style="
+      text-align: center;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    "
+  >
+    <button
+      type="button"
+      id="submit-and-download"
+      style="
+        background-color: transparent;
+        color: var(--all-text);
+        border: 1px solid var(--all-text);
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease,
+          box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        min-width: 200px;
+      "
+      onmouseover="this.style.backgroundColor='var(--all-text)'; this.style.color='var(--scrl)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.2)';"
+      onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--all-text)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';"
+    >
+      Submit & Download PDF
+    </button>
+    <button
+      id="autofill-random"
+      type="button"
+      style="
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--all-text);
+        background: transparent;
+        color: var(--all-text);
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        min-width: 232px;
+        margin-top: 8px;
+      "
+      onmouseover="this.style.backgroundColor='var(--all-text)'; this.style.color='var(--scrl)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.2)';"
+      onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--all-text)'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.1)';"
+    >
+      Auto-fill Beta
+    </button>
+  </div>
+
+  <!-- Separator between AI section and history form -->
+  <hr
+    id="ai-section-separator"
+    style="
+      margin: 20px 0 30px 0;
+      border: 0;
+      border-top: 1px solid var(--all-text);
+      opacity: 1;
+      width: 100%;
+      margin-top: 30px;
+      margin-bottom: 40px;
+    "
+  />
+
+  <!-- AI Model Selector -->
+  <div class="form-section" style="margin-top: -20px; margin-bottom: 20px">
+    <!-- Decoy fields to appease password managers -->
+    <div
+      aria-hidden="true"
+      style="
+        position: absolute;
+        left: -99999px;
+        top: -99999px;
+        opacity: 0;
+        pointer-events: none;
+        height: 0;
+        overflow: hidden;
+      "
+    >
+      <input type="text" name="email" autocomplete="username" />
+      <input type="password" name="password" autocomplete="current-password" />
+    </div>
+    <label for="ai-model" style="font-weight: 600">AI Model</label>
+    <select
+      id="ai-model"
+      name="no_autofill_ai_model_7c1f1b"
+      autocomplete="off"
+      data-lpignore="true"
+      data-1p-ignore="true"
+      data-bwignore="true"
+      style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px"
+    >
+      <option value="gemini-1.5-flash">Gemini 1.5 Flash (default)</option>
+      <option value="mistral-large-2411">Mistral Large 2411</option>
+      <option value="openai/gpt-5-nano">
+        OpenAI GPT-5 Nano (GitHub Models)
+      </option>
+    </select>
+    <div
+      id="ai-token-hint"
+      style="font-size: 12px; color: var(--all-text); margin-top: 6px"
+    >
+      No token required — AI calls are proxied server-side. Switching models
+      affects the AI summary/plan generator.
+    </div>
+    <div id="ai-token-section" class="form-subsection" style="margin-top: 10px">
+      <div style="font-size: 12px; color: var(--all-text);">
+        No token required — secrets are handled on the server.
+      </div>
+    </div>
+  </div>
+
+  <!-- Separator between AI section and history form -->
+  <hr
+    id="ai-section-separator"
+    style="
+      margin: 20px 0 30px 0;
+      border: 0;
+      border-top: 1px solid var(--all-text);
+      opacity: 1;
+      width: 100%;
+      margin-top: 29px;
+      margin-bottom: 40px;
+    "
+  />
+
+  <!-- Gated AI demo (visible only when authenticated; controlled by bau.js) -->
+  <section
+    id="ai-demo"
+    style="
+      max-width: 820px;
+      margin: 30px auto;
+      margin-bottom: 0px;
+      padding: 10px 12px;
+      border: 1px solid var(--all-text);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--all-text);
+      display: none;
+    "
+  >
+    <details open>
+      <summary
+        style="cursor: pointer; font-weight: 700; color: var(--all-text)"
+      >
+        <span>AI Beta — Clinical Helper</span>
+        <small style="opacity: 0.8; color: var(--all-text); margin-left: 10px">
+          <span id="ai-model-status"
+            >Model: Choose the AI model at the top of the form.</span
+          >
+        </small>
+      </summary>
+      <div
+        style="
+          margin-top: 10px;
+          display: grid;
+          gap: 8px;
+          color: var(--all-text);
+        "
+      >
+        <textarea
+          id="aiPrompt"
+          rows="3"
+          placeholder="Type a short, non-sensitive prompt (no PHI)."
+          style="
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--all-text);
+            resize: vertical;
+            background: transparent;
+            color: var(--all-text);
+          "
+        ></textarea>
+        <div
+          style="
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: var(--all-text);
+          "
+        >
+          <button
+            id="aiSendBtn"
+            style="
+              padding: 8px 12px;
+              border-radius: 8px;
+              border: 1px solid var(--all-text);
+              cursor: pointer;
+              background: transparent;
+              color: var(--all-text);
+            "
+          >
+            Ask AI
+          </button>
+        </div>
+        <!-- Prompt Preview (read-only) -->
+        <div style="display: grid; gap: 6px">
+          <label
+            for="aiPromptPreview"
+            style="font-weight: 600; color: var(--all-text)"
+            >Prompt Preview</label
+          >
+          <pre
+            id="aiPromptPreview"
+            style="
+              white-space: pre-wrap;
+              font-family: Nunito, Arial, sans-serif;
+              font-size: 13px;
+              background: transparent;
+              border: 1px dashed var(--all-text);
+              padding: 8px;
+              border-radius: 8px;
+              min-height: 40px;
+              color: var(--all-text);
+            "
+          ></pre>
+        </div>
+        <pre
+          id="aiResult"
+          style="
+            white-space: pre-wrap;
+            font-family: Nunito, Arial, sans-serif;
+            font-size: 14px;
+            background: transparent;
+            border: 1px dashed var(--all-text);
+            padding: 8px;
+            border-radius: 8px;
+            min-height: 40px;
+            color: var(--all-text);
+          "
+        >
+Sign in to use AI.
+        </pre>
+      </div>
+    </details>
+  </section>
+</div>
+
+<div class="error">
+  <p>
+    Oops! <br />
+    Seems like this page is not supported on this screen size! <br />
+    Maximize your screen to view the page
+  </p>
+  <img
+    id="diagnosis-icon"
+    src="icons/diagnosis.png"
+    alt="Diagnosis Icon"
+    style="width: 50px; margin-top: 30px; margin-left: 15px; opacity: 0.9"
+  />
+</div>

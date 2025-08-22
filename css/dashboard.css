@@ -1,0 +1,296 @@
+/* dashboard.css */
+
+/* Main dashboard container */
+#dashboard {
+  max-width: 900px;
+  margin: 2rem auto;
+  color: var(--all-text-color);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Header section */
+.dashboard-header {
+  color: var(--all-text-color);
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Navigation menu */
+.nav-menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; /* vertical centering */
+  justify-content: center; /* horizontal centering */
+  gap: 0.75rem;
+  margin-left: 0;
+  margin-top: 10px;
+}
+
+.nav-btn {
+  background-color: transparent;
+  border: 2px solid rgb(44, 201, 199);
+  color: var(--all-text);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.nav-btn:hover {
+  background-color: rgba(44, 201, 199, 0.15);
+  transform: scale(1.05);
+}
+
+.nav-btn.active {
+  background-color: rgba(44, 201, 198, 0.793);
+  color: var(--all-text);
+  font-weight: bold;
+}
+.dashboard-section {
+  display: none;
+  padding: 2rem;
+  background-color: var(--header-bg);
+  color: var(--all-text-color);
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Remove opacity & transform transitions here */
+}
+
+.dashboard-section.active {
+  display: block;
+  pointer-events: auto;
+  position: relative;
+}
+
+/* Animation */
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-load {
+  animation-name: fadeSlideIn;
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  opacity: 0; /* start hidden, animation fades it in */
+}
+
+/* User profile section */
+#user-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: var(--all-text-color);
+  background: rgba(150, 150, 150, 0.205);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  width: 70%;
+  margin: auto;
+  padding: 20px;
+}
+
+#user-profile p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+#profile {
+  padding: 30px;
+  padding-top: 10px;
+}
+
+#photoURL {
+  margin-top: 1rem;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.error {
+  text-align: center;
+  /* Always present in the layout */
+  opacity: 0;
+  /* Start invisible */
+  transform: translateY(-10px);
+  /* Slightly shifted up */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  /* Prevent interactions when hidden */
+}
+
+/* When screen is 1000px or smaller, animate to visible */
+@media (max-width: 1000px) {
+  .error {
+    opacity: 1;
+    /* Fade in */
+    transform: translateY(0);
+    /* Slide into place */
+    pointer-events: auto;
+    /* Allow interactions */
+    text-align: center;
+    padding: 10px;
+  }
+
+  #dashboard {
+    display: none;
+  }
+
+  .end-margin {
+    display: none;
+  }
+}
+
+#main-content {
+  padding: 30px;
+  padding-top: 10px;
+}
+
+#admin-post-form {
+  max-width: 400px;
+  margin: 20px;
+  margin-bottom: 20px;
+  padding: 27px;
+  padding-bottom: 20px;
+  font-family: Arial, Tahoma, Geneva, Verdana, sans-serif;
+  background: rgba(150, 150, 150, 0.205);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+#admin-post-form input[type="text"],
+#admin-post-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1.8px solid #ccc;
+  border-radius: 7px;
+  transition: border-color 0.25s ease;
+  box-sizing: border-box;
+  resize: none;
+  font-family: Arial, Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#admin-post-form input[type="text"]:focus,
+#admin-post-form textarea:focus {
+  border-color: rgb(44, 201, 199);
+  outline: none;
+}
+
+#admin-post-form button#submit-post {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  background-color: rgba(44, 201, 198, 0.793);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#admin-post-form button#submit-post:hover {
+  background-color: var(--all-text);
+  color: var(--scrl);
+}
+
+#admin-post-form p#post-status {
+  margin-top: 18px !important;
+  margin-bottom: 4px;
+
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  display: none; /* hidden by default so it doesn't take space */
+}
+
+/* HR under the admin post form (robust selector, overrides inline style in dashboard.js) */
+#main-content #admin-post-form ~ hr {
+  margin-top: 80px !important;
+}
+
+/* Admin posts list container styling */
+#posts-list {
+  background: rgba(150, 150, 150, 0.205);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  padding: 20px;
+  padding-bottom: 40px;
+  padding-left: 40px;
+  padding-right: 40px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+#post-title::placeholder {
+  color: var(--all-text);
+  font-size: 15px;
+}
+
+#post-content::placeholder {
+  color: var(--all-text);
+  font-size: 15px;
+}
+
+#post-file-link::placeholder {
+  color: var(--all-text);
+  opacity: 1; /* optional, makes color fully opaque */
+  font-size: 15px;
+}
+
+/* To-Do specific minimal styles */
+.todo-text.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.drag-handle {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* To-Do controls: make buttons feel clickable and avoid accidental text selection */
+#todo-controls button,
+.todo-btn {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}

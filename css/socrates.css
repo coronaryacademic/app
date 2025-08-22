@@ -1,0 +1,279 @@
+h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.form-section {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+input,
+select,
+textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--all-text);
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+textarea,
+select,
+input {
+  background-color: transparent;
+  color: var(--all-text);
+}
+
+#student-number::placeholder,
+#rotation::placeholder {
+  color: gray;
+  opacity: 1; /* ensure it's visible in all browsers */
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-wrapper {
+  max-width: 85%;
+  margin: auto;
+  padding: 20px;
+  margin-top: 20px;
+  background: rgba(150, 150, 150, 0.096);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  color: var(--all-text); /* Same here */
+  border-radius: 25px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  font-family: Nunito, Arial;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+input,
+select,
+textarea {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Group inputs on the same row */
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.flex-row > .form-subsection {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* SOCRATES specific layout */
+#socrates-wrapper {
+  border: 1px solid var(--all-text);
+
+  border-radius: 10px;
+  padding: 15px;
+  background-color: transparent;
+
+  margin-top: 10px;
+}
+
+#socrates-wrapper .form-subsection {
+  margin-bottom: 10px;
+}
+
+/* For boxed sections like SOCRATES, Drug, Social */
+.boxed-section {
+  border: 1px solid var(--all-text);
+  border-radius: 10px;
+  padding: 15px;
+  background-color: transparent;
+
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Fix layout of inputs in horizontal rows */
+.form-subsection {
+  display: flex;
+  flex-direction: column;
+}
+
+.error {
+  text-align: center;
+  overflow: hidden;
+  max-height: 0; /* Hidden height = no space taken */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+#overall {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  border-radius: 5px;
+  text-align: center;
+  padding: 40px;
+  padding-bottom: 20px;
+  padding-top: 10px;
+}
+
+/* Show on small screens */
+@media (max-width: 1000px) {
+  #contact-container {
+    display: none;
+  }
+
+  .error {
+    max-height: 300px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    padding: 10px;
+    margin-top: 65px;
+  }
+
+  .form-wrapper {
+    display: none;
+  }
+
+  /* Instead of hiding #overall, hide only the FAQ */
+  .FAQ {
+    display: none;
+  }
+
+  /* Keep the help button visible but maybe adjust its styling */
+  #overall {
+    display: none;
+  }
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-load {
+  opacity: 0;
+  animation-name: fadeSlideIn;
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s; /* current duration */
+  animation-timing-function: ease-out;
+}
+
+#history-form-container h2,
+#history-form-container .form-section {
+  opacity: 0;
+}
+
+.help-container {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+#helpLabel {
+  position: absolute;
+  top: 35%;
+  left: calc(100% + 10px);
+  transform: translateY(-50%) translateX(-10px);
+  background: rgba(0, 0, 0, 0.11);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0 20px 20px 0;
+  color: var(--all-text);
+  padding: 8px 16px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 10px 100%, 0% 50%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.help-container:hover #helpLabel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* NEW: Initial animation class that temporarily overrides hover behavior */
+#helpLabel.tooltip-initial-show {
+  animation: tooltipInitialShow 3.5s ease-in-out forwards;
+}
+
+@keyframes tooltipInitialShow {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+}
+
+#helpicon {
+  font-size: 24px;
+  color: var(--all-text);
+  padding-bottom: 30px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#helpicon:hover {
+  color: rgb(72, 201, 176);
+}

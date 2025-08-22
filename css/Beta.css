@@ -1,0 +1,596 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.arabic-font {
+  font-family: "Baloo Bhaijaan 2", Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent; /* <-- this is new */
+}
+
+body {
+  background-color: transparent;
+  font-family: Nunito;
+  min-height: 100vh;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  background-color: transparent;
+}
+
+footer {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.header {
+  background-color: #d8feff;
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.main {
+  flex: 1;
+  margin: 0;
+  text-align: left;
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+  a {
+    text-decoration: none;
+  }
+
+  /* --- AI fields: reduce autofill interference --- */
+  #ai-gh-token,
+  #ai-model {
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  /* Remove yellow bg and keep text color when autofilled (Chrome/Safari) */
+  input#ai-gh-token:-webkit-autofill,
+  select#ai-model:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-text-fill-color: inherit !important;
+  }
+
+  /* Try to prevent password managers from altering size */
+  input#ai-gh-token[data-no-autofill="true"] {
+    background-clip: padding-box;
+  }
+
+  .Clickhere {
+    transition: color 0.2s ease;
+  }
+
+  .Clickhere:active,
+  .Clickhere:hover {
+    color: rgb(47, 174, 172);
+    text-decoration: underline;
+  }
+
+  .Clickhere.active {
+    color: rgb(52, 164, 162);
+    text-decoration: underline;
+  }
+}
+
+.BAUTitle {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 45px;
+  margin-bottom: 10px;
+  margin-top: 100px;
+}
+
+.OurUNI {
+  color: rgba(45, 45, 45, 0.812);
+  font-weight: bold;
+}
+
+/* Override the flex settings by letting the children of these containers be direct grid items */
+.all-container > .info-container,
+.all-container > .label-container {
+  display: contents;
+}
+
+@media (max-width: 750px) {
+  .BAUTitle {
+    font-size: 30px;
+  }
+
+  .label-container,
+  .info-container {
+    display: flex;
+    flex-direction: row; /* Change to row to make them side by side */
+    justify-content: space-between;
+    align-items: center; /* Vertically center the text */
+    text-align: left;
+    font-size: 20px; /* Adjust font size for better mobile display */
+    white-space: nowrap;
+    overflow: hidden;
+    height: 30px;
+  }
+
+  .QS,
+  .FA,
+  .ST {
+    line-height: 30px;
+  }
+
+  .label-container div,
+  .info-container div {
+    margin-right: 10px; /* Add some spacing between labels and stats */
+  }
+
+  li {
+    font-size: 19px;
+    transition: background-color 0.2s;
+    list-style-type: disc;
+    line-height: 60px;
+  }
+
+  .TORdiv {
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 540px) {
+  .BAUTitle {
+    font-size: 25px;
+  }
+
+  .OurUNI {
+    font-size: 17px;
+  }
+
+  .label-container,
+  .info-container {
+    display: flex;
+    flex-direction: row; /* Change to row to make them side by side */
+    justify-content: space-between;
+    align-items: center; /* Vertically center the text */
+    text-align: left;
+    font-size: 15px; /* Adjust font size for better mobile display */
+    white-space: nowrap;
+    overflow: hidden;
+    height: 20px;
+  }
+
+  .QS,
+  .FA,
+  .ST {
+    line-height: 20px;
+  }
+
+  .label-container div,
+  .info-container div {
+    margin-right: 10px; /* Add some spacing between labels and stats */
+  }
+
+  li {
+    font-size: 13px;
+    transition: background-color 0.2s;
+    list-style-type: disc;
+    line-height: 50px;
+  }
+
+  .TORdiv {
+    font-size: 5px;
+  }
+}
+
+@media (max-width: 380px) {
+  .BAUTitle {
+    font-size: 20px;
+  }
+
+  .OurUNI {
+    font-size: 15px;
+  }
+
+  .label-container,
+  .info-container {
+    display: flex;
+    flex-direction: row; /* Change to row to make them side by side */
+    justify-content: space-between;
+    align-items: center; /* Vertically center the text */
+    text-align: left;
+    font-size: 10px; /* Adjust font size for better mobile display */
+    white-space: nowrap;
+    overflow: hidden;
+    height: 15px;
+  }
+
+  .QS,
+  .FA,
+  .ST {
+    line-height: 15px;
+  }
+
+  .label-container div,
+  .info-container div {
+    margin-right: 10px; /* Add some spacing between labels and stats */
+  }
+
+  li {
+    font-size: 10px;
+    transition: background-color 0.2s;
+    list-style-type: disc;
+    line-height: 50px;
+  }
+
+  .TORdiv {
+    font-size: 4px;
+  }
+
+  .right-section button {
+    display: none;
+  }
+}
+
+@media (max-width: 260px) {
+  .BAUTitle {
+    font-size: 13px;
+  }
+
+  .OurUNI {
+    font-size: 10px;
+  }
+
+  .label-container,
+  .info-container {
+    display: flex;
+    flex-direction: row; /* Change to row to make them side by side */
+    justify-content: space-between;
+    align-items: center; /* Vertically center the text */
+    text-align: left;
+    font-size: 6px; /* Adjust font size for better mobile display */
+    white-space: nowrap;
+    overflow: hidden;
+    height: 13px;
+  }
+
+  .QS,
+  .FA,
+  .ST {
+    line-height: 13px;
+  }
+
+  .label-container div,
+  .info-container div {
+    margin-right: 10px; /* Add some spacing between labels and stats */
+  }
+
+  li {
+    font-size: 5px;
+    transition: background-color 0.2s;
+    list-style-type: disc;
+    line-height: 30px;
+  }
+
+  .TORdiv {
+    font-size: 3px;
+  }
+}
+
+@media (max-width: 220px) {
+  .BAUTitle {
+    font-size: 10px;
+  }
+
+  .OurUNI {
+    font-size: 5px;
+  }
+
+  .label-container,
+  .info-container {
+    display: flex;
+    flex-direction: row; /* Change to row to make them side by side */
+    justify-content: space-between;
+    align-items: center; /* Vertically center the text */
+    text-align: left;
+    font-size: 5px; /* Adjust font size for better mobile display */
+    white-space: nowrap;
+    overflow: hidden;
+    height: 5px;
+  }
+
+  .QS,
+  .FA,
+  .ST {
+    line-height: 5px;
+  }
+
+  .label-container div,
+  .info-container div {
+    margin-right: 10px; /* Add some spacing between labels and stats */
+  }
+
+  li {
+    font-size: 3px;
+    transition: background-color 0.2s;
+    list-style-type: disc;
+    line-height: 20px;
+  }
+
+  .TORdiv {
+    font-size: 2px;
+  }
+}
+
+.TOR {
+  margin-top: 50px;
+}
+
+.end-margin {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 0;
+  padding-bottom: 0px;
+  padding-top: 10px;
+  text-align: center;
+  background-color: white;
+  border-top: none;
+  white-space: nowrap;
+  border-color: gray;
+  border-width: 0.1px;
+  box-shadow: 0px -10px 10px rgba(57, 57, 57, 0.032);
+}
+
+.end-margin-text01 {
+  margin-top: 35px;
+  margin-bottom: 0px;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 0;
+}
+
+.end-margin-text03,
+.end-margin-text02 {
+  display: inline-block;
+  margin-top: 5px;
+  margin-bottom: 35px;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 0;
+}
+
+.end-margin-text03 {
+  line-height: 0;
+  margin-top: 0;
+}
+
+#copyMessage {
+  color: rgb(52, 164, 162);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  visibility: hidden;
+  text-align: center;
+  /* Hidden by default */
+}
+
+/* Show message with smooth animation */
+#copyMessage.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* Hide message with smooth animation */
+#copyMessage.hide {
+  opacity: 0;
+  transform: translateY(20px);
+  visibility: visible;
+  /* Keep it visible for the transition */
+}
+
+@media (max-width: 1000px) {
+  .view {
+    display: none;
+  }
+}
+
+.error {
+  text-align: center;
+  /* Always present in the layout */
+  opacity: 0;
+  /* Start invisible */
+  transform: translateY(-10px);
+  /* Slightly shifted up */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  /* Prevent interactions when hidden */
+}
+
+/* When screen is 1000px or smaller, animate to visible */
+@media (max-width: 1000px) {
+  .error {
+    opacity: 1;
+    /* Fade in */
+    transform: translateY(0);
+    /* Slide into place */
+    pointer-events: auto;
+    /* Allow interactions */
+    text-align: center;
+    padding: 10px;
+  }
+
+  .end-margin {
+    display: none;
+  }
+}
+
+.back-to-top {
+  position: fixed; /* stick to screen */
+  bottom: 20px;
+  right: 30px;
+  z-index: 1000;
+  border: solid 1px rgba(128, 128, 128, 0.349);
+  outline: none;
+  border-radius: 100px;
+  cursor: pointer;
+  padding: 17px 20px 16px 20px;
+  background: transparent;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(128, 128, 128, 0.36);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(40px); /* start off-screen */
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Show when scrolling */
+.back-to-top.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top.fade-out {
+  opacity: 0;
+  transform: translateY(40px); /* slide down when disappearing */
+  pointer-events: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.login-button {
+  margin-top: 10px;
+}
+/* DROPDOWN WRAPPER */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* MAIN TOGGLE BUTTON ("User") */
+.dropdown-toggle {
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+/* WHEN DROPDOWN IS OPEN - KEEP BACKGROUND */
+.dropdown-toggle.dropdown-open {
+  background-color: rgba(128, 128, 128, 0.25); /* Slightly darker when open */
+}
+
+/* MENU DROPDOWN PANEL */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  color: var(--text-color);
+  background: rgba(150, 150, 150, 0.205);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  z-index: 100;
+  right: 0;
+  min-width: 180px;
+  margin-top: 5px;
+  overflow: hidden;
+  padding: 15px;
+}
+
+/* WHEN DROPDOWN IS VISIBLE */
+.dropdown-menu.show {
+  display: block;
+}
+
+/* BUTTON INSIDE DROPDOWN (Dashboard) */
+.dropdown-user,
+.dropdown-logout {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-color);
+  transition: background 0.2s;
+}
+
+/* HOVER STYLES */
+.dropdown-user:hover,
+.dropdown-logout:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.loader {
+  width: 30px;
+  height: 30px;
+  border: 5px solid rgba(72, 201, 176, 0.2);
+  border-top-color: rgb(72, 201, 176);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+
+  /* Centering inside parent */
+  margin: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#posts-list {
+  position: relative; /* Ensure positioning context */
+  min-height: 80px; /* To avoid collapsing if empty */
+}
+
+.loader0 {
+  width: 30px;
+  height: 30px;
+  border: 5px solid rgba(72, 201, 176, 0.2);
+  border-top-color: rgb(72, 201, 176);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+
+  /* Center inside the #posts-list div */
+  margin: 70px auto;
+  display: block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

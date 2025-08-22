@@ -1,0 +1,221 @@
+:root {
+  /* Light theme variables (default) */
+  --bg-color: #ffffff;
+  --text-color: rgb(0, 0, 0); /* General text color */
+  --specific-text-color: gray; /* Specific text color variable */
+  --quote: darken;
+  --header-bg: #ffffff;
+  --link-color: rgb(94, 93, 93);
+  --link-hover-color: rgb(52, 164, 162);
+  --bottom-border-color: gray;
+  --footer-text-color: gray;
+  --header-shadow: rgba(0, 0, 0, 0.1);
+  --header-border: 0px solid gray;
+  --lang-bg: white;
+  --lang-txt: rgb(96, 96, 96);
+  --lang-hover: #f1f1f1;
+  --back: white;
+  --input: rgba(128, 128, 128, 0.13);
+  --selc: rgba(52, 164, 162, 0.533);
+  --input-border: rgb(44, 201, 199);
+  --show: black;
+  --ia: rgba(226, 226, 226, 0.519);
+  --bg-gradient: linear-gradient(
+    270deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.7),
+    rgba(54, 170, 163, 0.2),
+    rgba(115, 203, 196, 0.3),
+    rgba(115, 203, 196, 0.5),
+    rgba(54, 170, 163, 0.4),
+    rgba(54, 130, 140, 0.4),
+    rgba(54, 130, 140, 0.6),
+    rgba(255, 255, 255, 0.9)
+  );
+  --font-w: 700;
+  --all-text: black;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --bg-color: #343434;
+  --text-color: #f0f0f0; /* General text color */
+  --specific-text-color: rgb(
+    255,
+    255,
+    255
+  ); /* Specific text color for dark theme */
+  --quote: darken;
+  --header-bg: #303030;
+  --link-color: rgb(162, 162, 162);
+  --link-hover-color: rgb(44, 201, 199);
+  --bottom-border-color: rgb(255, 255, 255);
+  --header-shadow: rgba(0, 0, 0, 0.15);
+  --header-border: 1px solid #50c7c700;
+  --lang-bg: rgba(59, 59, 59, 0.961);
+  --lang-txt: white;
+  --lang-hover: #555555;
+  --back: black;
+  --input: rgba(124, 124, 124, 0.277);
+  --selc: rgba(52, 164, 162, 0.533);
+  --input-border: rgb(44, 201, 199);
+  --show: white;
+  --ia: gray;
+  --bg-gradient: linear-gradient(
+    270deg,
+    rgba(73, 73, 73, 0.776),
+    rgba(91, 91, 91, 0.58),
+    rgba(91, 91, 91, 0.403),
+    rgba(115, 203, 196, 0.6),
+    rgba(115, 203, 196, 0.5),
+    rgba(54, 170, 162, 0.357),
+    rgba(115, 203, 196, 0.6),
+    rgba(115, 203, 196, 0.5),
+    rgba(54, 170, 162, 0.357)
+  );
+  --font-w: 950;
+  --all-text: white;
+}
+
+.background {
+  background: var(--bg-gradient);
+  background-size: 400% 400%;
+  animation: gradientAnimation 40s ease infinite; /* Adjust duration if needed */
+  z-index: -1; /* Place it behind other content */
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+  75% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.15); /* light glass effect on dark bg */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+}
+
+.quote {
+  mix-blend-mode: darken; /* Invert colors */
+  padding-left: 25px;
+}
+
+input {
+  color: var(--text-color);
+}
+
+#last-name:hover,
+#first-name:hover,
+#last-pass:hover,
+#first-pass:hover,
+.input1:hover {
+  border-color: var(--input-border);
+}
+
+#last-name:focus,
+#first-name:focus,
+#last-pass:focus,
+#first-pass:focus,
+.input1:focus {
+  border-color: var(--input-border);
+  cursor: text;
+}
+
+.show-password-btn {
+  color: var(--show); /* Default color */
+}
+
+.input1::selection {
+  background-color: var(--selc);
+  /* Change this to your desired color */
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: var(--bg-color); /* Desired background color */
+  color: #000; /* Text color */
+  -webkit-box-shadow: 0 0 0px 1000px var(--ia) inset;
+  -webkit-text-fill-color: #000; /* Text color */
+}
+
+.login-in-button {
+  color: var(--text-color);
+  background-color: var(--input);
+}
+
+a:visited,
+a {
+  color: var(--text-color);
+}
+
+#forbidden-message1,
+#forbidden-message,
+#email-error-message,
+.measure {
+  font-weight: var(--font-w);
+}
+
+#toggleConfirmPassword,
+#togglePassword {
+  color: var(--text-color);
+}
+
+.placeholder-last {
+  color: var(--text-color);
+}
+
+.placeholder {
+  color: var(--text-color);
+}
+
+input[type="email"]:hover + .placeholder {
+  color: var(
+    --link-hover-color
+  ); /* Special color when hovering over the input */
+}
+input[type="password"]:hover + .placeholder {
+  color: var(
+    --link-hover-color
+  ); /* Special color when hovering over the input */
+}
+
+/* Move placeholder when input is focused or filled */
+input:focus + .placeholder,
+input:not(:placeholder-shown) + .placeholder {
+  color: var(--link-hover-color);
+}
+
+input:focus + .placeholder-last,
+input:not(:placeholder-shown) + .placeholder-last {
+  color: var(--link-hover-color);
+}
+
+.container-1 i {
+  color: var(--text-color);
+}
+
+input {
+  border-bottom-color: var(--text-color);
+  transition: border-bottom-color 0.4s ease;
+}
+
+input:hover {
+  border-bottom-color: var(--link-hover-color);
+}

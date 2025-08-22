@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Corornary Academic Login</title>
+    <link rel="icon" href="header-logo-32x32.png" type="image/x-icon" />
+    <link rel="stylesheet" href="login01.css" />
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      a {
+        text-decoration: none; /* remove underline if you prefer */
+      }
+
+      a:hover {
+        color: rgb(52, 164, 162);
+        text-decoration: underline;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      a {
+        font-weight: 1000;
+        transition: color 0.25s ease;
+      }
+
+      .hover-logo {
+        cursor: pointer;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="all">
+      <div class="login-box">
+        <div class="container">
+          <div class="flex">
+            <div class="header">
+              <section class="logo-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="43px"
+                  viewBox="0 -960 960 960"
+                  width="43px"
+                  fill="var(--all-text)"
+                  onclick="goHome();"
+                  onmouseover="this.style.color='var(--accent-color)'; this.style.transform='scale(1.1)'"
+                  onmouseout="this.style.color='var(--all-text)'; this.style.transform='scale(1)'"
+                  style="
+                    cursor: pointer;
+                    position: relative;
+                    top: 15px;
+                    right: 2px;
+                    transition: color 0.3s, transform 0.2s;
+                  "
+                >
+                  <path
+                    d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z"
+                  />
+                </svg>
+              </section>
+            </div>
+
+            <div class="content">
+              <h1 class="h1" style="font-weight: 500">Hello Doctor!</h1>
+              <!--
+            <h1
+              class="h1"
+              style="
+                color: darkred;
+                font-weight: 900;
+                margin-top: 20px;
+                background-color: rgba(255, 160, 122, 0.164);
+                display: block;
+                width: auto;
+              "
+            >
+              THIS LOGIN SYSTEM IS NOT YET READY
+            </h1>
+
+            <div class="input">
+                <section class="container-1">
+                  <input
+                    class="input1"
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="off"
+                    placeholder=" "
+                    required
+                  />
+                  <label for="email" class="placeholder">Email</label>
+                  <i class="fa-solid fa-user"></i>
+                </section>
+                <div class="nun">
+                  <section class="container-2">
+                    <div class="star0">
+                      <input
+                        class="input1"
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="off"
+                        placeholder=" "
+                        required
+                      />
+                      <label for="password" class="placeholder">Password</label>
+
+                      <i class="fa-solid fa-lock"></i>
+                      <i class="fa-solid fa-unlock"></i>
+                      <button
+                        type="button"
+                        id="togglePassword"
+                        class="show-password-btn"
+                      >
+                        Show
+                      </button>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <p style="font-size: 12px" class="sit0">Forgot password?</p>
+              </div>
+              <button class="login-in-button" type="submit">Login</button>
+
+            --></div>
+            <div class="card">
+              <section class="auth-card">
+                <div class="google-login-wrapper">
+                  <button id="google-login">
+                    <img
+                      src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                      alt="Google"
+                      style="width: 20px; height: 20px"
+                    />
+                    Sign in with Google
+                  </button>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <p style="margin-top: 0; font-weight: 100">
+                    Sign in quickly using your Google account. <br />
+                    Your accounts info are protected by Google.
+                  </p>
+                </div>
+                <p class="right00" style="font-size: 12px; margin-bottom: 35px">
+                  v1.12.3. LS
+                </p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #fff;
+          background: radial-gradient(
+              circle at 20% 30%,
+              rgba(52, 164, 162, 0.35),
+              transparent 60%
+            ),
+            radial-gradient(
+              circle at 80% 20%,
+              rgba(173, 216, 230, 0.25),
+              transparent 60%
+            ),
+            radial-gradient(
+              circle at 70% 80%,
+              rgba(186, 85, 211, 0.168),
+              transparent 60%
+            ),
+            radial-gradient(
+              circle at 30% 70%,
+              rgba(255, 182, 193, 0.123),
+              transparent 60%
+            );
+          background-blend-mode: screen;
+          z-index: -1;
+        "
+      ></div>
+    </div>
+    <script src="touch0.js"></script>
+
+    <script src="theme.js"></script>
+    <script
+      src="https://kit.fontawesome.com/607f9f57fe.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="module" src="login01.js?v=1.12.2"></script>
+  </body>
+</html>

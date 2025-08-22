@@ -1,0 +1,352 @@
+.dynamic-hover {
+  color: rgb(52, 164, 162);
+  font-weight: bold;
+}
+
+.dynamic-hover {
+  color: rgb(52, 164, 162);
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.4s ease-in-out; /* Apply here — base state */
+}
+
+a {
+  text-decoration: none; /* remove underline if you prefer */
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+#contact-container {
+  font-family: Nunito, Arial;
+}
+
+#contact-container header {
+  text-align: center;
+  margin: 50px;
+}
+
+.scroll-section {
+  padding: 50px;
+  padding-top: 0px;
+  padding-left: 100px;
+  padding-right: 100px;
+  margin: 50px 0;
+  margin-top: 0px;
+  opacity: 0; /* Hidden initially */
+  transition: all 1s ease-out;
+}
+
+/* Default animation for all sections except Section 1 and li5 */
+.scroll-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.scroll-section1 {
+  padding: 50px;
+  padding-top: 0px;
+  padding-left: 100px;
+  padding-right: 100px;
+  margin: 50px 0;
+  margin-top: 0px;
+  transition: all 1s ease-out;
+}
+
+.scroll-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Specific animations for li5 and section1 */
+#lit,
+#li5,
+#section1 {
+  transform: translateX(50px); /* Moves content off to the right */
+  opacity: 0; /* Initially hidden */
+}
+
+#lit.visible,
+#li5.visible,
+#section1.visible {
+  opacity: 1; /* Fully visible */
+  transform: translateX(0); /* Back to its normal position */
+}
+
+/*-------------------------------------------*/
+
+h1 {
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.desc01 {
+  font-size: 20px;
+  margin-top: 50px;
+}
+
+.desc1 {
+  font-size: 20px;
+  font-family: "Nunito", sans-serif;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+#section4,
+#section3,
+#section2,
+#section1 {
+  font-size: 30px;
+  text-align: left;
+}
+
+#section4,
+#section3,
+#section2 {
+  text-align: center;
+}
+
+#section3 {
+  margin-bottom: 50px;
+}
+
+#section2 {
+  margin-top: 0;
+}
+
+#section1 {
+  margin-bottom: 50px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+#info0,
+#info {
+  color: rgb(52, 164, 162);
+  font-size: 30px;
+  text-align: center;
+  border-bottom: 1px solid gray;
+  margin: 0;
+  margin-bottom: 50px;
+  padding-bottom: 50px;
+  margin-top: 5px;
+}
+
+#info0 {
+  margin-top: 40px;
+}
+
+#info {
+  margin-top: 60px;
+}
+
+#stsx,
+#aboutus {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 150px;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 150px;
+  padding: 50px;
+  padding-bottom: 90px;
+  padding-top: 0px;
+  margin-top: -10px;
+  background-size: 1000% 1000%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 10s ease infinite, slideDownFadeIn 1s ease forwards;
+  opacity: 0;
+  animation-delay: 0s, 0s;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes slideDownFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px); /* start 30px above */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* normal position */
+  }
+}
+
+#li5 {
+  margin: 0;
+  padding: 0 50px;
+}
+
+#lit {
+  font-size: 30px;
+  margin-bottom: 0;
+  margin-top: 0;
+  h2 {
+    margin-bottom: 0;
+  }
+  padding-top: 10px;
+  padding-bottom: 0px;
+}
+
+.desc {
+  font-size: 15px;
+  color: rgb(135, 135, 135);
+}
+
+#section1 {
+  position: relative;
+}
+
+.tl {
+  margin-bottom: 20px;
+  margin-right: 50px;
+}
+
+.flex-us {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.logo-aboutus {
+  height: 250px;
+  padding-left: 25px;
+  padding-bottom: 20px;
+  margin-top: 50px;
+  border: 1px dashed transparent; /* Keep a border with transparent color */
+  border-radius: 20px;
+  transition: border-color 0.5s, opacity 0.5s; /* Transition for border color and opacity */
+}
+
+.logo-aboutus:hover {
+  border-color: rgb(130, 130, 130); /* Change to the desired color on hover */
+  opacity: 1; /* Set to full opacity */
+  cursor: crosshair;
+}
+
+.admins {
+  margin: 0;
+  margin-top: 80px;
+  margin-bottom: 24.9px;
+}
+
+.page-info-div {
+  display: flex;
+  align-items: center;
+  border-left: dashed;
+  border-width: 1px;
+  padding-left: 15px;
+  padding-right: 3px;
+}
+
+#page-info {
+  font-size: 13px;
+  font-weight: 700;
+  padding-right: 7px;
+  padding-top: 0;
+}
+
+#pdf-viewer-container {
+  height: 600px; /* Set a specific height for the viewer */
+  overflow: hidden; /* Prevent overflowing from the container */
+}
+
+#pdf-viewer {
+  border: 1px solid;
+  border-top-width: 0;
+  overflow: auto; /* Enable scrolling */
+  flex-grow: 1; /* Allow it to grow within the container */
+  max-height: 600px; /* Restrict height */
+  height: 100%; /* Make sure it occupies the full height */
+  padding: 10px; /* Add padding if necessary */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+canvas {
+  width: 100%; /* Allow canvas to take full width */
+  /* Remove max-height to allow it to grow beyond the container */
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  vertical-align: bottom;
+  border: solid;
+  border-width: 1px;
+  margin-bottom: 0px;
+  border-bottom-width: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0px 5px;
+}
+
+.toolbut {
+  display: flex;
+  white-space: nowrap;
+  padding-left: 7px;
+  padding: 10px 7px;
+
+  button {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.pnx,
+.znx {
+  display: flex;
+  overflow: hidden;
+}
+
+.znx {
+  display: none;
+}
+
+.error {
+  text-align: center;
+  overflow: hidden;
+  max-height: 0; /* Hidden height = no space taken */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+/* Show on small screens */
+@media (max-width: 1000px) {
+  #contact-container {
+    display: none;
+  }
+
+  .error {
+    max-height: 300px; /* Enough to show full content */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    padding: 10px;
+    margin-top: 65px;
+  }
+}

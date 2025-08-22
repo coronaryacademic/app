@@ -1,0 +1,556 @@
+:root {
+  /* Light theme variables (default) */
+  --bg-color: #ffffff;
+  --text-color: rgb(0, 0, 0); /* General text color */
+  --specific-text-color: rgba(
+    53,
+    53,
+    53,
+    0.723
+  ); /* Specific text color variable */
+  --header-bg: #ffffff;
+  --link-color: rgb(0, 0, 0);
+  --link-hover-color: rgb(0, 0, 0);
+  --bottom-border-color: white;
+  --footer-text-color: gray;
+  --header-shadow: rgba(0, 0, 0, 0.1);
+  --header-border: 0px solid gray;
+  --lang-bg: white;
+  --lang-txt: rgb(96, 96, 96);
+  --lang-hover: #f1f1f1;
+  --nav-hover: rgba(122, 122, 122, 0.034);
+  --drop-down: rgba(44, 44, 44, 0.068);
+  --selc-la: rgba(82, 82, 82, 0.123);
+  --button-pdf: rgba(147, 147, 147, 0.502);
+  --titles: rgba(0, 0, 0, 0.582);
+  --top: rgb(0, 0, 0);
+  --grad-1: rgb(30, 30, 30); /* Very dark gray */
+  --grad-2: rgb(50, 50, 50); /* Deep gray */
+  --grad-3: rgb(44, 201, 199); /* Teal */
+  --grad-4: rgb(72, 201, 176); /* Bright Teal */
+  --grad-5: rgb(126, 214, 223); /* Aqua Blue */
+  --grad-6: rgb(18, 18, 18); /* Almost black */
+  --grad-7: rgb(100, 100, 100); /* Medium gray */
+  --grad-8: rgb(32, 40, 48); /* Midnight gray */
+  --grad-9: rgb(60, 120, 120); /* Desaturated cyan */
+  --all-text: rgba(0, 0, 0, 0.622);
+  --scrl: white;
+  --shine-start: rgba(255, 255, 255, 0);
+  --shine-middle: rgba(255, 255, 255, 0.2);
+  --shine-end: rgba(255, 255, 255, 0);
+  --borderline: white;
+  --navbuttons: white;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --bg-color: #454545;
+  --text-color: #f0f0f0; /* General text color */
+  --specific-text-color: rgb(
+    255,
+    255,
+    255
+  ); /* Specific text color for dark theme */
+  --quote: black;
+  --header-bg: #303030;
+  --link-color: rgb(255, 255, 255);
+  --link-hover-color: rgb(255, 255, 255);
+  --bottom-border-color: rgb(255, 255, 255);
+  --header-shadow: rgba(0, 0, 0, 0.15);
+  --header-border: 1px solid #50c7c700;
+  --lang-bg: rgb(0, 0, 0);
+  --lang-txt: rgba(255, 255, 255, 0.759);
+  --lang-hover: #555555;
+  --nav-hover: rgba(255, 255, 255, 0.048);
+  --drop-down: rgba(255, 255, 255, 0.082);
+  --selc-la: rgb(58, 58, 58);
+  --button-pdf: rgb(219, 219, 219);
+  --titles: rgba(206, 206, 206, 0.61);
+  --top: rgb(243, 243, 243);
+  --toptxt: black;
+  --grad-1: rgb(255, 255, 255); /* White */
+  --grad-2: rgb(240, 240, 240); /* Light Gray */
+  --grad-3: rgb(126, 214, 223); /* Aqua Blue */
+  --grad-4: rgb(72, 201, 176); /* Bright Teal */
+  --grad-5: rgb(44, 201, 199); /* Teal */
+  --grad-6: rgb(255, 244, 229); /* Light Cream */
+  --grad-7: rgb(223, 249, 251); /* Pale Aqua */
+  --grad-8: rgb(244, 244, 244); /* Near-white */
+  --grad-9: rgb(200, 255, 255); /* Soft Cyan */
+  --all-text: rgba(255, 255, 255, 0.818);
+  --scrl: black;
+  --navbuttons: white;
+}
+
+.timeline-label::before,
+.timeline-line {
+  background-color: var(--text-color);
+}
+
+.all-text0,
+.all-text {
+  color: var(--all-text);
+}
+
+.fas {
+  color: var(--toptxt);
+}
+
+.dynamic-hover:hover {
+  color: var(--text-color); /* Just change color */
+}
+
+/* Apply the theme variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+/* Header container styles */
+.header-container {
+  background-color: transparent;
+  color: var(--text-color);
+  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out,
+    border-color 0.4s ease-in-out;
+}
+
+/* Link styles */
+a {
+  color: var(--link-color);
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* Button styles */
+.right-section button {
+  color: var(--specific-text-color);
+  transition: color 0.3s;
+}
+
+.register-button:hover {
+  color: rgb(52, 164, 162);
+}
+
+.nav-button {
+  opacity: 0.7;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  touch-action: manipulation;
+}
+
+.nav-button:hover {
+  opacity: 1;
+}
+
+.logo-container:hover .header-logo {
+  opacity: 0.85;
+}
+
+/* Side Bar styles */
+.side-bar-container {
+  background-color: transparent;
+  color: var(--specific-text-color);
+}
+
+.side-bar-container .nav-bar,
+.side-bar-container .nav-bar5 {
+  color: var(--navbuttons);
+  transition: background-color 0.3s, border-bottom-color 0.3s ease-in-out,
+    border-bottom-width 0.3s ease-in-out;
+}
+
+.side-bar-container .nav-bar:hover,
+.side-bar-container .nav-bar5:hover {
+  background-color: var(--nav-hover);
+  border-bottom-color: var(--bottom-border-color);
+}
+
+.side-bar-container .nav-bar.active,
+.side-bar-container .nav-bar5.active {
+  border-bottom-color: var(--bottom-border-color);
+  border-bottom-width: 1px;
+}
+
+/* Footer styles */
+.end-margin {
+  background-color: var(--bg-color);
+  color: var(--footer-text-color);
+  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+.end-margin-text01,
+.end-margin-text02 {
+  color: var(--footer-text-color);
+}
+
+.mark {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  left: -17px;
+  bottom: -105px;
+  background-color: var(--header-bg);
+  min-width: 140px;
+  z-index: 1;
+  padding: 10px;
+}
+
+.dropdown-content button {
+  background-color: var(--header-bg);
+  transition: background-color 0.29s;
+  border: none;
+  padding: 10px;
+  padding-left: 20px;
+  border-radius: 1px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: var(--drop-down);
+}
+
+.dropdown-content button:active,
+.dropdown-content button:focus {
+  background-color: var(--header-bg);
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+.nested-dropdown-content {
+  position: absolute;
+  background-color: var(--header-bg);
+  padding: 10px;
+  top: 0;
+  z-index: 2;
+  right: auto;
+  left: -130px;
+  width: 110px;
+}
+
+#theme-dropdown {
+  right: auto;
+  left: -210px;
+  width: 190px;
+}
+
+.nested-dropdown-content button {
+  background-color: var(--header-bg);
+  border: none;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.nested-dropdown-content button:hover {
+  background-color: var(--drop-down);
+}
+
+.nested-dropdown-content button.active {
+  background-color: var(--selc-la);
+}
+
+@media (max-width: 650px) {
+  #theme-dropdown {
+    left: 159px;
+  }
+
+  .nested-dropdown-content {
+    left: 160px;
+    min-width: 120px;
+  }
+}
+
+body.arabic-font .dropdown-content button {
+  text-align: right;
+}
+
+.logo-aboutus:hover {
+  border-color: var(--text-color); /* Change to the desired color on hover */
+  opacity: 1; /* Set to full opacity */
+  cursor: crosshair;
+}
+
+.desc {
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.toolbut {
+  button {
+    font-family: Nunito, Arial;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    transition: color 0.3s;
+  }
+
+  button:focus {
+    outline: none; /* Remove outline on focus */
+    color: var(--text-color); /* Reset color on focus */
+  }
+
+  button:active {
+    outline: none;
+    color: var(--text-color); /* Reset color on active */
+  }
+
+  button.touched {
+    /* Class added for touch state */
+    color: var(--link-hover-color); /* Change to hover color on touch */
+  }
+
+  button:focus {
+    outline: none; /* Remove outline on focus */
+  }
+}
+
+.ClickHere {
+  color: var(--text-color);
+}
+
+/* Convert the overall container into a grid with 3 columns and 2 rows */
+@keyframes move-border {
+  0% {
+    background-position: -100% 0%;
+    /* Start from the left */
+  }
+
+  100% {
+    background-position: 100% 0%;
+    /* End on the right */
+  }
+}
+
+.all-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+  padding: 40px;
+  position: relative;
+  z-index: 1;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.all-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 4px dashed transparent;
+  /* Change border to dashed */
+  background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+    linear-gradient(45deg, rgb(52, 164, 162), rgba(52, 164, 162, 0.5))
+      border-box;
+  background-size: 200% 200%;
+  z-index: -1;
+  animation: move-border 4s linear infinite;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  color: var(--text-color);
+  cursor: crosshair;
+}
+
+.all-container:hover::before {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* (Optional) Reapply styling to the statistic numbers */
+.info-container > .QS,
+.info-container > .FA,
+.info-container > .ST {
+  font-size: 30px;
+  /* Remove any fixed height or line-height if necessary */
+  margin: 0;
+  color: var(--text-color);
+}
+
+/* (Optional) Reapply styling to the statistic labels */
+.label-container > .QS,
+.label-container > .FA,
+.label-container > .ST {
+  font-size: 30px;
+  color: var(--text-color);
+  margin: 0;
+  text-align: center;
+}
+
+.button-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center;
+  margin-top: 100px;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  /* Space between button and text */
+}
+
+.buttons {
+  background-color: white;
+  color: var(--text-color);
+  padding: 10px;
+  border: solid;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  border-color: black;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  width: 90px;
+  /* Adjust size to keep all buttons uniform */
+  height: 90px;
+}
+
+.bauweb {
+  width: 10px;
+}
+
+.buttons img {
+  width: 60px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.buttons:hover {
+  background-color: rgba(52, 164, 162, 0.521);
+  color: white;
+}
+
+.buttons:hover img {
+  transform: scale(1.1);
+}
+
+.button-text {
+  font-family: Nunito, Arial;
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 5px;
+}
+
+.OurUNI {
+  color: var(--titles);
+}
+
+.theme-toggle-container {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  margin-top: 3.9px;
+}
+
+#themeToggleBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+#themeToggleBtn:hover {
+  transform: scale(1.1);
+}
+
+#themeIcon {
+  width: 25px;
+  height: 25px;
+  /* Remove opacity and transition for instant swap */
+  /* transition: opacity 0.1s ease-in-out; */
+  /* opacity: 1; */
+}
+
+.nav-button svg rect {
+  fill: var(--text-color);
+  transition: fill 0.3s ease; /* smooth color transitions */
+}
+
+/* When hamburger is active (X), make top & bottom bars white */
+#icon.active #topBar,
+#icon.active #bottomBar {
+  fill: rgb(243, 243, 243) !important;
+  stroke: rgb(243, 243, 243) !important;
+}
+
+/* When overlay is open, keep the hamburger white and ignore hover dimming */
+.no-scroll .nav-button:hover {
+  opacity: 1 !important;
+}
+
+.no-scroll .nav-button svg,
+.no-scroll .nav-button svg rect {
+  fill: rgb(243, 243, 243) !important;
+}
+
+#secondBar {
+  fill: var(--top);
+  transition: fill 0.3s ease;
+}
+
+#stsx,
+#aboutus {
+  font-size: 100px;
+  font-weight: 400;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 50px;
+  padding: 50px;
+  margin-top: 5px;
+
+  background: linear-gradient(
+    270deg,
+    var(--grad-1),
+    var(--grad-2),
+    var(--grad-3),
+    var(--grad-4),
+    var(--grad-5),
+    var(--grad-6),
+    var(--grad-7),
+    var(--grad-8),
+    var(--grad-9)
+  );
+  background-size: 400% 400%;
+  animation: gradientMove 300s ease-in-out infinite;
+  will-change: background-position;
+}
+
+/* Animation Keyframes */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

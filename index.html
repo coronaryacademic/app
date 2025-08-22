@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coronary Academic</title>
+    <link rel="icon" href="icons/header-logo-32x32.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/header04.css" />
+    <link rel="stylesheet" href="css/Beta.css" />
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/socrates.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=home"
+    />
+
+    <style>
+      .arabic-font {
+        font-family: "Baloo Bhaijaan 2", Arial, sans-serif;
+      }
+
+      .nav-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        margin-top: 4px;
+        margin-left: 5px;
+      }
+
+      #icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      #icon rect {
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      #icon.active #topBar {
+        transform-origin: 50px 26px;
+        transform: translateY(21px) rotate(45deg);
+      }
+
+      #icon.active #middleBar {
+        opacity: 0;
+        transform: scale(0);
+      }
+
+      #icon.active #bottomBar {
+        transform-origin: 50px 74px;
+        transform: translateY(-25px) rotate(-45deg);
+      }
+
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+
+      #ai-gh-token::placeholder {
+        color: var(--all-text);
+      }
+
+      #aiPrompt::placeholder {
+        color: var(--all-text);
+        opacity: 1; /* removes default faded look */
+      }
+    </style>
+
+    <script>
+      const savedTheme = localStorage.getItem("theme");
+
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+    </script>
+  </head>
+
+  <body
+    style="
+      font-family: Nunito, Arial;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      scroll-behavior: smooth;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    "
+  >
+    <header class="header-container">
+      <div class="left-section">
+        <h1
+          id="page-title"
+          style="
+            font-size: 29px;
+            position: relative;
+            top: 10px;
+            left: 20px;
+            user-select: none;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.15s ease;
+          "
+          role="button"
+          tabindex="0"
+          onclick="window.location.reload();"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
+          onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
+          onmouseleave="this.style.transform=''; this.style.color='';"
+        >
+          Socrates Beta
+        </h1>
+        <!--
+         <nav>
+          <button
+            class="nav-button"
+            style="padding-left: 0px; padding-top: 5px"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 100 100"
+              id="icon"
+            >
+              <rect
+                id="topBar"
+                x="5"
+                y="20"
+                width="90"
+                height="10"
+                rx="1"
+              ></rect>
+              <rect
+                id="middleBar"
+                x="5"
+                y="44"
+                width="90"
+                height="10"
+                rx="1"
+              ></rect>
+              <rect
+                id="bottomBar"
+                x="5"
+                y="68"
+                width="90"
+                height="10"
+                rx="1"
+              ></rect>
+            </svg>
+          </button>
+        </nav>-->
+
+        <!-- Theme toggle moved into user dropdown; header icon removed -->
+      </div>
+      <div class="right-section">
+        <div id="auth-buttons" class="right-section" style="padding-right: 5px">
+          <a href="cont/011215071914/login01.html">
+            <button class="login-button">
+              Account
+              <i style="font-size: 17px; padding-left: 10px" class="fa"
+                >&#xf007;</i
+              >
+            </button>
+          </a>
+        </div>
+
+        <!--
+         <a href="cont/01.signUp/signup.html">
+            <button class="register-button">Sign Up</button>
+          </a>-->
+
+        <section class="logo-container" style="margin-right: 5.5px">
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon"
+            onclick="goHome();"
+            onmouseover="this.style.color='var(--accent-color)'; this.style.transform='scale(1.1)'"
+            onmouseout="this.style.color='var(--all-text)'; this.style.transform='scale(1)'"
+            style="
+              cursor: pointer;
+              position: relative;
+              top: 17px;
+              right: 15px;
+              transition: color 0.3s, transform 0.2s;
+              color: var(--all-text);
+            "
+          >
+            <path
+              d="M2.6687 11.333V8.66699C2.6687 7.74455 2.66841 7.01205 2.71655 6.42285C2.76533 5.82612 2.86699 5.31731 3.10425 4.85156L3.25854 4.57617C3.64272 3.94975 4.19392 3.43995 4.85229 3.10449L5.02905 3.02149C5.44666 2.84233 5.90133 2.75849 6.42358 2.71582C7.01272 2.66769 7.74445 2.66797 8.66675 2.66797H9.16675C9.53393 2.66797 9.83165 2.96586 9.83179 3.33301C9.83179 3.70028 9.53402 3.99805 9.16675 3.99805H8.66675C7.7226 3.99805 7.05438 3.99834 6.53198 4.04102C6.14611 4.07254 5.87277 4.12568 5.65601 4.20313L5.45581 4.28906C5.01645 4.51293 4.64872 4.85345 4.39233 5.27149L4.28979 5.45508C4.16388 5.7022 4.08381 6.01663 4.04175 6.53125C3.99906 7.05373 3.99878 7.7226 3.99878 8.66699V11.333C3.99878 12.2774 3.99906 12.9463 4.04175 13.4688C4.08381 13.9833 4.16389 14.2978 4.28979 14.5449L4.39233 14.7285C4.64871 15.1465 5.01648 15.4871 5.45581 15.7109L5.65601 15.7969C5.87276 15.8743 6.14614 15.9265 6.53198 15.958C7.05439 16.0007 7.72256 16.002 8.66675 16.002H11.3337C12.2779 16.002 12.9461 16.0007 13.4685 15.958C13.9829 15.916 14.2976 15.8367 14.5447 15.7109L14.7292 15.6074C15.147 15.3511 15.4879 14.9841 15.7117 14.5449L15.7976 14.3447C15.8751 14.128 15.9272 13.8546 15.9587 13.4688C16.0014 12.9463 16.0017 12.2774 16.0017 11.333V10.833C16.0018 10.466 16.2997 10.1681 16.6667 10.168C17.0339 10.168 17.3316 10.4659 17.3318 10.833V11.333C17.3318 12.2555 17.3331 12.9879 17.2849 13.5771C17.2422 14.0993 17.1584 14.5541 16.9792 14.9717L16.8962 15.1484C16.5609 15.8066 16.0507 16.3571 15.4246 16.7412L15.1492 16.8955C14.6833 17.1329 14.1739 17.2354 13.5769 17.2842C12.9878 17.3323 12.256 17.332 11.3337 17.332H8.66675C7.74446 17.332 7.01271 17.3323 6.42358 17.2842C5.90135 17.2415 5.44665 17.1577 5.02905 16.9785L4.85229 16.8955C4.19396 16.5601 3.64271 16.0502 3.25854 15.4238L3.10425 15.1484C2.86697 14.6827 2.76534 14.1739 2.71655 13.5771C2.66841 12.9879 2.6687 12.2555 2.6687 11.333ZM13.4646 3.11328C14.4201 2.334 15.8288 2.38969 16.7195 3.28027L16.8865 3.46485C17.6141 4.35685 17.6143 5.64423 16.8865 6.53613L16.7195 6.7207L11.6726 11.7686C11.1373 12.3039 10.4624 12.6746 9.72827 12.8408L9.41089 12.8994L7.59351 13.1582C7.38637 13.1877 7.17701 13.1187 7.02905 12.9707C6.88112 12.8227 6.81199 12.6134 6.84155 12.4063L7.10132 10.5898L7.15991 10.2715C7.3262 9.53749 7.69692 8.86241 8.23218 8.32715L13.2791 3.28027L13.4646 3.11328ZM15.7791 4.2207C15.3753 3.81702 14.7366 3.79124 14.3035 4.14453L14.2195 4.2207L9.17261 9.26856C8.81541 9.62578 8.56774 10.0756 8.45679 10.5654L8.41772 10.7773L8.28296 11.7158L9.22241 11.582L9.43433 11.543C9.92426 11.432 10.3749 11.1844 10.7322 10.8271L15.7791 5.78027L15.8552 5.69629C16.185 5.29194 16.1852 4.708 15.8552 4.30371L15.7791 4.2207Z"
+            ></path>
+          </svg>
+        </section>
+      </div>
+    </header>
+
+    <!--
+    <nav class="side-bar-container">
+
+        <button class="nav-bar" data-page="main" id="nav-bar1">
+        Home
+      </button>
+      <button class="nav-bar active" data-page="bau" id="nav-bar3">Clinical</button>
+      <button class="nav-bar" data-page="dashboard" id="nav-bar-dashboard">
+        Dashboard
+      </button>
+      <button class="nav-bar5" data-page="help" id="nav-bar5">Help</button>
+      <button class="nav-bar" data-page="library" id="nav-bar2">Library</button>
+      <button class="nav-bar" data-page="contact" id="nav-bar4">
+        About Us
+      </button>
+    </nav>
+
+      -->
+
+    <!-- Add this overlay div right after sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main" id="mainContainer">
+      <div class="loader"></div>
+    </div>
+
+    <!-- <footer class="end-margin" style="font-size: 30px">
+      <p class="end-margin-text01">2024 - Coronary Academic MCQs.</p>
+      
+      <p class="end-margin-text03" style="display: block; line-height: 0px">
+        This website has been developed by
+        <a href="javascript:void(0);" onclick="copyToClipboard()"
+          ><span style="font-weight: 900">Mo'men Allala</span></a
+        >.
+      </p>
+
+       <br />Content shared on this website is intended for educational
+        purposes only. All materials are provided free of charge and should
+        never be sold or monetized.
+        <a href="javascript:void(0);" onclick="copyToClipboard()"
+          ><span class="dynamic-hover" style="font-weight: 700"
+            >Contact Me</span
+          ></a
+        >
+        Version – Work in Progress, meaning it's not fully ready and may change
+        later.  © 2024 Coronary Academic MCQs. All rights reserved. 
+    </footer> -->
+
+    <p
+      id="copyMessage"
+      class="end-margin-text04"
+      style="margin-bottom: 10px; margin-top: 20px"
+    >
+      Telegram Username '@mumenq' copied to clipboard!
+    </p>
+    <footer
+      class="footer-bar"
+      style="
+        font-family: Nunito, Arial, sans-serif;
+        width: 100%;
+        color: var(--text-color);
+        text-align: center;
+        padding: 5px 15px;
+        font-size: 13px;
+        margin-top: 5px;
+        position: relative; /* make footer a positioning container */
+      "
+    >
+      <button id="backToTopBtn" class="back-to-top" title="Back to the top">
+        <i style="font-size: 19px; color: var(--lang-txt)" class="fas"
+          >&#xf062;</i
+        >
+      </button>
+
+      <span
+        data-role="app-version"
+        style="font-size: 10px; text-align: center; z-index: 9999"
+      >
+        Fetching version update..
+      </span>
+    </footer>
+
+    <!-- Load jsPDF globally, before your dynamic JS loads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-arabic/dist/jspdf-arabic.umd.min.js"></script>
+
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => resolve();
+          script.onerror = () =>
+            reject(new Error(`Failed to load script: ${src}`));
+          document.body.appendChild(script);
+        });
+      }
+    </script>
+    <script src="script.js" defer></script>
+    <script src="theme.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/607f9f57fe.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      function copyToClipboard() {
+        const textToCopy = "@mumenq";
+        const textarea = document.createElement("textarea");
+        textarea.value = textToCopy;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+
+        const message = document.getElementById("copyMessage");
+
+        // Reset classes before showing
+        message.classList.remove("show", "hide");
+        message.style.visibility = "visible"; // Ensure it's visible before showing
+
+        // Show message
+        message.classList.add("show");
+
+        // Remove the message after 2 seconds with smooth transition
+        setTimeout(function () {
+          message.classList.add("hide");
+          message.classList.remove("show");
+        }, 2000);
+
+        // Ensure visibility is hidden after the transition ends
+        setTimeout(function () {
+          message.style.visibility = "hidden";
+        }, 2500); // Wait for the complete transition duration before hiding
+      }
+    </script>
+
+    <script type="module">
+      console.log("[INDEX] Debug script running");
+
+      const authButtonsDiv = document.getElementById("auth-buttons");
+      if (authButtonsDiv) {
+        console.log("[INDEX] Found auth-buttons div:", authButtonsDiv);
+      } else {
+        console.warn("[INDEX] auth-buttons div NOT found!");
+      }
+
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+      // Add Firestore imports **here** inside the same module script:
+      import {
+        getFirestore,
+        collection,
+        query,
+        orderBy,
+        limit,
+        getDocs,
+        doc,
+        getDoc,
+        setDoc,
+        updateDoc,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+      // Firebase App Check (reCAPTCHA v3)
+      import {
+        initializeAppCheck,
+        ReCaptchaV3Provider,
+      } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app-check.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyB6e_H-E7l6_x9GbOeJONZ515lsclyoogw",
+        authDomain: "coronary-64f63.firebaseapp.com",
+        projectId: "coronary-64f63",
+        storageBucket: "coronary-64f63.firebasestorage.app",
+        messagingSenderId: "110121771753",
+        appId: "1:110121771753:web:bad6365385b0a38fa94678",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Initialize App Check
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider("RECAPTCHA_V3_SITE_KEY_HERE"),
+          isTokenAutoRefreshEnabled: true,
+        });
+        console.log("[INDEX] Firebase App Check initialized");
+      } catch (e) {
+        console.warn("[INDEX] App Check init failed or unavailable:", e);
+      }
+
+      // Initialize Firestore
+      const db = getFirestore(app);
+
+      // Expose these globally if you want to access from other scripts
+      window.firebaseApp = app;
+      window.auth = auth;
+      window.onAuthStateChanged = onAuthStateChanged;
+      window.signOut = signOut;
+
+      window.db = db;
+      window.getDocs = getDocs;
+      window.collection = collection;
+      window.query = query;
+      window.orderBy = orderBy;
+      window.limit = limit;
+      window.doc = doc;
+      window.getDoc = getDoc;
+      window.setDoc = setDoc;
+      window.updateDoc = updateDoc;
+      window.onSnapshot = onSnapshot;
+
+      window.firebaseApp = app;
+      window.auth = auth;
+      window.onAuthStateChanged = onAuthStateChanged;
+      window.signOut = signOut;
+
+      // Helper to dynamically load dashboard.js as a module and cache it
+      async function loadDashboardScript() {
+        try {
+          if (!sessionStorage.getItem("dashboardScriptLoaded")) {
+            console.log("[INDEX] Fetching and loading dashboard.js...");
+            // Fetch dashboard.js text
+            const response = await fetch("cont/00.dashboard/dashboard.js");
+            if (!response.ok) throw new Error("Failed to fetch dashboard.js");
+            const jsText = await response.text();
+
+            // Create a new script element and evaluate the JS code as a module
+            const blob = new Blob([jsText], { type: "text/javascript" });
+            const url = URL.createObjectURL(blob);
+            await import(url);
+            URL.revokeObjectURL(url);
+
+            sessionStorage.setItem("dashboardScriptLoaded", "true");
+            console.log("[INDEX] dashboard.js loaded and applied successfully");
+          } else {
+            console.log(
+              "[INDEX] dashboard.js already loaded from sessionStorage"
+            );
+          }
+        } catch (error) {
+          console.error("[INDEX] Error loading dashboard.js:", error);
+        }
+      }
+
+      async function loadDashboard() {
+        const mainContainer = document.querySelector(".main");
+        if (!mainContainer) {
+          console.error("[INDEX] Main container not found");
+          return;
+        }
+
+        try {
+          const response = await fetch("cont/00.dashboard/dashboard.html");
+          if (!response.ok) throw new Error("Failed to load dashboard.html");
+          const html = await response.text();
+
+          mainContainer.innerHTML = html;
+          console.log("[INDEX] Dashboard HTML loaded successfully");
+
+          if (typeof window.initDashboard === "function") {
+            window.initDashboard();
+            console.log("[INDEX] initDashboard() called");
+          }
+
+          // Trigger animation after initDashboard
+          if (typeof window.animateDashboardActiveSection === "function") {
+            window.animateDashboardActiveSection();
+            console.log("[INDEX] animateDashboardActiveSection() called");
+          }
+
+          sessionStorage.setItem("currentPage", "dashboard");
+          if (typeof window.setHeaderTitleByPage === "function") {
+            window.setHeaderTitleByPage("dashboard");
+          }
+        } catch (err) {
+          console.error("[INDEX] Error loading dashboard:", err);
+        }
+      }
+
+      function loadDefaultPage() {
+        return loadContent("bau")
+          .then(() => console.log("Default page loaded"))
+          .catch((err) => {
+            console.error("Failed to load default page:", err);
+            const mainContainer = document.querySelector(".main");
+            if (mainContainer) {
+              mainContainer.innerHTML =
+                "<p>Welcome! Please login to continue.</p>";
+            }
+          });
+      }
+
+      function restoreAccountButton() {
+        console.log("[INDEX] restoreAccountButton called");
+        if (!authButtonsDiv) {
+          console.warn(
+            "[INDEX] auth-buttons div NOT found in restoreAccountButton"
+          );
+          return;
+        }
+        authButtonsDiv.innerHTML = `
+      <a href="cont/011215071914/login01.html">
+        <button class="login-button" style="margin-right: 10px; margin-top: 11px">
+          Account
+          <i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i>
+        </button>
+      </a>
+    `;
+        console.log("[INDEX] Account button restored");
+      }
+      function updateAuthUI(user) {
+        console.log("[INDEX] updateAuthUI called with user:", user);
+        if (!authButtonsDiv) {
+          console.warn("[INDEX] auth-buttons div NOT found in updateAuthUI");
+          return;
+        }
+
+        if (user) {
+          authButtonsDiv.innerHTML = `
+      <div class="dropdown" style="margin-right: -3px; margin-top: 10px">
+        <button id="dropdownToggle" class="login-button dropdown-toggle">
+          User <i class="fa fa-caret-down" style="margin-left: 5px;"></i>
+        </button>
+        <div id="dropdownMenu" class="dropdown-menu">
+          <button class="dropdown-user" id="openDashboardBtn">Dashboard</button>
+          <button class="dropdown-user" id="toggleThemeInMenu">Theme: ...</button>
+          <button id="logoutBtn" class="dropdown-logout">Logout</button>
+        </div>
+      </div>
+    `;
+
+          const dropdownToggle = document.getElementById("dropdownToggle");
+          const dropdownMenu = document.getElementById("dropdownMenu");
+
+          const closeDropdown = () => {
+            dropdownMenu.classList.remove("show");
+            dropdownToggle.classList.remove("dropdown-open");
+          };
+
+          // Open Dashboard
+          const openDashboardBtn = document.getElementById("openDashboardBtn");
+          openDashboardBtn?.addEventListener("click", () => {
+            console.log("[INDEX] Dashboard button clicked");
+            loadDashboard();
+            updateNavActiveState("dashboard"); // 👈 Add this line to sync sidebar
+            closeDropdown(); // 👈 closes menu after click
+          });
+
+          // Logout
+          const logoutBtn = document.getElementById("logoutBtn");
+          logoutBtn?.addEventListener("click", () => {
+            console.log("[INDEX] Logout clicked");
+            signOut(auth)
+              .then(() => {
+                console.log("[INDEX] Signed out successfully");
+                restoreAccountButton();
+                loadDefaultPage().then(() => {
+                  updateNavActiveState("bau");
+                });
+                closeDropdown(); // 👈 closes menu after click
+              })
+              .catch((err) => {
+                console.error("[INDEX] Sign out error:", err);
+              });
+          });
+
+          // Toggle dropdown on toggle click
+          dropdownToggle?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+            dropdownToggle.classList.toggle("dropdown-open");
+          });
+
+          // Theme toggle wiring inside dropdown
+          const toggleThemeInMenu =
+            document.getElementById("toggleThemeInMenu");
+          const getCurrentTheme = () => {
+            const fromAttr =
+              document.documentElement.getAttribute("data-theme");
+            const fromStorage = localStorage.getItem("theme");
+            return (fromAttr || fromStorage || "light").toLowerCase();
+          };
+          const setToggleLabel = (theme) => {
+            if (toggleThemeInMenu) {
+              const pretty = theme.charAt(0).toUpperCase() + theme.slice(1);
+              toggleThemeInMenu.textContent = `Theme: ${pretty}`;
+            }
+          };
+          // Init label
+          setToggleLabel(getCurrentTheme());
+
+          // Listen for theme changes from theme.js
+          const themeChangedHandler = (e) => {
+            const t =
+              e && e.detail && e.detail.theme
+                ? e.detail.theme
+                : getCurrentTheme();
+            setToggleLabel(t);
+          };
+          window.addEventListener("theme-changed", themeChangedHandler);
+
+          // Toggle theme on click
+          toggleThemeInMenu?.addEventListener("click", () => {
+            if (typeof window.toggleTheme === "function") {
+              window.toggleTheme();
+            }
+            closeDropdown();
+          });
+
+          // Close on outside click
+          document.addEventListener("click", () => {
+            closeDropdown();
+          });
+
+          // Close on scroll
+          window.addEventListener("scroll", () => {
+            closeDropdown();
+          });
+
+          // Prevent closing when clicking inside dropdown
+          dropdownMenu?.addEventListener("click", (e) => {
+            e.stopPropagation();
+          });
+        } else {
+          console.log("[INDEX] No user logged in, restoring Account button");
+          restoreAccountButton();
+          loadDefaultPage();
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            updateAuthUI(user);
+
+            // Load saved page from sessionStorage or default to bau
+            const savedPage = sessionStorage.getItem("currentPage") || "bau";
+
+            if (savedPage === "dashboard") {
+              loadDashboard();
+            } else {
+              loadContent(savedPage).catch((err) => {
+                console.error("Failed to load saved page:", err);
+                loadDefaultPage();
+              });
+            }
+          } else {
+            restoreAccountButton();
+
+            // If no user, load saved page or default bau page
+            const savedPage = sessionStorage.getItem("currentPage") || "bau";
+            loadContent(savedPage).catch(() => loadDefaultPage());
+          }
+        });
+      });
+    </script>
+    <script>
+      let lastScrollTop = 0;
+      const header = document.querySelector(".header-container");
+
+      // Set a threshold to prevent early hiding near top of the page
+      const scrollThreshold = 50;
+
+      window.addEventListener("scroll", function () {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+
+        // Prevent hiding if within the top threshold
+        if (scrollTop < scrollThreshold) {
+          header.classList.remove("hide-on-scroll");
+          header.classList.add("show-on-scroll");
+          lastScrollTop = scrollTop;
+          return;
+        }
+
+        if (scrollTop > lastScrollTop) {
+          // Scrolling down
+          header.classList.remove("show-on-scroll");
+          header.classList.add("hide-on-scroll");
+        } else {
+          // Scrolling up
+          header.classList.remove("hide-on-scroll");
+          header.classList.add("show-on-scroll");
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("submit-and-download");
+        if (btn) {
+          btn.addEventListener("click", () => {
+            // Your download or submit logic here
+            console.log("Submit & Download button clicked");
+            // Example: generate PDF or trigger download
+          });
+        } else {
+          console.warn("submit-and-download button not found");
+        }
+      });
+    </script>
+    <script type="module" src="cont/00.dashboard/dashboard.js"></script>
+  </body>
+</html>
