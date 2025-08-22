@@ -316,7 +316,11 @@ function setHeaderTitleByPage(page) {
     };
 
     const title = map[page] || "Socrates Beta";
-    el.textContent = title;
+    if (title === "Socrates Beta") {
+      el.innerHTML = 'Socrates<sup style="font-size: 12px; margin-left: 5px">Beta</sup>';
+    } else {
+      el.textContent = title;
+    }
   } catch (e) {
     // no-op
   }

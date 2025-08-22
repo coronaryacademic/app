@@ -128,12 +128,58 @@
   >
     <header class="header-container" style="position: relative">
       <div class="left-section">
+        <button
+          id="bau-history-external-toggle"
+          type="button"
+          style="
+            padding: 10px 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+          "
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="23"
+            viewBox="0 0 100 100"
+            style="color: var(--all-text)"
+          >
+            <rect
+              x="5"
+              y="20"
+              width="90"
+              height="8"
+              rx="1"
+              fill="currentColor"
+            ></rect>
+            <rect
+              x="5"
+              y="44"
+              width="90"
+              height="8"
+              rx="1"
+              fill="currentColor"
+            ></rect>
+            <rect
+              x="5"
+              y="68"
+              width="90"
+              height="8"
+              rx="1"
+              fill="currentColor"
+            ></rect>
+          </svg>
+        </button>
         <h1
           id="page-title"
           style="
-            font-size: 29px;
+            font-size: 24px;
             position: relative;
-            top: 10px;
+            top: -5px;
             left: 0;
             right: 0;
             text-align: center;
@@ -146,35 +192,25 @@
           tabindex="0"
           onclick="window.location.reload();"
           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.reload();}"
-          onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='var(--accent-color)';"
+          onmouseenter="this.style.transform='translateY(-1px) scale(1.02)'; this.style.color='rgb(52, 164, 162)';"
           onmouseleave="this.style.transform=''; this.style.color='';"
         >
-          Socrates Beta
+          Socrates<sup style="font-size: 12px; margin-left: 5px">Beta</sup>
         </h1>
       </div>
 
       <div class="right-section">
-        <div id="auth-buttons" class="right-section" style="padding-right: 5px">
-          <a href="cont/011215071914/Login.html">
-            <button class="login-button">
-              Account
-              <i style="font-size: 17px; padding-left: 10px" class="fa"
-                >&#xf007;</i
-              >
-            </button>
-          </a>
-        </div>
-
-        <!--
-         <a href="cont/01.signUp/signup.html">
-            <button class="register-button">Sign Up</button>
-          </a>-->
+        <div
+          id="auth-buttons"
+          class="right-section"
+          style="padding-right: 5px"
+        ></div>
 
         <section class="logo-container" style="margin-right: 5.5px">
           <svg
             id="header-home-svg"
-            width="30"
-            height="30"
+            width="25"
+            height="25"
             viewBox="0 0 20 20"
             fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
@@ -185,8 +221,8 @@
             style="
               cursor: pointer;
               position: relative;
-              top: 17px;
-              right: 15px;
+              top: 10px;
+              right: 5px;
               transition: color 0.3s, transform 0.2s, opacity 0.3s ease-out;
               color: var(--all-text);
             "

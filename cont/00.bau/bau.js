@@ -2114,72 +2114,18 @@ async function renderHistorySidebar() {
   // Allow sidebar to render even if the history form container is not present
   if (document.getElementById("bau-history-drawer")) return; // already added
 
-  // Create external toggle button for when sidebar is closed
-  const externalToggleBtn = document.createElement("button");
-  externalToggleBtn.id = "bau-history-external-toggle";
-  externalToggleBtn.type = "button";
-  externalToggleBtn.innerHTML = `
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="23"
-      height="23"
-      viewBox="0 0 100 100"
-      style="color: var(--all-text);"
-    >
-      <rect
-        x="5"
-        y="20"
-        width="90"
-        height="8"
-        rx="1"
-        fill="currentColor"
-      ></rect>
-      <rect
-        x="5"
-        y="44"
-        width="90"
-        height="8"
-        rx="1"
-        fill="currentColor"
-      ></rect>
-      <rect
-        x="5"
-        y="68"
-        width="90"
-        height="8"
-        rx="1"
-        fill="currentColor"
-      ></rect>
-    </svg>
-  `;
-  Object.assign(externalToggleBtn.style, {
-    position: "fixed",
-    top: "20px",
-    left: "20px",
-    padding: "10px 12px",
-    border: "none",
-    borderRadius: "6px",
-    background: "transparent",
-    color: "var(--all-text)",
-    cursor: "pointer",
-    zIndex: "999999",
-    fontSize: "16px",
-    fontWeight: "bold",
-    boxShadow: "none",
-    transition: "opacity 300ms ease",
-    opacity: "1",
-    visibility: "visible",
-    display: "block",
-    pointerEvents: "auto",
-  });
+  // Get existing toggle button from header
+  const externalToggleBtn = document.getElementById("bau-history-external-toggle");
+  if (externalToggleBtn) {
+    Object.assign(externalToggleBtn.style, {
+      display: "block",
+      opacity: "1",
+      visibility: "visible",
+      pointerEvents: "auto",
+    });
+  }
 
-  // Force visibility with important declarations
-  externalToggleBtn.style.setProperty("opacity", "1", "important");
-  externalToggleBtn.style.setProperty("visibility", "visible", "important");
-  externalToggleBtn.style.setProperty("display", "block", "important");
-  externalToggleBtn.style.setProperty("z-index", "999999", "important");
-
-  document.body.appendChild(externalToggleBtn);
+  // Button is now in header, no need to append to body
 
   // Add debug logging to verify button creation and positioning
   console.log("[BAU] External toggle button created:", externalToggleBtn);

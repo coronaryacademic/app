@@ -7,7 +7,6 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
     <title>Socrates beta login</title>
-    <!-- Favicon: provide 16x16 and 32x32 with cache-busting -->
     <link
       rel="icon"
       type="image/png"
@@ -38,22 +37,22 @@
     <style>
       .legal-text {
         font-family: Arial, sans-serif;
-        font-weight: 200; /* makes it thinner */
+        font-weight: 200;
         text-align: center;
       }
 
       .legal-links a {
-        display: block; /* put them below each other */
+        display: block;
         font-size: 0.85em;
-        color: var(--all-text); /* muted gray for legal style */
+        color: var(--all-text);
         text-decoration: none;
         margin-top: 6px;
         transition: color 0.2s ease;
       }
 
       .legal-links a:hover {
-        color: var(--scrl); /* darker on hover */
-        text-decoration: underline; /* underline only on hover */
+        color: var(--scrl);
+        text-decoration: underline;
       }
 
       body {
@@ -68,32 +67,6 @@
       <div class="login-box">
         <div class="container">
           <div class="flex">
-            <!--
-             <div class="header">
-              <section class="logo-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="43px"
-                  viewBox="0 -960 960 960"
-                  width="43px"
-                  fill="var(--all-text)"
-                  onclick="goHome();"
-                  onmouseover="this.style.color='var(--accent-color)'; this.style.transform='scale(1.1)'"
-                  onmouseout="this.style.color='var(--all-text)'; this.style.transform='scale(1)'"
-                  style="
-                    cursor: pointer;
-                    position: relative;
-                    top: 15px;
-                    right: 2px;
-                    transition: color 0.3s, transform 0.2s;
-                  "
-                >
-                  <path
-                    d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z"
-                  />
-                </svg>
-              </section>
-            </div>-->
             <div class="content">
               <h1
                 style="
@@ -125,8 +98,6 @@
                 Welcome, Doctor! <br />To Use this app, and other related
                 features, please login in.
               </h1>
-
-              <!-- Benefits Toggle Section -->
               <div style="margin: 20px 0">
                 <button
                   id="benefitsToggle"
@@ -165,7 +136,6 @@
                     >▼</span
                   >
                 </button>
-
                 <div
                   id="benefitsContent"
                   style="
@@ -257,75 +227,7 @@
                   </div>
                 </div>
               </div>
-              <!--
-            <h1
-              class="h1"
-              style="
-                color: darkred;
-                font-weight: 900;
-                margin-top: 20px;
-                background-color: rgba(255, 160, 122, 0.164);
-                display: block;
-                width: auto;
-              "
-            >
-              THIS LOGIN SYSTEM IS NOT YET READY
-            </h1>
-
-            <div class="input">
-                <section class="container-1">
-                  <input
-                    class="input1"
-                    type="email"
-                    id="email"
-                    name="email"
-                    autocomplete="off"
-                    placeholder=" "
-                    required
-                  />
-                  <label for="email" class="placeholder">Email</label>
-                  <i class="fa-solid fa-user"></i>
-                </section>
-                <div class="nun">
-                  <section class="container-2">
-                    <div class="star0">
-                      <input
-                        class="input1"
-                        type="password"
-                        id="password"
-                        name="password"
-                        autocomplete="off"
-                        placeholder=" "
-                        required
-                      />
-                      <label for="password" class="placeholder">Password</label>
-
-                      <i class="fa-solid fa-lock"></i>
-                      <i class="fa-solid fa-unlock"></i>
-                      <button
-                        type="button"
-                        id="togglePassword"
-                        class="show-password-btn"
-                      >
-                        Show
-                      </button>
-                    </div>
-                  </section>
-                </div>
-              </div>
-              
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
-              >
-                <p style="font-size: 12px" class="sit0">Forgot password?</p>
-              </div>
-              <button class="login-in-button" type="submit">Login</button>
-
-            --></div>
+            </div>
             <div class="card">
               <section class="auth-card">
                 <div
@@ -372,7 +274,6 @@
           </div>
         </div>
       </div>
-
       <div
         style="
           position: fixed;
@@ -406,17 +307,13 @@
         "
       ></div>
     </div>
-    <script src="touch0.js"></script>
-
     <script src="theme.js"></script>
     <script
       src="https://kit.fontawesome.com/607f9f57fe.js"
       crossorigin="anonymous"
     ></script>
-
     <script type="module" src="login01.js?v=1.12.2"></script>
     <script>
-      // Benefits toggle functionality
       document.addEventListener("DOMContentLoaded", function () {
         const toggle = document.getElementById("benefitsToggle");
         const content = document.getElementById("benefitsContent");
@@ -447,8 +344,6 @@
             openBenefits();
           }
         });
-
-        // Close benefits when clicking outside
         document.addEventListener("click", function (event) {
           if (
             isExpanded &&
@@ -458,8 +353,6 @@
             closeBenefits();
           }
         });
-
-        // Prevent closing when clicking inside the content
         content.addEventListener("click", function (event) {
           event.stopPropagation();
         });
