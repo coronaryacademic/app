@@ -2206,7 +2206,7 @@ async function renderHistorySidebar() {
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
   header.style.padding = "20px";
-  header.style.paddingRight = "28px";
+  header.style.paddingRight = "25px";
 
   // Create left section with close button and title
   const leftSection = document.createElement("div");
@@ -2240,7 +2240,8 @@ async function renderHistorySidebar() {
   const hTitle = document.createElement("div");
   hTitle.textContent = "Recent Histories";
   Object.assign(hTitle.style, {
-    marginTop: "5px",
+    marginTop: "6px",
+    paddingLeft: "25px",
   });
   hTitle.style.fontWeight = "600";
 
@@ -2253,10 +2254,14 @@ async function renderHistorySidebar() {
 
   const clearBtn = document.createElement("button");
   clearBtn.type = "button";
-  clearBtn.textContent = "Clear";
+  clearBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+  </svg>`;
   Object.assign(clearBtn.style, {
     padding: "6px 10px",
-    border: "1px solid var(--all-text)",
+    paddingTop: "10px",
+    border: "none",
     borderRadius: "6px",
     background: "transparent",
     color: "var(--all-text)",
@@ -2291,7 +2296,7 @@ async function renderHistorySidebar() {
   userSection.id = "sidebar-user-section";
   Object.assign(userSection.style, {
     padding: "16px",
-    borderTop: "1px solid var(--all-text)",
+    borderTop: "none",
     background: "rgba(0,0,0,0.05)",
     marginTop: "auto", // Push to bottom
   });
@@ -2302,7 +2307,7 @@ async function renderHistorySidebar() {
     <button id="sidebarUserToggle" style="
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid var(--all-text);
+      border: none;
       border-radius: 6px;
       background: transparent;
       color: var(--all-text);
@@ -2318,7 +2323,7 @@ async function renderHistorySidebar() {
     <div id="sidebarUserMenu" style="
       display: none;
       margin-top: 8px;
-      border: 1px solid var(--all-text);
+      border: none;
       border-radius: 6px;
       background: rgba(0,0,0,0.2);
       overflow: hidden;
@@ -2331,7 +2336,7 @@ async function renderHistorySidebar() {
         color: var(--all-text);
         cursor: pointer;
         text-align: left;
-        border-bottom: 1px solid var(--all-text);
+        border-bottom: none;
       ">Dashboard</button>
       <button id="sidebarThemeBtn" style="
         width: 100%;
@@ -2341,7 +2346,7 @@ async function renderHistorySidebar() {
         color: var(--all-text);
         cursor: pointer;
         text-align: left;
-        border-bottom: 1px solid var(--all-text);
+        border-bottom: none;
       ">Theme: ...</button>
       <button id="sidebarLogoutBtn" style="
         width: 100%;
@@ -2856,7 +2861,7 @@ async function renderHistorySidebar() {
       newFormButton.textContent = "Start";
       Object.assign(newFormButton.style, {
         padding: "6px 10px",
-        border: "1px solid var(--all-text)",
+        border: "none",
         borderRadius: "6px",
         background: "transparent",
         color: "var(--all-text)",
@@ -2977,27 +2982,125 @@ async function renderHistorySidebar() {
       if (snap.empty) {
         const p = document.createElement("p");
         p.textContent = "No saved histories yet.";
+        p.style.paddingLeft = "14.5px";
+        p.style.paddingTop = "14.5px";
         list.appendChild(p);
         return;
       }
 
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
+      snap.forEach((doc) => {
+        const data = doc.data();
         const item = document.createElement("div");
         Object.assign(item.style, {
           display: "grid",
           gridTemplateColumns: "1fr auto",
           alignItems: "center",
           gap: "8px",
-          border: "1px solid var(--all-text)",
+          border: "none",
           borderRadius: "8px",
           padding: "8px",
+          position: "relative",
+          transition: "transform 0.3s ease",
+          cursor: "grab",
         });
+
+        // Add swipe/drag to delete functionality for all devices
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let deleteThreshold = -100; // Swipe/drag left 100px to delete
+
+        const getClientX = (e) => {
+          return e.touches ? e.touches[0].clientX : e.clientX;
+        };
+
+        const handleStart = (e) => {
+          startX = getClientX(e);
+          isDragging = true;
+          item.style.transition = "none";
+          item.style.cursor = "grabbing";
+          e.preventDefault(); // Prevent text selection on desktop
+        };
+
+        const handleMove = (e) => {
+          if (!isDragging) return;
+          currentX = getClientX(e);
+          const deltaX = currentX - startX;
+          
+          // Only allow left swipe/drag (negative delta)
+          if (deltaX < 0) {
+            item.style.transform = `translateX(${deltaX}px)`;
+            
+            // Add visual feedback when approaching delete threshold
+            if (deltaX < deleteThreshold) {
+              item.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
+            } else {
+              item.style.backgroundColor = "";
+            }
+          }
+          e.preventDefault();
+        };
+
+        const handleEnd = async (e) => {
+          if (!isDragging) return;
+          isDragging = false;
+          
+          const deltaX = currentX - startX;
+          item.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+          item.style.cursor = "grab";
+          
+          if (deltaX < deleteThreshold) {
+            // Delete the item
+            if (confirm(`Delete history for ${data.patientName || "Unknown"}?`)) {
+              try {
+                const { deleteDoc } = window;
+                if (deleteDoc) {
+                  await deleteDoc(doc.ref);
+                  item.style.transform = "translateX(-100%)";
+                  item.style.opacity = "0";
+                  setTimeout(() => {
+                    if (item.parentNode) {
+                      item.parentNode.removeChild(item);
+                    }
+                  }, 300);
+                } else {
+                  console.warn("[BAU] deleteDoc not available");
+                }
+              } catch (error) {
+                console.error("[BAU] Failed to delete history:", error);
+                item.style.transform = "translateX(0)";
+                item.style.backgroundColor = "";
+              }
+            } else {
+              // Reset position if user cancels
+              item.style.transform = "translateX(0)";
+              item.style.backgroundColor = "";
+            }
+          } else {
+            // Reset position if threshold not met
+            item.style.transform = "translateX(0)";
+            item.style.backgroundColor = "";
+          }
+        };
+
+        // Add touch event listeners for mobile
+        item.addEventListener("touchstart", handleStart, { passive: false });
+        item.addEventListener("touchmove", handleMove, { passive: false });
+        item.addEventListener("touchend", handleEnd, { passive: false });
+
+        // Add mouse event listeners for desktop
+        item.addEventListener("mousedown", handleStart);
+        item.addEventListener("mousemove", handleMove);
+        item.addEventListener("mouseup", handleEnd);
+        item.addEventListener("mouseleave", handleEnd); // Handle mouse leaving the element
 
         const meta = document.createElement("div");
         const dt = parseDateSafe(data.createdAt);
         const when = dt
-          ? `${dt.toLocaleDateString()} ${dt.toLocaleTimeString()}`
+          ? `${dt.toLocaleDateString()}\n${dt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}`
           : data.createdAt || "";
         // Remaining time
         const createdMs =
@@ -3015,6 +3118,7 @@ async function renderHistorySidebar() {
         dateLine.textContent = when;
         dateLine.style.fontSize = "12px";
         dateLine.style.opacity = "0.85";
+        dateLine.style.whiteSpace = "pre-line";
         meta.replaceChildren(nameLine, dateLine);
         meta.title = `${
           data.patientName || "Unknown"
@@ -3036,7 +3140,7 @@ async function renderHistorySidebar() {
         Object.assign(remainBadge.style, {
           fontSize: "12px",
           opacity: "0.85",
-          border: "1px solid var(--all-text)",
+          border: "none",
           borderRadius: "999px",
           padding: "2px 8px",
           whiteSpace: "nowrap",
@@ -3048,7 +3152,7 @@ async function renderHistorySidebar() {
         loadBtn.textContent = "Load";
         Object.assign(loadBtn.style, {
           padding: "6px 10px",
-          border: "1px solid var(--all-text)",
+          border: "none",
           borderRadius: "6px",
           background: "transparent",
           color: "var(--all-text)",
