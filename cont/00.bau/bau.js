@@ -2407,10 +2407,10 @@ async function renderHistorySidebar() {
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }
 
-    // Show the form SVG message when sidebar closes
+    // Hide the form SVG message when sidebar closes
     const loadHistoryMessage = document.getElementById("load-history-message");
     if (loadHistoryMessage) {
-      loadHistoryMessage.style.display = "block";
+      loadHistoryMessage.style.display = "none";
     }
 
     // Show the header SVG when sidebar closes with fade animation
@@ -2428,6 +2428,19 @@ async function renderHistorySidebar() {
     }
     // Remove the click-anywhere-to-close listener
     document.removeEventListener("click", handleOutsideClick);
+    
+    // Clean up any stuck trash icons
+    const trashIcon = document.querySelector('.drag-trash-icon');
+    if (trashIcon) {
+      trashIcon.remove();
+    }
+
+    // Run all cleanup functions
+    if (window.sidebarCleanupFunctions) {
+      window.sidebarCleanupFunctions.forEach(cleanup => cleanup());
+      window.sidebarCleanupFunctions = [];
+    }
+    
     isOpen = false;
   };
 
@@ -2672,40 +2685,40 @@ async function renderHistorySidebar() {
         inlineMessage("Please sign in to manage histories.");
         return;
       }
-      const confirmClear = window.confirm(
-        "Clear all saved histories? This cannot be undone."
-      );
-      if (!confirmClear) return;
+      // Show confirmation dialog for clear all
+      showClearAllConfirmation(async (confirmed) => {
+        if (!confirmed) return;
 
-      const db = window.db;
-      const { collection, getDocs, query } = window;
-      const { deleteDoc } = window;
-      if (!deleteDoc) {
-        console.warn("[BAU] deleteDoc not available on window");
-        inlineMessage("Clear failed: delete API unavailable.");
-        return;
-      }
+        const db = window.db;
+        const { collection, getDocs, query } = window;
+        const { deleteDoc } = window;
+        if (!deleteDoc) {
+          console.warn("[BAU] deleteDoc not available on window");
+          inlineMessage("Clear failed: delete API unavailable.");
+          return;
+        }
 
-      const col = collection(db, "users", user.uid, "histories");
-      const q = query(col);
-      const snap = await getDocs(q);
-      if (snap.empty) {
-        inlineMessage("No histories to clear.");
-        return;
-      }
+        const col = collection(db, "users", user.uid, "histories");
+        const q = query(col);
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          inlineMessage("No histories to clear.");
+          return;
+        }
 
-      const deletions = [];
-      snap.forEach((docSnap) => {
-        // Use ref when available for correctness
-        if (docSnap.ref) deletions.push(deleteDoc(docSnap.ref));
+        const deletions = [];
+        snap.forEach((docSnap) => {
+          // Use ref when available for correctness
+          if (docSnap.ref) deletions.push(deleteDoc(docSnap.ref));
+        });
+        await Promise.allSettled(deletions);
+        inlineMessage("All histories cleared.");
+        await loadHistories();
       });
-      await Promise.allSettled(deletions);
-      inlineMessage("All histories cleared.");
-      await loadHistories();
-    } catch (err) {
-      console.warn("[BAU] Failed to clear histories:", err);
-      inlineMessage("Failed to clear histories.");
+    } catch (error) {
+      console.error("[BAU] Failed to clear histories:", error);
     }
+    inlineMessage("Failed to clear histories.");
   });
 
   // Add additional event listeners for Clear button
@@ -3015,6 +3028,10 @@ async function renderHistorySidebar() {
         };
 
         const handleStart = (e) => {
+          // Don't start drag if clicking on Load button
+          if (e.target.closest('button')) {
+            return;
+          }
           startX = getClientX(e);
           isDragging = true;
           item.style.transition = "none";
@@ -3031,11 +3048,47 @@ async function renderHistorySidebar() {
           if (deltaX < 0) {
             item.style.transform = `translateX(${deltaX}px)`;
             
-            // Add visual feedback when approaching delete threshold
+            // Show trash icon outside the item when dragging
+            let trashIcon = document.querySelector('.drag-trash-icon');
+            if (!trashIcon) {
+              trashIcon = document.createElement('div');
+              trashIcon.className = 'drag-trash-icon';
+              trashIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+              </svg>`;
+              Object.assign(trashIcon.style, {
+                position: 'fixed',
+                right: '20px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#ff4444',
+                opacity: '0',
+                transition: 'opacity 0.2s ease',
+                pointerEvents: 'none',
+                zIndex: '1000',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                borderRadius: '50%',
+                border: '2px solid #ff4444'
+              });
+              document.body.appendChild(trashIcon);
+            }
+            
+            // Position trash icon relative to the dragged item
+            const itemRect = item.getBoundingClientRect();
+            trashIcon.style.top = `${itemRect.top + itemRect.height / 2}px`;
+            
             if (deltaX < deleteThreshold) {
               item.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
+              trashIcon.style.opacity = '1';
             } else {
               item.style.backgroundColor = "";
+              trashIcon.style.opacity = Math.abs(deltaX) / Math.abs(deleteThreshold) * 0.7;
             }
           }
           e.preventDefault();
@@ -3044,38 +3097,45 @@ async function renderHistorySidebar() {
         const handleEnd = async (e) => {
           if (!isDragging) return;
           isDragging = false;
-          
           const deltaX = currentX - startX;
           item.style.transition = "transform 0.3s ease, background-color 0.3s ease";
           item.style.cursor = "grab";
           
+          // Remove trash icon
+          const trashIcon = document.querySelector('.drag-trash-icon');
+          if (trashIcon) {
+            trashIcon.remove();
+          }
+          
           if (deltaX < deleteThreshold) {
-            // Delete the item
-            if (confirm(`Delete history for ${data.patientName || "Unknown"}?`)) {
-              try {
-                const { deleteDoc } = window;
-                if (deleteDoc) {
-                  await deleteDoc(doc.ref);
-                  item.style.transform = "translateX(-100%)";
-                  item.style.opacity = "0";
-                  setTimeout(() => {
-                    if (item.parentNode) {
-                      item.parentNode.removeChild(item);
-                    }
-                  }, 300);
-                } else {
-                  console.warn("[BAU] deleteDoc not available");
+            // Show confirmation dialog
+            showDeleteConfirmation(data.patientName || "Unknown", async (confirmed) => {
+              if (confirmed) {
+                try {
+                  const { deleteDoc } = window;
+                  if (deleteDoc) {
+                    await deleteDoc(doc.ref);
+                    item.style.transform = "translateX(-100%)";
+                    item.style.opacity = "0";
+                    setTimeout(() => {
+                      if (item.parentNode) {
+                        item.parentNode.removeChild(item);
+                      }
+                    }, 300);
+                  } else {
+                    console.warn("[BAU] deleteDoc not available");
+                  }
+                } catch (error) {
+                  console.error("[BAU] Failed to delete history:", error);
+                  item.style.transform = "translateX(0)";
+                  item.style.backgroundColor = "";
                 }
-              } catch (error) {
-                console.error("[BAU] Failed to delete history:", error);
+              } else {
+                // Reset position if user cancels
                 item.style.transform = "translateX(0)";
                 item.style.backgroundColor = "";
               }
-            } else {
-              // Reset position if user cancels
-              item.style.transform = "translateX(0)";
-              item.style.backgroundColor = "";
-            }
+            });
           } else {
             // Reset position if threshold not met
             item.style.transform = "translateX(0)";
@@ -3083,16 +3143,47 @@ async function renderHistorySidebar() {
           }
         };
 
+        // Cleanup function to reset drag state and remove trash icon
+        const cleanupDrag = () => {
+          if (isDragging) {
+            isDragging = false;
+            item.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+            item.style.cursor = "grab";
+            item.style.transform = "translateX(0)";
+            item.style.backgroundColor = "";
+          }
+          // Always remove trash icon regardless of drag state
+          const trashIcon = document.querySelector('.drag-trash-icon');
+          if (trashIcon) {
+            trashIcon.remove();
+          }
+        };
+
         // Add touch event listeners for mobile
         item.addEventListener("touchstart", handleStart, { passive: false });
         item.addEventListener("touchmove", handleMove, { passive: false });
         item.addEventListener("touchend", handleEnd, { passive: false });
+        item.addEventListener("touchcancel", cleanupDrag);
 
         // Add mouse event listeners for desktop
         item.addEventListener("mousedown", handleStart);
         item.addEventListener("mousemove", handleMove);
         item.addEventListener("mouseup", handleEnd);
-        item.addEventListener("mouseleave", handleEnd); // Handle mouse leaving the element
+        item.addEventListener("mouseleave", cleanupDrag);
+        
+        // Global cleanup when sidebar closes or page changes
+        const globalCleanup = () => {
+          const trashIcon = document.querySelector('.drag-trash-icon');
+          if (trashIcon) {
+            trashIcon.remove();
+          }
+        };
+        
+        // Store cleanup function for later use
+        if (!window.sidebarCleanupFunctions) {
+          window.sidebarCleanupFunctions = [];
+        }
+        window.sidebarCleanupFunctions.push(globalCleanup);
 
         const meta = document.createElement("div");
         const dt = parseDateSafe(data.createdAt);
@@ -3158,7 +3249,9 @@ async function renderHistorySidebar() {
           color: "var(--all-text)",
           cursor: "pointer",
         });
-        loadBtn.addEventListener("click", () => {
+        loadBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           console.log("[BAU] Load history button clicked");
           try {
             // Navigate to BAU page first if we're not already there
@@ -3177,9 +3270,13 @@ async function renderHistorySidebar() {
                     "load-history-message"
                   );
                   if (loadHistoryMessage) {
-                    loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
+                    loadHistoryMessage.textContent = `${patientName} History loaded successfully.`;
                     loadHistoryMessage.style.display = "block";
                     loadHistoryMessage.style.marginBottom = "10px";
+                    // Auto-hide after 3 seconds
+                    setTimeout(() => {
+                      loadHistoryMessage.style.display = "none";
+                    }, 3000);
                     setTimeout(() => {
                       loadHistoryMessage.style.opacity = "1";
                       loadHistoryMessage.style.transform =
@@ -3267,6 +3364,246 @@ async function renderHistorySidebar() {
       return isNaN(d.getTime()) ? null : d;
     } catch {
       return null;
+    }
+  }
+
+  // Show styled confirmation dialog
+  function showDeleteConfirmation(patientName, callback) {
+    // Remove any existing confirmation dialog
+    const existingDialog = list.querySelector('.delete-confirmation');
+    if (existingDialog) {
+      existingDialog.remove();
+    }
+
+    // Create confirmation dialog
+    const confirmDialog = document.createElement('div');
+    confirmDialog.className = 'delete-confirmation';
+    Object.assign(confirmDialog.style, {
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr auto',
+      alignItems: 'center',
+      gap: '12px',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px',
+      marginBottom: '12px',
+      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+      transition: 'all 0.3s ease',
+      animation: 'slideIn 0.3s ease'
+    });
+
+    // Add CSS animation
+    if (!document.getElementById('delete-confirmation-styles')) {
+      const style = document.createElement('style');
+      style.id = 'delete-confirmation-styles';
+      style.textContent = `
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Warning icon
+    const warningIcon = document.createElement('div');
+    warningIcon.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="color: #ff4444;">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+      </svg>
+    `;
+
+    // Message text
+    const messageText = document.createElement('div');
+    messageText.textContent = `Delete ${patientName} history?`;
+    messageText.style.fontWeight = '500';
+    messageText.style.color = 'var(--all-text)';
+    messageText.style.whiteSpace = 'nowrap';
+    messageText.style.overflow = 'hidden';
+    messageText.style.textOverflow = 'ellipsis';
+
+    // Buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.gap = '8px';
+
+    // Cancel button
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Cancel';
+    Object.assign(cancelBtn.style, {
+      padding: '6px 12px',
+      border: 'none',
+      borderRadius: '6px',
+      background: 'transparent',
+      color: 'var(--all-text)',
+      cursor: 'pointer',
+      fontSize: '14px'
+    });
+
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.textContent = 'Delete';
+    Object.assign(deleteBtn.style, {
+      padding: '6px 12px',
+      border: 'none',
+      borderRadius: '6px',
+      background: '#ff4444',
+      color: 'white',
+      cursor: 'pointer',
+      fontSize: '14px'
+    });
+
+    // Event handlers
+    cancelBtn.addEventListener('click', () => {
+      confirmDialog.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => {
+        confirmDialog.remove();
+        callback(false);
+      }, 300);
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      confirmDialog.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => {
+        confirmDialog.remove();
+        callback(true);
+      }, 300);
+    });
+
+    // Add slide out animation
+    const existingStyle = document.getElementById('delete-confirmation-styles');
+    if (existingStyle && !existingStyle.textContent.includes('slideOut')) {
+      existingStyle.textContent += `
+        @keyframes slideOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(-10px); }
+        }
+      `;
+    }
+
+    // Assemble dialog
+    buttonsContainer.appendChild(cancelBtn);
+    buttonsContainer.appendChild(deleteBtn);
+    confirmDialog.appendChild(warningIcon);
+    confirmDialog.appendChild(messageText);
+    confirmDialog.appendChild(buttonsContainer);
+
+    // Insert after the New Form item
+    const newFormItem = list.querySelector('div:first-child');
+    if (newFormItem && newFormItem.nextSibling) {
+      list.insertBefore(confirmDialog, newFormItem.nextSibling);
+    } else {
+      list.insertBefore(confirmDialog, list.firstChild);
+    }
+  }
+
+  // Show styled confirmation dialog for Clear All
+  function showClearAllConfirmation(callback) {
+    // Remove any existing confirmation dialog
+    const existingDialog = list.querySelector('.delete-confirmation');
+    if (existingDialog) {
+      existingDialog.remove();
+    }
+
+    // Create confirmation dialog
+    const confirmDialog = document.createElement('div');
+    confirmDialog.className = 'delete-confirmation';
+    Object.assign(confirmDialog.style, {
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr auto',
+      alignItems: 'center',
+      gap: '12px',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px',
+      marginBottom: '12px',
+      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+      transition: 'all 0.3s ease',
+      animation: 'slideIn 0.3s ease'
+    });
+
+    // Warning icon
+    const warningIcon = document.createElement('div');
+    warningIcon.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="color: #ff4444;">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+      </svg>
+    `;
+
+    // Message text
+    const messageText = document.createElement('div');
+    messageText.textContent = 'Clear all saved histories? This cannot be undone.';
+    messageText.style.fontWeight = '500';
+    messageText.style.color = 'var(--all-text)';
+    messageText.style.whiteSpace = 'nowrap';
+    messageText.style.overflow = 'hidden';
+    messageText.style.textOverflow = 'ellipsis';
+
+    // Buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.gap = '8px';
+
+    // Cancel button
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Cancel';
+    Object.assign(cancelBtn.style, {
+      padding: '6px 12px',
+      border: 'none',
+      borderRadius: '6px',
+      background: 'transparent',
+      color: 'var(--all-text)',
+      cursor: 'pointer',
+      fontSize: '14px'
+    });
+
+    // Clear button
+    const clearAllBtn = document.createElement('button');
+    clearAllBtn.type = 'button';
+    clearAllBtn.textContent = 'Clear All';
+    Object.assign(clearAllBtn.style, {
+      padding: '6px 12px',
+      border: 'none',
+      borderRadius: '6px',
+      background: '#ff4444',
+      color: 'white',
+      cursor: 'pointer',
+      fontSize: '14px'
+    });
+
+    // Event handlers
+    cancelBtn.addEventListener('click', () => {
+      confirmDialog.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => {
+        confirmDialog.remove();
+        callback(false);
+      }, 300);
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+      confirmDialog.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => {
+        confirmDialog.remove();
+        callback(true);
+      }, 300);
+    });
+
+    // Assemble dialog
+    buttonsContainer.appendChild(cancelBtn);
+    buttonsContainer.appendChild(clearAllBtn);
+    confirmDialog.appendChild(warningIcon);
+    confirmDialog.appendChild(messageText);
+    confirmDialog.appendChild(buttonsContainer);
+
+    // Insert after the New Form item
+    const newFormItem = list.querySelector('div:first-child');
+    if (newFormItem && newFormItem.nextSibling) {
+      list.insertBefore(confirmDialog, newFormItem.nextSibling);
+    } else {
+      list.insertBefore(confirmDialog, list.firstChild);
     }
   }
 }
