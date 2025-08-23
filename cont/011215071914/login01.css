@@ -67,19 +67,16 @@ body {
 .all {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Align to top instead of center */
-  min-height: 100vh; /* Minimum viewport height */
+  align-items: flex-end; /* Align to bottom */
+  min-height: 100vh; /* Full viewport height */
   margin: 0;
-  padding: 20px 0; /* Add padding for better spacing */
 }
 
 .container {
-  width: 38vw; /* reduced from 45vw */
-  max-width: 520px; /* prevent over-expansion on large screens */
-  min-width: 400px;
+  width: 65vw; /* reduced from 45vw */
   font-family: Nunito, Arial;
   background-color: rgb(255, 255, 255);
-  margin: 20px 0; /* Add vertical margin for spacing */
+  margin: 0; /* Remove margins for bottom positioning */
   border-radius: 50px;
   box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.039);
 
