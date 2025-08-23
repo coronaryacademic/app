@@ -454,6 +454,11 @@ function goHome() {
   if (form) {
     const inputs = form.querySelectorAll("input, select, textarea");
     inputs.forEach((input) => {
+      // Skip student name and student number fields to preserve them
+      if (input.id === "student-name" || input.id === "student-number") {
+        return;
+      }
+      
       if (input.type === "checkbox" || input.type === "radio") {
         input.checked = false;
       } else if (input.tagName === "SELECT") {

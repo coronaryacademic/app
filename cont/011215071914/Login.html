@@ -60,6 +60,12 @@
         margin: 0;
         padding: 0;
       }
+
+      #student-name::placeholder,
+      #student-number::placeholder {
+        color: var(--all-text);
+        opacity: 0.8;
+      }
     </style>
   </head>
   <body>
@@ -237,11 +243,124 @@
             </div>
             <div class="card">
               <section class="auth-card">
+                <!-- Student Information Form -->
+                <div id="student-form" style="margin-bottom: 30px">
+                  <h3
+                    style="
+                      color: var(--all-text);
+                      font-size: 18px;
+                      font-weight: 600;
+                      margin-bottom: 20px;
+                      text-align: center;
+                      font-family: Nunito, sans-serif;
+                    "
+                  >
+                    Student Information
+                  </h3>
+
+                  <!-- Warning Message -->
+                  <div
+                    id="warning-message"
+                    style="
+                      display: none;
+                      background: rgba(255, 59, 48, 0.1);
+                      border: 1px solid rgba(255, 59, 48, 0.3);
+                      border-radius: 8px;
+                      padding: 12px;
+                      margin-bottom: 15px;
+                      color: var(--all-text);
+                      font-size: 14px;
+                      font-weight: 500;
+                      text-align: center;
+                      width: 80%;
+                      margin: auto;
+                      margin-bottom: 20px;
+                    "
+                  ></div>
+
+                  <!-- Student Name Input -->
+                  <div style="margin-bottom: 15px">
+                    <label
+                      for="student-name"
+                      style="
+                        display: block;
+                        color: var(--all-text);
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 6px;
+                        font-family: Nunito, sans-serif;
+                      "
+                      >Student Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="student-name"
+                      placeholder="Enter your full name"
+                      style="
+                        width: 80%;
+                        margin: 0 auto;
+                        display: block;
+                        padding: 12px;
+                        border: 1px solid rgba(150, 150, 150, 0.3);
+                        border-radius: 8px;
+                        background: rgba(150, 150, 150, 0.1);
+                        backdrop-filter: blur(10px);
+                        color: var(--all-text);
+                        font-size: 14px;
+                        font-family: Nunito, sans-serif;
+                        box-sizing: border-box;
+                        transition: border-color 0.3s ease;
+                      "
+                    />
+                  </div>
+
+                  <!-- Student Number Input -->
+                  <div style="margin-bottom: 20px">
+                    <label
+                      for="student-number"
+                      style="
+                        display: block;
+                        color: var(--all-text);
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 6px;
+                        font-family: Nunito, sans-serif;
+                      "
+                      >Student Number *</label
+                    >
+                    <input
+                      type="text"
+                      id="student-number"
+                      placeholder="Enter 11-digit student number"
+                      maxlength="11"
+                      style="
+                        width: 80%;
+                        margin: 0 auto;
+                        display: block;
+                        padding: 12px;
+                        border: 1px solid rgba(150, 150, 150, 0.3);
+                        border-radius: 8px;
+                        background: rgba(150, 150, 150, 0.1);
+                        backdrop-filter: blur(10px);
+                        color: var(--all-text);
+                        font-size: 14px;
+                        font-family: Nunito, sans-serif;
+                        box-sizing: border-box;
+                        transition: border-color 0.3s ease;
+                      "
+                    />
+                  </div>
+                </div>
+
                 <div
                   class="google-login-wrapper"
                   style="margin-bottom: 40px; margin-top: 20px"
                 >
-                  <button id="google-login">
+                  <button
+                    id="google-login"
+                    disabled
+                    style="opacity: 0.6; cursor: not-allowed"
+                  >
                     <img
                       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                       alt="Google"

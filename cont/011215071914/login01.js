@@ -4,10 +4,131 @@ function goHome() {
 }
 window.goHome = goHome;
 
+// Global validation functions
+function isEnglishOnly(text) {
+  return /^[a-zA-Z\s]+$/.test(text);
+}
+
+function isValidStudentNumber(number) {
+  return /^\d{11}$/.test(number);
+}
+
+function showWarning(message) {
+  const warningMessage = document.getElementById("warning-message");
+  if (warningMessage) {
+    warningMessage.textContent = message;
+    warningMessage.style.display = 'block';
+  }
+}
+
+function hideWarning() {
+  const warningMessage = document.getElementById("warning-message");
+  if (warningMessage) {
+    warningMessage.style.display = 'none';
+  }
+}
+
+function validateInputs() {
+  const studentNameInput = document.getElementById("student-name");
+  const studentNumberInput = document.getElementById("student-number");
+  
+  if (!studentNameInput || !studentNumberInput) {
+    console.error("[DEBUG] Student input fields not found");
+    return false;
+  }
+
+  const name = studentNameInput.value.trim();
+  const number = studentNumberInput.value.trim();
+
+  console.log("[DEBUG] Validating inputs:", { name, number });
+
+  // Check if fields are empty
+  if (!name || !number) {
+    showWarning('Both Student Name and Student Number are required.');
+    return false;
+  }
+
+  // Check if name contains only English characters
+  if (!isEnglishOnly(name)) {
+    showWarning('Student Name must contain only English characters and spaces.');
+    return false;
+  }
+
+  // Check if student number is exactly 11 digits
+  if (!isValidStudentNumber(number)) {
+    showWarning('Student Number must be exactly 11 digits.');
+    return false;
+  }
+
+  hideWarning();
+  return true;
+}
+
+function saveStudentData() {
+  const studentNameInput = document.getElementById("student-name");
+  const studentNumberInput = document.getElementById("student-number");
+  
+  if (studentNameInput && studentNumberInput) {
+    localStorage.setItem("studentName", studentNameInput.value.trim());
+    localStorage.setItem("studentNumber", studentNumberInput.value.trim());
+    console.log("[DEBUG] Student data saved to localStorage");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const loginButton = document.getElementById("loginButton");
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
+  const googleLoginBtn = document.getElementById("google-login");
+  const studentNameInput = document.getElementById("student-name");
+  const studentNumberInput = document.getElementById("student-number");
+  const warningMessage = document.getElementById("warning-message");
+
+  function updateGoogleButtonState() {
+    const isValid = validateInputs();
+    if (googleLoginBtn) {
+      googleLoginBtn.disabled = !isValid;
+      googleLoginBtn.style.opacity = isValid ? '1' : '0.6';
+      googleLoginBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+    }
+  }
+
+  // Load saved student data
+  function loadSavedStudentData() {
+    const savedName = localStorage.getItem('studentName');
+    const savedNumber = localStorage.getItem('studentNumber');
+    
+    if (savedName && studentNameInput) {
+      studentNameInput.value = savedName;
+    }
+    if (savedNumber && studentNumberInput) {
+      studentNumberInput.value = savedNumber;
+    }
+    
+    // Update button state after loading
+    setTimeout(updateGoogleButtonState, 100);
+  }
+
+
+  // Add event listeners for real-time validation
+  if (studentNameInput) {
+    studentNameInput.addEventListener('input', function() {
+      // Remove non-English characters as user types
+      this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+      updateGoogleButtonState();
+    });
+  }
+
+  if (studentNumberInput) {
+    studentNumberInput.addEventListener('input', function() {
+      // Only allow digits
+      this.value = this.value.replace(/\D/g, '');
+      updateGoogleButtonState();
+    });
+  }
+
+  // Load saved data on page load
+  loadSavedStudentData();
 
   // Add null checks for all DOM elements
   if (passwordInput) {
@@ -215,10 +336,26 @@ function setupGoogleLogin() {
     return;
   }
 
-  googleBtn.addEventListener("click", async () => {
+  googleBtn.addEventListener("click", async (event) => {
+    console.log("[DEBUG] Google login button clicked!");
+    
+    // Validate student data before proceeding with login
+    if (!validateInputs()) {
+      console.log("[DEBUG] Validation failed, stopping login");
+      return; // Stop login if validation fails
+    }
+
+    console.log("[DEBUG] Validation passed, proceeding with login");
+
+    // Save student data before login
+    saveStudentData();
+
+    // Prevent default behavior
+    event.preventDefault();
+
     let originalWindowOpen = null;
     try {
-      console.log("[DEBUG] Google login button clicked - opening in new tab");
+      console.log("[DEBUG] Starting Google sign-in process");
 
       // Override window.open to force new tab behavior for Firebase popup
       originalWindowOpen = window.open;
@@ -227,6 +364,7 @@ function setupGoogleLogin() {
         return originalWindowOpen.call(this, url, "_blank");
       };
 
+      // Call signInWithPopup immediately to maintain user gesture context
       const result = await signInWithPopup(auth, provider);
 
       console.log("[DEBUG] Google login success:", result.user);

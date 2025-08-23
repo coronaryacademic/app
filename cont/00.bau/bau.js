@@ -3157,12 +3157,17 @@ async function renderHistorySidebar() {
             if (typeof window.updateNavActiveState === "function") {
               window.updateNavActiveState("bau");
             }
-            // Clear the form after navigation
+            // Clear the form after navigation (preserve student data)
             setTimeout(() => {
               const form = document.getElementById("history-form-container");
               if (form) {
                 const inputs = form.querySelectorAll("input, select, textarea");
                 inputs.forEach((input) => {
+                  // Skip student name and student number fields to preserve them
+                  if (input.id === "student-name" || input.id === "student-number") {
+                    return;
+                  }
+                  
                   if (input.type === "checkbox" || input.type === "radio") {
                     input.checked = false;
                   } else if (input.tagName === "SELECT") {
@@ -4419,6 +4424,38 @@ function enhanceOneInFlow(select) {
     } catch {}
   }
 }
+
+// ---- Auto-fill student data from localStorage on page load ----
+(function autoFillStudentData() {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", autoFillStudentData);
+    return;
+  }
+  try {
+    // Get stored student data from localStorage
+    const storedStudentName = localStorage.getItem("studentName");
+    const storedStudentNumber = localStorage.getItem("studentNumber");
+    
+    // Auto-fill the student name field
+    const studentNameField = document.getElementById("student-name");
+    if (studentNameField && storedStudentName) {
+      studentNameField.value = storedStudentName;
+    }
+    
+    // Auto-fill the student number field
+    const studentNumberField = document.getElementById("student-number");
+    if (studentNumberField && storedStudentNumber) {
+      studentNumberField.value = storedStudentNumber;
+    }
+    
+    console.log("[BAU] Auto-filled student data:", { 
+      name: storedStudentName, 
+      number: storedStudentNumber 
+    });
+  } catch (error) {
+    console.warn("[BAU] Error auto-filling student data:", error);
+  }
+})();
 
 // ---- Ensure SH and Gender use custom single-select UI on page load ----
 (function enhanceSHGenderOnLoad() {
