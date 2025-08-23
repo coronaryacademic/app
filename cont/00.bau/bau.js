@@ -2111,31 +2111,43 @@ onHistoryFormInjected();
 // Build and mount a slide-in recent-history sidebar with overlay and toggle button
 async function renderHistorySidebar() {
   const root = document.getElementById("history-form-container");
-  
+
   // Get existing toggle button from header
-  const externalToggleBtn = document.getElementById("bau-history-external-toggle");
-  
-  // Always ensure the button is visible when this function is called
+  const externalToggleBtn = document.getElementById(
+    "bau-history-external-toggle"
+  );
+
+  // Only make button visible if sidebar is not currently open
   if (externalToggleBtn) {
-    Object.assign(externalToggleBtn.style, {
-      display: "block",
-      opacity: "1",
-      visibility: "visible",
-      pointerEvents: "auto",
-    });
+    // Check if sidebar is currently open by looking for the drawer's transform state
+    const existingDrawer = document.getElementById("bau-history-drawer");
+    const isDrawerOpen =
+      existingDrawer && existingDrawer.style.transform === "translateX(0px)";
+
+    if (!isDrawerOpen) {
+      Object.assign(externalToggleBtn.style, {
+        display: "block",
+        opacity: "1",
+        visibility: "visible",
+        pointerEvents: "auto",
+      });
+    }
     console.log("[BAU] Button made visible:", externalToggleBtn);
   } else {
     console.error("[BAU] External toggle button not found!");
     return;
   }
-  
+
   // Check if drawer already exists and if event listeners are already attached
   const existingDrawer = document.getElementById("bau-history-drawer");
-  if (existingDrawer && externalToggleBtn.dataset.listenersAttached === "true") {
+  if (
+    existingDrawer &&
+    externalToggleBtn.dataset.listenersAttached === "true"
+  ) {
     console.log("[BAU] Drawer and listeners already exist, skipping");
     return;
   }
-  
+
   if (existingDrawer) {
     console.log("[BAU] Drawer exists but listeners need to be attached");
   }
@@ -2193,7 +2205,8 @@ async function renderHistorySidebar() {
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
-  header.style.padding = "16px";
+  header.style.padding = "20px";
+  header.style.paddingRight = "28px";
 
   // Create left section with close button and title
   const leftSection = document.createElement("div");
@@ -2212,7 +2225,8 @@ async function renderHistorySidebar() {
     background: "transparent",
     color: "var(--all-text)",
     cursor: "pointer",
-    fontSize: "14px",
+    fontSize: "18px",
+    marginTop: "5px",
     lineHeight: "1",
     position: "relative",
     zIndex: "1000001",
@@ -2225,6 +2239,9 @@ async function renderHistorySidebar() {
 
   const hTitle = document.createElement("div");
   hTitle.textContent = "Recent Histories";
+  Object.assign(hTitle.style, {
+    marginTop: "5px",
+  });
   hTitle.style.fontWeight = "600";
 
   leftSection.appendChild(internalCloseBtn);
@@ -2239,7 +2256,7 @@ async function renderHistorySidebar() {
   clearBtn.textContent = "Clear";
   Object.assign(clearBtn.style, {
     padding: "6px 10px",
-    border: "none",
+    border: "1px solid var(--all-text)",
     borderRadius: "6px",
     background: "transparent",
     color: "var(--all-text)",
@@ -2247,6 +2264,7 @@ async function renderHistorySidebar() {
     position: "relative",
     zIndex: "1000001",
     pointerEvents: "auto",
+    marginTop: "8px",
   });
 
   // Force high z-index with important
@@ -2339,13 +2357,12 @@ async function renderHistorySidebar() {
 
   userSection.appendChild(userDropdown);
 
-  // Add retention notice above user section
+  // Create note section
   const note = document.createElement("div");
-  note.style.fontSize = "12px";
-  note.style.opacity = "0.9";
-  note.style.margin = "0";
   note.style.padding = "16px";
-  note.style.textAlign = "left";
+  note.style.fontSize = "12px";
+  note.style.color = "var(--all-text)";
+  note.style.opacity = "0.7";
   note.textContent = "Note: Items here are automatically deleted after 7 days.";
 
   drawer.appendChild(header);
@@ -2359,8 +2376,8 @@ async function renderHistorySidebar() {
 
   const close = () => {
     drawer.style.transform = "translateX(-100%)";
-    externalToggleBtn.style.opacity = "1";
-    externalToggleBtn.style.pointerEvents = "auto";
+    externalToggleBtn.style.display = "block";
+
     // Restore main content
     const mainContainer = document.querySelector(".main");
     if (mainContainer) {
@@ -2368,11 +2385,29 @@ async function renderHistorySidebar() {
       mainContainer.style.transition =
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }
+
+    // Restore header content
+    const headerContainer = document.querySelector(".header-container");
+    if (headerContainer) {
+      headerContainer.style.marginLeft = "0";
+      headerContainer.style.transition =
+        "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
+    }
+
+    // Remove extra margin from title when sidebar closes
+    const pageTitle = document.getElementById("page-title");
+    if (pageTitle) {
+      pageTitle.style.marginLeft = "0";
+      pageTitle.style.transition =
+        "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
+    }
+
     // Show the form SVG message when sidebar closes
     const loadHistoryMessage = document.getElementById("load-history-message");
     if (loadHistoryMessage) {
       loadHistoryMessage.style.display = "block";
     }
+
     // Show the header SVG when sidebar closes with fade animation
     const headerSvg = document.getElementById("header-home-svg");
     if (headerSvg) {
@@ -2381,6 +2416,11 @@ async function renderHistorySidebar() {
         headerSvg.style.opacity = "1";
       }, 10);
     }
+
+    // Show the entire sidebar toggle button when sidebar closes
+    if (externalToggleBtn) {
+      externalToggleBtn.style.display = "block";
+    }
     // Remove the click-anywhere-to-close listener
     document.removeEventListener("click", handleOutsideClick);
     isOpen = false;
@@ -2388,8 +2428,8 @@ async function renderHistorySidebar() {
 
   const open = () => {
     drawer.style.transform = "translateX(0)";
-    externalToggleBtn.style.opacity = "0";
-    externalToggleBtn.style.pointerEvents = "none";
+    externalToggleBtn.style.display = "none";
+
     // Push main content to the right
     const mainContainer = document.querySelector(".main");
     if (mainContainer) {
@@ -2397,18 +2437,38 @@ async function renderHistorySidebar() {
       mainContainer.style.transition =
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }
+
+    // Push header content to the right to make it responsive
+    const headerContainer = document.querySelector(".header-container");
+    if (headerContainer) {
+      headerContainer.style.marginLeft = "300px";
+      headerContainer.style.transition =
+        "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
+    }
+
+    // Add extra margin to title when sidebar opens
+    const pageTitle = document.getElementById("page-title");
+    if (pageTitle) {
+      pageTitle.style.marginLeft = "20px";
+      pageTitle.style.transition =
+        "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
+    }
+
     // Hide the form SVG message when sidebar opens
     const loadHistoryMessage = document.getElementById("load-history-message");
     if (loadHistoryMessage) {
       loadHistoryMessage.style.display = "none";
     }
-    // Hide the header SVG when sidebar opens with fade animation
+
+    // Hide the header SVG when sidebar opens
     const headerSvg = document.getElementById("header-home-svg");
     if (headerSvg) {
-      headerSvg.style.opacity = "0";
-      setTimeout(() => {
-        headerSvg.style.display = "none";
-      }, 300);
+      headerSvg.style.display = "none";
+    }
+
+    // Hide the entire sidebar toggle button when sidebar opens
+    if (externalToggleBtn) {
+      externalToggleBtn.style.display = "none";
     }
     isOpen = true;
     // Load or refresh histories each time drawer opens
@@ -2442,35 +2502,31 @@ async function renderHistorySidebar() {
     }
   };
 
-  // Clear any existing event listeners to prevent duplicates
-  const newExternalBtn = externalToggleBtn.cloneNode(true);
-  externalToggleBtn.parentNode.replaceChild(newExternalBtn, externalToggleBtn);
-  
-  // Add debug logging and multiple event handlers for better compatibility
-  newExternalBtn.addEventListener("click", (e) => {
+  // Add event listeners directly to original button to preserve positioning
+  externalToggleBtn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     console.log("[BAU] External toggle button clicked");
     toggle();
   });
-  
+
   // Add mousedown as backup
-  newExternalBtn.addEventListener("mousedown", (e) => {
+  externalToggleBtn.addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
     console.log("[BAU] External toggle button mousedown");
   });
-  
+
   // Add touchstart for mobile
-  newExternalBtn.addEventListener("touchstart", (e) => {
+  externalToggleBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
     e.stopPropagation();
     console.log("[BAU] External toggle button touched");
     toggle();
   });
-  
+
   // Mark that listeners are attached
-  newExternalBtn.dataset.listenersAttached = "true";
+  externalToggleBtn.dataset.listenersAttached = "true";
   console.log("[BAU] Event listeners attached to button");
   internalCloseBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -2810,7 +2866,7 @@ async function renderHistorySidebar() {
       newFormButton.addEventListener("click", (e) => {
         e.stopPropagation();
         console.log("[BAU] New Form button clicked");
-        
+
         // Navigate to BAU page if we're not already there
         if (typeof window.loadContent === "function") {
           console.log("[BAU] Navigating to BAU page");
@@ -2836,9 +2892,12 @@ async function renderHistorySidebar() {
                 });
               }
               // Show success message
-              const loadHistoryMessage = document.getElementById("load-history-message");
+              const loadHistoryMessage = document.getElementById(
+                "load-history-message"
+              );
               if (loadHistoryMessage) {
-                loadHistoryMessage.textContent = "New form is loaded successfully.";
+                loadHistoryMessage.textContent =
+                  "New form is loaded successfully.";
                 loadHistoryMessage.style.display = "block";
                 loadHistoryMessage.style.marginBottom = "10px";
                 setTimeout(() => {
@@ -2847,7 +2906,8 @@ async function renderHistorySidebar() {
                 }, 10);
                 setTimeout(() => {
                   loadHistoryMessage.style.opacity = "0";
-                  loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                  loadHistoryMessage.style.transform =
+                    "translateY(-20px) scale(0.95)";
                   loadHistoryMessage.style.marginBottom = "0";
                   setTimeout(() => {
                     loadHistoryMessage.style.display = "none";
@@ -2857,7 +2917,9 @@ async function renderHistorySidebar() {
             }, 100);
           });
         } else {
-          console.log("[BAU] loadContent function not available, clearing form only");
+          console.log(
+            "[BAU] loadContent function not available, clearing form only"
+          );
           // Fallback: just clear the form
           const form = document.getElementById("history-form-container");
           if (form) {
@@ -3007,18 +3069,22 @@ async function renderHistorySidebar() {
                   applySnapshotToForm(data.data || {});
                   const patientName = data.patientName || "Unknown";
                   // Show success message
-                  const loadHistoryMessage = document.getElementById("load-history-message");
+                  const loadHistoryMessage = document.getElementById(
+                    "load-history-message"
+                  );
                   if (loadHistoryMessage) {
                     loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
                     loadHistoryMessage.style.display = "block";
                     loadHistoryMessage.style.marginBottom = "10px";
                     setTimeout(() => {
                       loadHistoryMessage.style.opacity = "1";
-                      loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+                      loadHistoryMessage.style.transform =
+                        "translateY(0) scale(1)";
                     }, 10);
                     setTimeout(() => {
                       loadHistoryMessage.style.opacity = "0";
-                      loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                      loadHistoryMessage.style.transform =
+                        "translateY(-20px) scale(0.95)";
                       loadHistoryMessage.style.marginBottom = "0";
                       setTimeout(() => {
                         loadHistoryMessage.style.display = "none";
@@ -3028,11 +3094,15 @@ async function renderHistorySidebar() {
                 }, 100);
               });
             } else {
-              console.log("[BAU] loadContent function not available, applying data only");
+              console.log(
+                "[BAU] loadContent function not available, applying data only"
+              );
               // Fallback: just apply the data
               applySnapshotToForm(data.data || {});
               const patientName = data.patientName || "Unknown";
-              const loadHistoryMessage = document.getElementById("load-history-message");
+              const loadHistoryMessage = document.getElementById(
+                "load-history-message"
+              );
               if (loadHistoryMessage) {
                 loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
                 loadHistoryMessage.style.display = "block";
@@ -3043,7 +3113,8 @@ async function renderHistorySidebar() {
                 }, 10);
                 setTimeout(() => {
                   loadHistoryMessage.style.opacity = "0";
-                  loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                  loadHistoryMessage.style.transform =
+                    "translateY(-20px) scale(0.95)";
                   loadHistoryMessage.style.marginBottom = "0";
                   setTimeout(() => {
                     loadHistoryMessage.style.display = "none";
@@ -3482,6 +3553,7 @@ function enhanceOneInFlow(select) {
       borderRadius: "4px",
       background: "#f7f7f7",
       cursor: "pointer",
+      marginTop: "8px",
     });
     clearBtn.addEventListener("click", () => {
       Array.from(select.options).forEach((opt) => (opt.selected = false));
