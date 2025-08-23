@@ -2351,7 +2351,7 @@ async function renderHistorySidebar() {
           ">U</div>
         <span>User Menu</span>
       </div>
-      <i class="fa fa-chevron-right" id="userMenuChevron" style="transition: transform 0.2s ease;"></i>
+      <i class="fa fa-chevron-down" id="userMenuChevron" style="transition: transform 0.2s ease;"></i>
     </button>
         <div id="sidebarUserMenu" style="
           position: relative;
@@ -2452,6 +2452,19 @@ async function renderHistorySidebar() {
   const close = () => {
     drawer.style.transform = "translateX(-100%)";
     externalToggleBtn.style.display = "block";
+
+    // Reset user menu state when sidebar closes
+    const sidebarUserMenu = document.getElementById("sidebarUserMenu");
+    const chevron = document.getElementById("userMenuChevron");
+    if (sidebarUserMenu) {
+      sidebarUserMenu.style.opacity = "0";
+      sidebarUserMenu.style.visibility = "hidden";
+      sidebarUserMenu.style.maxHeight = "0";
+      sidebarUserMenu.style.pointerEvents = "none";
+    }
+    if (chevron) {
+      chevron.style.transform = "rotate(0deg)";
+    }
 
     // Restore main content
     const mainContainer = document.querySelector(".main");
@@ -2776,7 +2789,7 @@ async function renderHistorySidebar() {
         console.log("[BAU] User menu opened");
       } else {
         sidebarUserMenu.style.opacity = "0";
-        sidebarUserMenu.style.transform = "translateX(10px) scale(0.95)";
+        sidebarUserMenu.style.transform = "translateX(0) scale(0.95)";
         sidebarUserMenu.style.pointerEvents = "none";
         sidebarUserMenu.style.visibility = "hidden";
         if (chevron) {
@@ -2790,7 +2803,7 @@ async function renderHistorySidebar() {
       userMenuOpen = false;
       const chevron = document.getElementById("userMenuChevron");
       sidebarUserMenu.style.opacity = "0";
-      sidebarUserMenu.style.transform = "translateX(10px) scale(0.95)";
+      sidebarUserMenu.style.transform = "translateX(0) scale(0.95)";
       sidebarUserMenu.style.pointerEvents = "none";
       sidebarUserMenu.style.visibility = "hidden";
       if (chevron) {
@@ -2810,6 +2823,7 @@ async function renderHistorySidebar() {
           sidebarUserMenu.style.visibility = "hidden";
           sidebarUserMenu.style.maxHeight = "0";
           sidebarUserMenu.style.pointerEvents = "none";
+          sidebarUserMenu.style.transform = "translateX(0) scale(0.95)";
           userMenuOpen = false;
           console.log("[BAU] Menu closed");
         } else {
@@ -2817,6 +2831,7 @@ async function renderHistorySidebar() {
           sidebarUserMenu.style.visibility = "visible";
           sidebarUserMenu.style.maxHeight = "300px";
           sidebarUserMenu.style.pointerEvents = "auto";
+          sidebarUserMenu.style.transform = "translateX(0) scale(1)";
           userMenuOpen = true;
           console.log("[BAU] Menu opened");
         }
@@ -3303,7 +3318,7 @@ async function renderHistorySidebar() {
               // Add red border and background when threshold is reached
               item.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
               item.style.border = "3px solid #ff4444";
-              
+
               // Show confirmation dialog immediately when threshold is reached
               if (!confirmationShown) {
                 confirmationShown = true;
@@ -3638,11 +3653,9 @@ async function renderHistorySidebar() {
     messageText.textContent = `Delete ${patientName} history?`;
     messageText.style.fontWeight = "500";
     messageText.style.color = "var(--all-text)";
-    messageText.style.whiteSpace = "normal";
-    messageText.style.overflow = "visible";
-    messageText.style.textOverflow = "clip";
-    messageText.style.wordWrap = "break-word";
-    messageText.style.minWidth = "fit-content";
+    messageText.style.whiteSpace = "nowrap";
+    messageText.style.overflow = "hidden";
+    messageText.style.textOverflow = "ellipsis";
 
     // Buttons container
     const buttonsContainer = document.createElement("div");
@@ -3760,11 +3773,9 @@ async function renderHistorySidebar() {
       "Clear all saved histories? This cannot be undone.";
     messageText.style.fontWeight = "500";
     messageText.style.color = "var(--all-text)";
-    messageText.style.whiteSpace = "normal";
-    messageText.style.overflow = "visible";
-    messageText.style.textOverflow = "clip";
-    messageText.style.wordWrap = "break-word";
-    messageText.style.minWidth = "fit-content";
+    messageText.style.whiteSpace = "nowrap";
+    messageText.style.overflow = "hidden";
+    messageText.style.textOverflow = "ellipsis";
 
     // Buttons container
     const buttonsContainer = document.createElement("div");

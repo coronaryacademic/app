@@ -36,7 +36,7 @@
 
 .nav-btn {
   background-color: rgba(255, 255, 255, 0);
-  border: 2px solid var(--all-text);
+  border: 2px none var(--all-text);
   color: var(--all-text);
   padding: 10px 20px;
   border-radius: 23px;
@@ -48,12 +48,16 @@
 }
 
 .nav-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(43, 43, 43, 0.056);
   transform: scale(1.05);
 }
 
 .nav-btn.active {
-  background-color: rgba(255, 255, 255, 0.25);
+  background: rgba(150, 150, 150, 0.205);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
   color: var(--all-text);
   font-weight: bold;
 }
@@ -113,6 +117,9 @@
   width: 70%;
   margin: auto;
   padding: 20px;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 #user-profile p {

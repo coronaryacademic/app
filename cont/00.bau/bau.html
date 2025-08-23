@@ -297,7 +297,7 @@
   <div
     id="load-history-message"
     style="
-      background: rgba(150, 150, 150, 0.205);
+      background: rgba(150, 150, 150, 0.247);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border-radius: 12px;
@@ -312,6 +312,9 @@
       opacity: 0;
       transform: translateY(-20px) scale(0.95);
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     "
   >
     New form is loaded
