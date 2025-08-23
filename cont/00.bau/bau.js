@@ -2187,10 +2187,8 @@ async function renderHistorySidebar() {
     transform: "translateX(-100%)",
     transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
     background: "rgba(150, 150, 150, 0.205)",
-    backdropFilter: "blur(10px)",
-    WebkitBackdropFilter: "blur(10px)",
-    borderRadius: "12px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+    backdropFilter: "blur(30px)",
+    WebkitBackdropFilter: "blur(30px)",
     border: "none",
     color: "var(--all-text)",
     zIndex: "1000000",
@@ -2468,7 +2466,7 @@ async function renderHistorySidebar() {
     // Add extra margin to title when sidebar opens
     const pageTitle = document.getElementById("page-title");
     if (pageTitle) {
-      pageTitle.style.marginLeft = "20px";
+      pageTitle.style.marginLeft = "5px";
       pageTitle.style.transition =
         "margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1)";
     }

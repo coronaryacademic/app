@@ -3,28 +3,6 @@
 }
 
 .header-container {
-  background-color: #ffffff;
-  color: #505050;
-  font-family: Nunito;
-  position: static;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 100px; /* force same height */
-  min-height: 100px; /* ensures flex doesn’t shrink */
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 10px;
-  padding-left: 10px;
-  border-bottom: none;
-  border-bottom-color: gray;
-  border-bottom-width: 0.1px;
-  z-index: 10000; /* higher than sidebar and overlay */
-}
-
-.header-container {
   /* other styles */
   transition: box-shadow 0.3s ease; /* Adjust duration and easing as needed */
 }
