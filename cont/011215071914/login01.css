@@ -74,8 +74,8 @@ body {
 }
 
 .container {
-  width: 55vw; /* reduced from 45vw */
-  max-width: 600px; /* prevent over-expansion on large screens */
+  width: 38vw; /* reduced from 45vw */
+  max-width: 520px; /* prevent over-expansion on large screens */
   min-width: 400px;
   font-family: Nunito, Arial;
   background-color: rgb(255, 255, 255);
