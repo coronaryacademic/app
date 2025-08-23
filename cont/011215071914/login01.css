@@ -59,7 +59,7 @@ body {
   margin: 0; /* Remove default margin */
   padding: 0; /* Remove default padding */
   height: 100%; /* Full height */
-  overflow: hidden; /* Prevent scrolling */
+  overflow: auto; /* Allow scrolling when needed */
   -webkit-tap-highlight-color: transparent; /* <-- this is new */
   font-family: "Nunito", Arial, sans-serif;
 }
@@ -67,24 +67,28 @@ body {
 .all {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh; /* Full viewport height */
+  align-items: flex-start; /* Align to top instead of center */
+  min-height: 100vh; /* Minimum viewport height */
   margin: 0;
+  padding: 20px 0; /* Add padding for better spacing */
 }
 
 .container {
-  width: 38vw; /* reduced from 45vw */
-  max-width: 520px; /* prevent over-expansion on large screens */
+  width: 55vw; /* reduced from 45vw */
+  max-width: 600px; /* prevent over-expansion on large screens */
   min-width: 400px;
   font-family: Nunito, Arial;
   background-color: rgb(255, 255, 255);
-  margin: 0;
+  margin: 20px 0; /* Add vertical margin for spacing */
   border-radius: 50px;
   box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.039);
 
   height: auto;
   min-height: auto;
-  overflow-y: visible;
+  max-height: calc(
+    100vh - 40px
+  ); /* Prevent container from exceeding viewport */
+  overflow-y: auto; /* Enable scrolling within container */
 
   /* Perfect centering with equal spacing */
   display: flex;
@@ -145,11 +149,12 @@ body {
   .container {
     height: auto;
     min-height: auto;
-    overflow-y: visible; /* Let page handle scrolling when needed */
+    max-height: calc(100vh - 40px);
+    overflow-y: auto; /* Enable container scrolling */
   }
 
   body {
-    overflow: hidden; /* Prevent scrolling on the body itself */
+    overflow: auto; /* Allow body scrolling when needed */
   }
 }
 
@@ -157,11 +162,12 @@ body {
   .container {
     height: auto;
     min-height: auto;
-    overflow-y: visible; /* Enable natural content height */
+    max-height: calc(100vh - 40px);
+    overflow-y: auto; /* Enable container scrolling */
   }
 
   body {
-    overflow: hidden; /* Prevent body scroll */
+    overflow: auto; /* Allow body scrolling when needed */
   }
 }
 
