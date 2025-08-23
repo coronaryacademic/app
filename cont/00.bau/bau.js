@@ -2111,11 +2111,11 @@ onHistoryFormInjected();
 // Build and mount a slide-in recent-history sidebar with overlay and toggle button
 async function renderHistorySidebar() {
   const root = document.getElementById("history-form-container");
-  // Allow sidebar to render even if the history form container is not present
-  if (document.getElementById("bau-history-drawer")) return; // already added
-
+  
   // Get existing toggle button from header
   const externalToggleBtn = document.getElementById("bau-history-external-toggle");
+  
+  // Always ensure the button is visible when this function is called
   if (externalToggleBtn) {
     Object.assign(externalToggleBtn.style, {
       display: "block",
@@ -2123,6 +2123,21 @@ async function renderHistorySidebar() {
       visibility: "visible",
       pointerEvents: "auto",
     });
+    console.log("[BAU] Button made visible:", externalToggleBtn);
+  } else {
+    console.error("[BAU] External toggle button not found!");
+    return;
+  }
+  
+  // Check if drawer already exists and if event listeners are already attached
+  const existingDrawer = document.getElementById("bau-history-drawer");
+  if (existingDrawer && externalToggleBtn.dataset.listenersAttached === "true") {
+    console.log("[BAU] Drawer and listeners already exist, skipping");
+    return;
+  }
+  
+  if (existingDrawer) {
+    console.log("[BAU] Drawer exists but listeners need to be attached");
   }
 
   // Button is now in header, no need to append to body
@@ -2427,7 +2442,36 @@ async function renderHistorySidebar() {
     }
   };
 
-  externalToggleBtn.addEventListener("click", toggle);
+  // Clear any existing event listeners to prevent duplicates
+  const newExternalBtn = externalToggleBtn.cloneNode(true);
+  externalToggleBtn.parentNode.replaceChild(newExternalBtn, externalToggleBtn);
+  
+  // Add debug logging and multiple event handlers for better compatibility
+  newExternalBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("[BAU] External toggle button clicked");
+    toggle();
+  });
+  
+  // Add mousedown as backup
+  newExternalBtn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("[BAU] External toggle button mousedown");
+  });
+  
+  // Add touchstart for mobile
+  newExternalBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("[BAU] External toggle button touched");
+    toggle();
+  });
+  
+  // Mark that listeners are attached
+  newExternalBtn.dataset.listenersAttached = "true";
+  console.log("[BAU] Event listeners attached to button");
   internalCloseBtn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -2765,47 +2809,71 @@ async function renderHistorySidebar() {
 
       newFormButton.addEventListener("click", (e) => {
         e.stopPropagation();
-        // Clear the form
-        const form = document.getElementById("history-form-container");
-        if (form) {
-          const inputs = form.querySelectorAll("input, select, textarea");
-          inputs.forEach((input) => {
-            if (input.type === "checkbox" || input.type === "radio") {
-              input.checked = false;
-            } else if (input.tagName === "SELECT") {
-              input.selectedIndex = 0;
-            } else {
-              input.value = "";
+        console.log("[BAU] New Form button clicked");
+        
+        // Navigate to BAU page if we're not already there
+        if (typeof window.loadContent === "function") {
+          console.log("[BAU] Navigating to BAU page");
+          window.loadContent("bau").then(() => {
+            if (typeof window.updateNavActiveState === "function") {
+              window.updateNavActiveState("bau");
             }
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-          });
-        }
-        // Show success message in the load-history-message div with smooth animation
-        const loadHistoryMessage = document.getElementById(
-          "load-history-message"
-        );
-        if (loadHistoryMessage) {
-          loadHistoryMessage.textContent = "New form is loaded successfully.";
-          // Show with smooth animation
-          loadHistoryMessage.style.display = "block";
-          loadHistoryMessage.style.marginBottom = "10px";
-          // Small delay to ensure display change is processed
-          setTimeout(() => {
-            loadHistoryMessage.style.opacity = "1";
-            loadHistoryMessage.style.transform = "translateY(0) scale(1)";
-          }, 10);
-          // Hide the message after 3 seconds with smooth animation
-          setTimeout(() => {
-            loadHistoryMessage.style.opacity = "0";
-            loadHistoryMessage.style.transform =
-              "translateY(-20px) scale(0.95)";
-            loadHistoryMessage.style.marginBottom = "0";
-            // Hide display after animation completes
+            // Clear the form after navigation
             setTimeout(() => {
-              loadHistoryMessage.style.display = "none";
-            }, 500);
-          }, 3000);
+              const form = document.getElementById("history-form-container");
+              if (form) {
+                const inputs = form.querySelectorAll("input, select, textarea");
+                inputs.forEach((input) => {
+                  if (input.type === "checkbox" || input.type === "radio") {
+                    input.checked = false;
+                  } else if (input.tagName === "SELECT") {
+                    input.selectedIndex = 0;
+                  } else {
+                    input.value = "";
+                  }
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+                });
+              }
+              // Show success message
+              const loadHistoryMessage = document.getElementById("load-history-message");
+              if (loadHistoryMessage) {
+                loadHistoryMessage.textContent = "New form is loaded successfully.";
+                loadHistoryMessage.style.display = "block";
+                loadHistoryMessage.style.marginBottom = "10px";
+                setTimeout(() => {
+                  loadHistoryMessage.style.opacity = "1";
+                  loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+                }, 10);
+                setTimeout(() => {
+                  loadHistoryMessage.style.opacity = "0";
+                  loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                  loadHistoryMessage.style.marginBottom = "0";
+                  setTimeout(() => {
+                    loadHistoryMessage.style.display = "none";
+                  }, 500);
+                }, 3000);
+              }
+            }, 100);
+          });
+        } else {
+          console.log("[BAU] loadContent function not available, clearing form only");
+          // Fallback: just clear the form
+          const form = document.getElementById("history-form-container");
+          if (form) {
+            const inputs = form.querySelectorAll("input, select, textarea");
+            inputs.forEach((input) => {
+              if (input.type === "checkbox" || input.type === "radio") {
+                input.checked = false;
+              } else if (input.tagName === "SELECT") {
+                input.selectedIndex = 0;
+              } else {
+                input.value = "";
+              }
+              input.dispatchEvent(new Event("change", { bubbles: true }));
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+            });
+          }
         }
         close();
       });
@@ -2925,34 +2993,63 @@ async function renderHistorySidebar() {
           cursor: "pointer",
         });
         loadBtn.addEventListener("click", () => {
+          console.log("[BAU] Load history button clicked");
           try {
-            applySnapshotToForm(data.data || {});
-            const patientName = data.patientName || "Unknown";
-            // Show success message in the load-history-message div with smooth animation
-            const loadHistoryMessage = document.getElementById(
-              "load-history-message"
-            );
-            if (loadHistoryMessage) {
-              loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
-              // Show with smooth animation
-              loadHistoryMessage.style.display = "block";
-              loadHistoryMessage.style.marginBottom = "10px";
-              // Small delay to ensure display change is processed
-              setTimeout(() => {
-                loadHistoryMessage.style.opacity = "1";
-                loadHistoryMessage.style.transform = "translateY(0) scale(1)";
-              }, 10);
-              // Hide the message after 3 seconds with smooth animation
-              setTimeout(() => {
-                loadHistoryMessage.style.opacity = "0";
-                loadHistoryMessage.style.transform =
-                  "translateY(-20px) scale(0.95)";
-                loadHistoryMessage.style.marginBottom = "0";
-                // Hide display after animation completes
+            // Navigate to BAU page first if we're not already there
+            if (typeof window.loadContent === "function") {
+              console.log("[BAU] Navigating to BAU page to load history");
+              window.loadContent("bau").then(() => {
+                if (typeof window.updateNavActiveState === "function") {
+                  window.updateNavActiveState("bau");
+                }
+                // Apply the history data after navigation
                 setTimeout(() => {
-                  loadHistoryMessage.style.display = "none";
-                }, 500);
-              }, 3000);
+                  applySnapshotToForm(data.data || {});
+                  const patientName = data.patientName || "Unknown";
+                  // Show success message
+                  const loadHistoryMessage = document.getElementById("load-history-message");
+                  if (loadHistoryMessage) {
+                    loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
+                    loadHistoryMessage.style.display = "block";
+                    loadHistoryMessage.style.marginBottom = "10px";
+                    setTimeout(() => {
+                      loadHistoryMessage.style.opacity = "1";
+                      loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+                    }, 10);
+                    setTimeout(() => {
+                      loadHistoryMessage.style.opacity = "0";
+                      loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                      loadHistoryMessage.style.marginBottom = "0";
+                      setTimeout(() => {
+                        loadHistoryMessage.style.display = "none";
+                      }, 500);
+                    }, 3000);
+                  }
+                }, 100);
+              });
+            } else {
+              console.log("[BAU] loadContent function not available, applying data only");
+              // Fallback: just apply the data
+              applySnapshotToForm(data.data || {});
+              const patientName = data.patientName || "Unknown";
+              const loadHistoryMessage = document.getElementById("load-history-message");
+              if (loadHistoryMessage) {
+                loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
+                loadHistoryMessage.style.display = "block";
+                loadHistoryMessage.style.marginBottom = "10px";
+                setTimeout(() => {
+                  loadHistoryMessage.style.opacity = "1";
+                  loadHistoryMessage.style.transform = "translateY(0) scale(1)";
+                }, 10);
+                setTimeout(() => {
+                  loadHistoryMessage.style.opacity = "0";
+                  loadHistoryMessage.style.transform = "translateY(-20px) scale(0.95)";
+                  loadHistoryMessage.style.marginBottom = "0";
+                  setTimeout(() => {
+                    loadHistoryMessage.style.display = "none";
+                  }, 500);
+                }, 3000);
+              }
             }
             close();
           } catch (e) {
@@ -2998,6 +3095,9 @@ async function renderHistorySidebar() {
     }
   }
 }
+
+// Expose renderHistorySidebar globally so it can be called from other scripts
+window.renderHistorySidebar = renderHistorySidebar;
 
 // Set form fields from a saved snapshot { id/text -> value(s) }
 function applySnapshotToForm(snapshot) {

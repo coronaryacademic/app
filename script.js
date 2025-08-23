@@ -270,6 +270,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const storedPage = sessionStorage.getItem("currentPage") || "main";
   loadContent(storedPage).then(() => {
     updateNavActiveState(storedPage);
+    // Ensure sidebar button is visible if we're on dashboard
+    if (storedPage === "dashboard") {
+      console.log("[SCRIPT] Dashboard detected on page load, ensuring sidebar");
+      setTimeout(() => {
+        console.log("[SCRIPT] Timeout triggered for dashboard sidebar");
+        if (typeof window.ensureHistorySidebar === "function") {
+          window.ensureHistorySidebar();
+        } else {
+          console.log("[SCRIPT] ensureHistorySidebar function not available on page load");
+        }
+      }, 500);
+    }
   });
 
   // Animation end event handlers
@@ -536,8 +548,6 @@ function loadContent(page) {
       filePath = "cont/00.dashboard/dashboard.html";
       scriptPath = "cont/00.dashboard/dashboard.js";
       break;
-    case "dashboard":
-      return loadDashboardFromSidebar();
     default:
       console.error(`Unknown page requested: ${page}`);
       return Promise.reject("Unknown page");
@@ -602,10 +612,44 @@ function loadContent(page) {
             }
             // If dashboard page, ensure BAU sidebar exists
             if (page === "dashboard") {
-              if (typeof window.ensureHistorySidebar === "function") {
-                window.ensureHistorySidebar().then(() => resolve());
-                return;
+              console.log("[SCRIPT] Dashboard page loaded, ensuring BAU sidebar");
+              // Force load BAU script and ensure sidebar
+              const bauScript = document.querySelector('script[src="cont/00.bau/bau.js"]');
+              if (!bauScript) {
+                console.log("[SCRIPT] BAU script not found, loading it");
+                const s = document.createElement("script");
+                s.src = "cont/00.bau/bau.js";
+                s.dataset.pageScript = "true";
+                s.onload = () => {
+                  console.log("[SCRIPT] BAU script loaded successfully");
+                  setTimeout(() => {
+                    if (typeof window.renderHistorySidebar === "function") {
+                      console.log("[SCRIPT] Calling renderHistorySidebar after BAU script load");
+                      window.renderHistorySidebar();
+                    } else {
+                      console.log("[SCRIPT] renderHistorySidebar still not available after BAU load");
+                    }
+                    resolve();
+                  }, 100);
+                };
+                s.onerror = () => {
+                  console.error("[SCRIPT] Failed to load BAU script");
+                  resolve();
+                };
+                document.body.appendChild(s);
+              } else {
+                console.log("[SCRIPT] BAU script already exists, calling renderHistorySidebar");
+                setTimeout(() => {
+                  if (typeof window.renderHistorySidebar === "function") {
+                    console.log("[SCRIPT] Calling renderHistorySidebar with existing BAU script");
+                    window.renderHistorySidebar();
+                  } else {
+                    console.log("[SCRIPT] renderHistorySidebar not available with existing script");
+                  }
+                  resolve();
+                }, 100);
               }
+              return;
             }
             resolve();
           };
@@ -826,15 +870,28 @@ function loadDashboardFromSidebar() {
 
 // Ensure BAU history sidebar exists: load BAU script if needed and render sidebar
 function ensureHistorySidebar() {
+  console.log("[SCRIPT] ensureHistorySidebar called");
   return new Promise((resolve) => {
-    // If sidebar already added, resolve immediately
-    if (document.getElementById("bau-history-drawer") ||
-        document.getElementById("bau-history-external-toggle")) {
+    // Always try to render the sidebar to ensure button visibility
+    const tryRender = () => {
+      console.log("[SCRIPT] Trying to render sidebar, function exists:", typeof window.renderHistorySidebar);
       try {
         if (typeof window.renderHistorySidebar === "function") {
+          console.log("[SCRIPT] Calling renderHistorySidebar");
           window.renderHistorySidebar();
+        } else {
+          console.log("[SCRIPT] renderHistorySidebar function not available");
         }
-      } catch (_) {}
+      } catch (e) {
+        console.error("[SCRIPT] Error calling renderHistorySidebar:", e);
+      }
+    };
+
+    // If button exists but might be hidden, always call render
+    const toggleBtn = document.getElementById("bau-history-external-toggle");
+    console.log("[SCRIPT] Toggle button found:", !!toggleBtn);
+    if (toggleBtn) {
+      tryRender();
       return resolve();
     }
 
