@@ -35,27 +35,29 @@
 }
 
 .nav-btn {
-  background-color: transparent;
-  border: 2px solid rgb(44, 201, 199);
+  background-color: rgba(255, 255, 255, 0);
+  border: 2px solid var(--all-text);
   color: var(--all-text);
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
+  padding: 10px 20px;
+  border-radius: 23px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.3s ease;
   font-size: 17px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .nav-btn:hover {
-  background-color: rgba(44, 201, 199, 0.15);
+  background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.05);
 }
 
 .nav-btn.active {
-  background-color: rgba(44, 201, 198, 0.793);
+  background-color: rgba(255, 255, 255, 0.25);
   color: var(--all-text);
   font-weight: bold;
 }
+
 .dashboard-section {
   display: none;
   padding: 2rem;

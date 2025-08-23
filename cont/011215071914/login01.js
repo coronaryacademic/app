@@ -124,9 +124,20 @@ function restoreAccountButton() {
   }
   authButtonsDiv.innerHTML = `
     <a href="cont/011215071914/Login.html">
-      <button class="login-button" style="margin-top: 8px; margin-right: 10px">
+      <button class="login-button" style="margin-top: 8px; margin-right: 10px; display: flex; align-items: center; gap: 8px;">
         Account
-        <i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i>
+        <div style="
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-size: 12px;
+        ">A</div>
       </button>
     </a>
   `;
@@ -153,20 +164,30 @@ function updateAuthUI(user) {
     userBtn.className = "login-button";
     userBtn.style.marginTop = "8px";
     userBtn.style.marginRight = "10px";
+    userBtn.style.display = "flex";
+    userBtn.style.alignItems = "center";
+    userBtn.style.gap = "8px";
     userBtn.textContent = user.displayName || "User";
 
-    console.log("[INDEX] Setting username button text to:", user.displayName);
+    console.log("[DEBUG] userBtn created:", userBtn);
 
-    // Create <i> icon
-    const iconElem = document.createElement("i");
-    iconElem.className = "fa fa-user";
-    iconElem.style.fontSize = "17px";
-    iconElem.style.paddingLeft = "10px";
+    // Create gradient avatar
+    const avatarElem = document.createElement("div");
+    avatarElem.style.width = "24px";
+    avatarElem.style.height = "24px";
+    avatarElem.style.borderRadius = "50%";
+    avatarElem.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    avatarElem.style.display = "flex";
+    avatarElem.style.alignItems = "center";
+    avatarElem.style.justifyContent = "center";
+    avatarElem.style.color = "white";
+    avatarElem.style.fontWeight = "bold";
+    avatarElem.style.fontSize = "12px";
+    avatarElem.textContent = (user.displayName || "User").charAt(0).toUpperCase();
 
-    console.log("[DEBUG] iconElem created:", iconElem);
-    console.log("[DEBUG] iconElem.outerHTML:", iconElem.outerHTML);
+    console.log("[DEBUG] avatarElem created:", avatarElem);
 
-    userBtn.appendChild(iconElem);
+    userBtn.appendChild(avatarElem);
 
     console.log("[DEBUG] Final userBtn HTML:", userBtn.outerHTML);
 

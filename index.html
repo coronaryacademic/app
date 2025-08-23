@@ -124,7 +124,7 @@
       scroll-behavior: smooth;
       overscroll-behavior: none;
       -webkit-overflow-scrolling: touch;
-      padding-top: 100px;
+      padding-top: 75px;
     "
   >
     <header
@@ -591,9 +591,20 @@
         }
         authButtonsDiv.innerHTML = `
       <a href="cont/011215071914/Login.html">
-        <button class="login-button" style="margin-right: 10px; margin-top: 11px">
+        <button class="login-button" style="margin-right: 10px; margin-top: 11px; display: flex; align-items: center; gap: 8px;">
           Account
-          <i style="font-size: 17px; padding-left: 10px" class="fa">&#xf007;</i>
+          <div style="
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+          ">A</div>
         </button>
       </a>
     `;

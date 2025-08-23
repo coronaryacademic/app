@@ -796,6 +796,21 @@ document
             data[key] = (el.value || "").trim();
           }
         });
+
+        // Collect ROS data separately
+        const rosCheckboxes = root.querySelectorAll("input.ros");
+        const rosData = {};
+        rosCheckboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            const system = checkbox.getAttribute("data-system") || "Other";
+            if (!rosData[system]) rosData[system] = [];
+            rosData[system].push(checkbox.value);
+          }
+        });
+        if (Object.keys(rosData).length > 0) {
+          data._rosData = rosData;
+        }
+
         return data;
       }
 
@@ -2295,8 +2310,9 @@ async function renderHistorySidebar() {
   Object.assign(userSection.style, {
     padding: "16px",
     borderTop: "none",
-    background: "rgba(0,0,0,0.05)",
+    background: "transparent",
     marginTop: "auto", // Push to bottom
+    position: "relative",
   });
 
   const userDropdown = document.createElement("div");
@@ -2304,57 +2320,112 @@ async function renderHistorySidebar() {
   userDropdown.innerHTML = `
     <button id="sidebarUserToggle" style="
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 16px;
       border: none;
-      border-radius: 6px;
-      background: transparent;
+      border-radius: 12px;
+      background: rgba(150, 150, 150, 0.205);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
       color: var(--all-text);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     ">
-      <span>User</span>
-      <i class="fa fa-caret-down"></i>
+      <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="sidebarUserAvatar" style="
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+          ">U</div>
+        <span>User Menu</span>
+      </div>
+      <i class="fa fa-chevron-right" id="userMenuChevron" style="transition: transform 0.2s ease;"></i>
     </button>
-    <div id="sidebarUserMenu" style="
-      display: none;
-      margin-top: 8px;
-      border: none;
-      border-radius: 6px;
-      background: rgba(0,0,0,0.2);
-      overflow: hidden;
-    ">
-      <button id="sidebarDashboardBtn" style="
-        width: 100%;
-        padding: 10px 12px;
-        border: none;
-        background: transparent;
-        color: var(--all-text);
-        cursor: pointer;
-        text-align: left;
-        border-bottom: none;
-      ">Dashboard</button>
-      <button id="sidebarThemeBtn" style="
-        width: 100%;
-        padding: 10px 12px;
-        border: none;
-        background: transparent;
-        color: var(--all-text);
-        cursor: pointer;
-        text-align: left;
-        border-bottom: none;
-      ">Theme: ...</button>
-      <button id="sidebarLogoutBtn" style="
-        width: 100%;
-        padding: 10px 12px;
-        border: none;
-        background: transparent;
-        color: var(--all-text);
-        cursor: pointer;
-        text-align: left;
-      ">Logout</button>
+        <div id="sidebarUserMenu" style="
+          position: relative;
+          width: 100%;
+          background: rgba(150, 150, 150, 0.205);
+          backdrop-filter: blur(30px);
+          -webkit-backdrop-filter: blur(30px);
+          border-radius: 12px;
+          padding: 0;
+          margin: 8px 0 0 0;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          opacity: 0;
+          visibility: hidden;
+          max-height: 0;
+          overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          pointer-events: none;
+        ">
+        <button id="sidebarDashboardBtn" style="
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: transparent;
+          color: var(--all-text);
+          cursor: pointer;
+          text-align: left;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: background 0.2s ease;
+        " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+          <i class="fa fa-tachometer" style="width: 16px;"></i>
+          Dashboard
+        </button>
+        <button id="sidebarThemeBtn" style="
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: transparent;
+          color: var(--all-text);
+          cursor: pointer;
+          text-align: left;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: background 0.2s ease;
+        " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+          <i class="fa fa-palette" style="width: 16px;"></i>
+          <span>Theme: <span id="currentThemeText">...</span></span>
+        </button>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 16px;"></div>
+        <button id="sidebarLogoutBtn" style="
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: transparent;
+          color: #ff6b6b;
+          cursor: pointer;
+          text-align: left;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: background 0.2s ease;
+        " onmouseover="this.style.background='rgba(255,107,107,0.1)'" onmouseout="this.style.background='transparent'">
+          <i class="fa fa-sign-out" style="width: 16px;"></i>
+          Logout
+        </button>
     </div>
   `;
 
@@ -2564,113 +2635,293 @@ async function renderHistorySidebar() {
     console.log("[BAU] Internal close button touched");
     close();
   });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") close();
   });
 
-  // User dropdown functionality
-  const sidebarUserToggle = document.getElementById("sidebarUserToggle");
-  const sidebarUserMenu = document.getElementById("sidebarUserMenu");
-  const sidebarDashboardBtn = document.getElementById("sidebarDashboardBtn");
-  const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
-  const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
-
-  let userMenuOpen = false;
-
-  const toggleUserMenu = () => {
-    userMenuOpen = !userMenuOpen;
-    sidebarUserMenu.style.display = userMenuOpen ? "block" : "none";
-    const caret = sidebarUserToggle.querySelector("i");
-    if (caret) {
-      caret.className = userMenuOpen ? "fa fa-caret-up" : "fa fa-caret-down";
-    }
-  };
-
-  const closeUserMenu = () => {
-    userMenuOpen = false;
-    sidebarUserMenu.style.display = "none";
-    const caret = sidebarUserToggle.querySelector("i");
-    if (caret) {
-      caret.className = "fa fa-caret-down";
-    }
-  };
-
-  sidebarUserToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleUserMenu();
-  });
-
-  // Dashboard button
-  sidebarDashboardBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    console.log("[BAU] Dashboard clicked from sidebar");
-    if (window.loadDashboard) {
-      window.loadDashboard();
-      if (window.updateNavActiveState) {
-        window.updateNavActiveState("dashboard");
-      }
-    }
-    closeUserMenu();
-    close(); // Close the sidebar
-  });
-
-  // Theme button
-  sidebarThemeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    console.log("[BAU] Theme toggle clicked from sidebar");
-    if (window.toggleTheme) {
-      window.toggleTheme();
-    }
-    closeUserMenu();
-  });
-
-  // Logout button
-  sidebarLogoutBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    console.log("[BAU] Logout clicked from sidebar");
+  // Update user info from Firebase auth
+  const updateUserInfo = () => {
     const auth = window.auth;
-    if (auth && window.signOut) {
-      window
-        .signOut(auth)
-        .then(() => {
-          console.log("[BAU] Signed out successfully from sidebar");
-          if (window.restoreAccountButton) {
-            window.restoreAccountButton();
-          }
-          if (window.loadDefaultPage && window.updateNavActiveState) {
-            window.loadDefaultPage().then(() => {
-              window.updateNavActiveState("bau");
-            });
-          }
-        })
-        .catch((err) => {
-          console.error("[BAU] Sign out error from sidebar:", err);
-        });
-    }
-    closeUserMenu();
-    close(); // Close the sidebar
-  });
+    const user = auth?.currentUser;
 
-  // Update theme button text when theme changes
-  const updateThemeButtonText = () => {
-    const currentTheme =
-      document.documentElement.getAttribute("data-theme") || "light";
-    sidebarThemeBtn.textContent = `Theme: ${
-      currentTheme === "dark" ? "Dark" : "Light"
-    }`;
+    if (user) {
+      const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
+      const sidebarUserName = document.getElementById("sidebarUserName");
+      const userMenuAvatar = document.querySelector(
+        "#sidebarUserMenu .user-avatar"
+      );
+      const userMenuName = document.querySelector(
+        "#sidebarUserMenu .user-name"
+      );
+
+      const displayName = user.displayName || user.email || "User";
+      const userInitial = displayName.charAt(0).toUpperCase();
+
+      // Update sidebar toggle avatar
+      if (sidebarUserAvatar) {
+        if (user.photoURL) {
+          sidebarUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+          sidebarUserAvatar.textContent = userInitial;
+          sidebarUserAvatar.style.background =
+            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        }
+      }
+
+      // Update sidebar user name
+      if (sidebarUserName) {
+        sidebarUserName.textContent = displayName;
+      }
+
+      // Update user menu avatar and name
+      if (userMenuAvatar) {
+        if (user.photoURL) {
+          userMenuAvatar.innerHTML = `<img src="${user.photoURL}" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+          userMenuAvatar.textContent = userInitial;
+          userMenuAvatar.style.background =
+            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        }
+      }
+
+      if (userMenuName) {
+        userMenuName.textContent = displayName;
+      }
+
+      console.log("[BAU] User info updated:", {
+        displayName,
+        photoURL: user.photoURL,
+      });
+    }
   };
 
-  // Initial theme button text
-  updateThemeButtonText();
+  // Call updateUserInfo after a delay to ensure Firebase auth is ready
+  setTimeout(updateUserInfo, 500);
 
-  // Listen for theme changes
-  const observer = new MutationObserver(() => {
+  // Also listen for auth state changes to update user info dynamically
+  if (window.auth) {
+    window.auth.onAuthStateChanged((user) => {
+      if (user) {
+        setTimeout(updateUserInfo, 100);
+      }
+    });
+  }
+
+  // User dropdown functionality - wait for elements to be available and sidebar to be created
+  const waitForUserMenuElements = () => {
+    const sidebarUserToggle = document.getElementById("sidebarUserToggle");
+    const sidebarUserMenu = document.getElementById("sidebarUserMenu");
+
+    if (!sidebarUserToggle || !sidebarUserMenu) {
+      console.log("[BAU] User menu elements not ready, retrying...");
+      setTimeout(waitForUserMenuElements, 500);
+      return;
+    }
+
+    console.log("[BAU] User menu elements found, setting up...");
+    const sidebarDashboardBtn = document.getElementById("sidebarDashboardBtn");
+    const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
+    const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
+
+    // Initialize menu as hidden
+    sidebarUserMenu.style.opacity = "0";
+    sidebarUserMenu.style.visibility = "hidden";
+    sidebarUserMenu.style.maxHeight = "0";
+    sidebarUserMenu.style.pointerEvents = "none";
+
+    console.log("[BAU] User menu elements found:", {
+      toggle: !!sidebarUserToggle,
+      menu: !!sidebarUserMenu,
+      dashboard: !!sidebarDashboardBtn,
+      theme: !!sidebarThemeBtn,
+      logout: !!sidebarLogoutBtn,
+    });
+
+    // Debug: Log the actual elements
+    if (sidebarUserToggle) {
+      console.log("[BAU] Toggle element:", sidebarUserToggle);
+    }
+    if (sidebarUserMenu) {
+      console.log("[BAU] Menu element:", sidebarUserMenu);
+      console.log("[BAU] Menu current styles:", {
+        opacity: sidebarUserMenu.style.opacity,
+        visibility: sidebarUserMenu.style.visibility,
+        transform: sidebarUserMenu.style.transform,
+        pointerEvents: sidebarUserMenu.style.pointerEvents,
+      });
+    }
+
+    let userMenuOpen = false;
+
+    const toggleUserMenu = () => {
+      userMenuOpen = !userMenuOpen;
+      const chevron = document.getElementById("userMenuChevron");
+
+      console.log(
+        "[BAU] Toggling user menu to:",
+        userMenuOpen,
+        "Menu element:",
+        !!sidebarUserMenu
+      );
+
+      if (userMenuOpen) {
+        sidebarUserMenu.style.opacity = "1";
+        sidebarUserMenu.style.transform = "translateX(0) scale(1)";
+        sidebarUserMenu.style.pointerEvents = "auto";
+        sidebarUserMenu.style.visibility = "visible";
+        if (chevron) {
+          chevron.style.transform = "rotate(180deg)";
+        }
+        console.log("[BAU] User menu opened");
+      } else {
+        sidebarUserMenu.style.opacity = "0";
+        sidebarUserMenu.style.transform = "translateX(10px) scale(0.95)";
+        sidebarUserMenu.style.pointerEvents = "none";
+        sidebarUserMenu.style.visibility = "hidden";
+        if (chevron) {
+          chevron.style.transform = "rotate(0deg)";
+        }
+        console.log("[BAU] User menu closed");
+      }
+    };
+
+    const closeUserMenu = () => {
+      userMenuOpen = false;
+      const chevron = document.getElementById("userMenuChevron");
+      sidebarUserMenu.style.opacity = "0";
+      sidebarUserMenu.style.transform = "translateX(10px) scale(0.95)";
+      sidebarUserMenu.style.pointerEvents = "none";
+      sidebarUserMenu.style.visibility = "hidden";
+      if (chevron) {
+        chevron.style.transform = "rotate(0deg)";
+      }
+    };
+
+    if (sidebarUserToggle && sidebarUserMenu) {
+      sidebarUserToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("[BAU] User toggle clicked, current state:", userMenuOpen);
+
+        // Force toggle the menu visibility
+        if (userMenuOpen) {
+          sidebarUserMenu.style.opacity = "0";
+          sidebarUserMenu.style.visibility = "hidden";
+          sidebarUserMenu.style.maxHeight = "0";
+          sidebarUserMenu.style.pointerEvents = "none";
+          userMenuOpen = false;
+          console.log("[BAU] Menu closed");
+        } else {
+          sidebarUserMenu.style.opacity = "1";
+          sidebarUserMenu.style.visibility = "visible";
+          sidebarUserMenu.style.maxHeight = "300px";
+          sidebarUserMenu.style.pointerEvents = "auto";
+          userMenuOpen = true;
+          console.log("[BAU] Menu opened");
+        }
+
+        // Update chevron
+        const chevron = document.getElementById("userMenuChevron");
+        if (chevron) {
+          chevron.style.transform = userMenuOpen
+            ? "rotate(180deg)"
+            : "rotate(0deg)";
+        }
+      });
+
+      console.log(
+        "[BAU] User menu toggle event listeners attached successfully"
+      );
+    } else {
+      console.warn("[BAU] sidebarUserToggle or sidebarUserMenu not found", {
+        toggle: !!sidebarUserToggle,
+        menu: !!sidebarUserMenu,
+      });
+    }
+
+    // Dashboard button
+    if (sidebarDashboardBtn) {
+      sidebarDashboardBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("[BAU] Dashboard clicked from sidebar");
+        if (window.loadDashboard) {
+          window.loadDashboard();
+          if (window.updateNavActiveState) {
+            window.updateNavActiveState("dashboard");
+          }
+        }
+        closeUserMenu();
+        close(); // Close the sidebar
+      });
+    }
+
+    // Theme button
+    if (sidebarThemeBtn) {
+      sidebarThemeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("[BAU] Theme toggle clicked from sidebar");
+        if (window.toggleTheme) {
+          window.toggleTheme();
+        }
+        // Don't close the menu when toggling theme
+      });
+    }
+
+    // Logout button
+    if (sidebarLogoutBtn) {
+      sidebarLogoutBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("[BAU] Logout clicked from sidebar");
+        const auth = window.auth;
+        if (auth && window.signOut) {
+          window
+            .signOut(auth)
+            .then(() => {
+              console.log("[BAU] Signed out successfully from sidebar");
+              if (window.restoreAccountButton) {
+                window.restoreAccountButton();
+              }
+              if (window.loadDefaultPage && window.updateNavActiveState) {
+                window.loadDefaultPage().then(() => {
+                  window.updateNavActiveState("bau");
+                });
+              }
+            })
+            .catch((err) => {
+              console.error("[BAU] Sign out error from sidebar:", err);
+            });
+        }
+        closeUserMenu();
+        close(); // Close the sidebar
+      });
+    }
+
+    // Update theme button text when theme changes
+    const updateThemeButtonText = () => {
+      const currentTheme =
+        document.documentElement.getAttribute("data-theme") || "light";
+      const themeText = document.getElementById("currentThemeText");
+      if (themeText) {
+        themeText.textContent = currentTheme === "dark" ? "Dark" : "Light";
+      }
+    };
+
+    // Initial theme button text
     updateThemeButtonText();
-  });
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["data-theme"],
-  });
+
+    // Listen for theme changes
+    const observer = new MutationObserver(() => {
+      updateThemeButtonText();
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  };
+
+  // Start waiting for user menu elements
+  setTimeout(waitForUserMenuElements, 1000);
 
   // Clear histories for current user (INSIDE sidebar scope)
   clearBtn.addEventListener("click", async (e) => {
@@ -3021,6 +3272,7 @@ async function renderHistorySidebar() {
         let currentX = 0;
         let isDragging = false;
         let deleteThreshold = -100; // Swipe/drag left 100px to delete
+        let confirmationShown = false; // Track if confirmation dialog is already shown
 
         const getClientX = (e) => {
           return e.touches ? e.touches[0].clientX : e.clientX;
@@ -3047,48 +3299,52 @@ async function renderHistorySidebar() {
           if (deltaX < 0) {
             item.style.transform = `translateX(${deltaX}px)`;
 
-            // Show trash icon outside the item when dragging
-            let trashIcon = document.querySelector(".drag-trash-icon");
-            if (!trashIcon) {
-              trashIcon = document.createElement("div");
-              trashIcon.className = "drag-trash-icon";
-              trashIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-              </svg>`;
-              Object.assign(trashIcon.style, {
-                position: "fixed",
-                right: "20px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#ff4444",
-                opacity: "0",
-                transition: "opacity 0.2s ease",
-                pointerEvents: "none",
-                zIndex: "1000",
-                width: "40px",
-                height: "40px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "rgba(255, 68, 68, 0.1)",
-                borderRadius: "50%",
-                border: "2px solid #ff4444",
-              });
-              document.body.appendChild(trashIcon);
-            }
-
-            // Position trash icon relative to the dragged item
-            const itemRect = item.getBoundingClientRect();
-            trashIcon.style.top = `${itemRect.top + itemRect.height / 2}px`;
-
             if (deltaX < deleteThreshold) {
+              // Add red border and background when threshold is reached
               item.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
-              trashIcon.style.opacity = "1";
+              item.style.border = "3px solid #ff4444";
+              
+              // Show confirmation dialog immediately when threshold is reached
+              if (!confirmationShown) {
+                confirmationShown = true;
+                showDeleteConfirmation(
+                  data.patientName || "Unknown",
+                  async (confirmed) => {
+                    confirmationShown = false;
+                    if (confirmed) {
+                      try {
+                        const { deleteDoc } = window;
+                        if (deleteDoc) {
+                          await deleteDoc(doc.ref);
+                          item.style.transform = "translateX(-100%)";
+                          item.style.opacity = "0";
+                          setTimeout(() => {
+                            if (item.parentNode) {
+                              item.parentNode.removeChild(item);
+                            }
+                          }, 300);
+                        } else {
+                          console.warn("[BAU] deleteDoc not available");
+                        }
+                      } catch (error) {
+                        console.error("[BAU] Failed to delete history:", error);
+                        item.style.transform = "translateX(0)";
+                        item.style.backgroundColor = "";
+                        item.style.border = "none";
+                      }
+                    } else {
+                      // Reset position if user cancels
+                      item.style.transform = "translateX(0)";
+                      item.style.backgroundColor = "";
+                      item.style.border = "none";
+                    }
+                  }
+                );
+              }
             } else {
-              item.style.backgroundColor = "";
-              trashIcon.style.opacity =
-                (Math.abs(deltaX) / Math.abs(deleteThreshold)) * 0.7;
+              // Show lighter visual feedback while dragging
+              item.style.backgroundColor = "rgba(255, 0, 0, 0.05)";
+              item.style.border = "2px solid rgba(255, 68, 68, 0.3)";
             }
           }
           e.preventDefault();
@@ -3097,70 +3353,29 @@ async function renderHistorySidebar() {
         const handleEnd = async (e) => {
           if (!isDragging) return;
           isDragging = false;
-          const deltaX = currentX - startX;
           item.style.transition =
-            "transform 0.3s ease, background-color 0.3s ease";
+            "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease";
           item.style.cursor = "grab";
 
-          // Remove trash icon
-          const trashIcon = document.querySelector(".drag-trash-icon");
-          if (trashIcon) {
-            trashIcon.remove();
-          }
-
-          if (deltaX < deleteThreshold) {
-            // Show confirmation dialog
-            showDeleteConfirmation(
-              data.patientName || "Unknown",
-              async (confirmed) => {
-                if (confirmed) {
-                  try {
-                    const { deleteDoc } = window;
-                    if (deleteDoc) {
-                      await deleteDoc(doc.ref);
-                      item.style.transform = "translateX(-100%)";
-                      item.style.opacity = "0";
-                      setTimeout(() => {
-                        if (item.parentNode) {
-                          item.parentNode.removeChild(item);
-                        }
-                      }, 300);
-                    } else {
-                      console.warn("[BAU] deleteDoc not available");
-                    }
-                  } catch (error) {
-                    console.error("[BAU] Failed to delete history:", error);
-                    item.style.transform = "translateX(0)";
-                    item.style.backgroundColor = "";
-                  }
-                } else {
-                  // Reset position if user cancels
-                  item.style.transform = "translateX(0)";
-                  item.style.backgroundColor = "";
-                }
-              }
-            );
-          } else {
-            // Reset position if threshold not met
+          // If confirmation dialog wasn't shown during drag, reset position
+          if (!confirmationShown) {
             item.style.transform = "translateX(0)";
             item.style.backgroundColor = "";
+            item.style.border = "none";
           }
         };
 
-        // Cleanup function to reset drag state and remove trash icon
+        // Cleanup function to reset drag state
         const cleanupDrag = () => {
           if (isDragging) {
             isDragging = false;
+            confirmationShown = false;
             item.style.transition =
-              "transform 0.3s ease, background-color 0.3s ease";
+              "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease";
             item.style.cursor = "grab";
             item.style.transform = "translateX(0)";
             item.style.backgroundColor = "";
-          }
-          // Always remove trash icon regardless of drag state
-          const trashIcon = document.querySelector(".drag-trash-icon");
-          if (trashIcon) {
-            trashIcon.remove();
+            item.style.border = "none";
           }
         };
 
@@ -3423,9 +3638,11 @@ async function renderHistorySidebar() {
     messageText.textContent = `Delete ${patientName} history?`;
     messageText.style.fontWeight = "500";
     messageText.style.color = "var(--all-text)";
-    messageText.style.whiteSpace = "nowrap";
-    messageText.style.overflow = "hidden";
-    messageText.style.textOverflow = "ellipsis";
+    messageText.style.whiteSpace = "normal";
+    messageText.style.overflow = "visible";
+    messageText.style.textOverflow = "clip";
+    messageText.style.wordWrap = "break-word";
+    messageText.style.minWidth = "fit-content";
 
     // Buttons container
     const buttonsContainer = document.createElement("div");
@@ -3543,9 +3760,11 @@ async function renderHistorySidebar() {
       "Clear all saved histories? This cannot be undone.";
     messageText.style.fontWeight = "500";
     messageText.style.color = "var(--all-text)";
-    messageText.style.whiteSpace = "nowrap";
-    messageText.style.overflow = "hidden";
-    messageText.style.textOverflow = "ellipsis";
+    messageText.style.whiteSpace = "normal";
+    messageText.style.overflow = "visible";
+    messageText.style.textOverflow = "clip";
+    messageText.style.wordWrap = "break-word";
+    messageText.style.minWidth = "fit-content";
 
     // Buttons container
     const buttonsContainer = document.createElement("div");
@@ -3635,7 +3854,23 @@ function applySnapshotToForm(snapshot) {
     sel.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
+  // Handle ROS checkboxes specially
+  if (snapshot._rosData) {
+    const rosCheckboxes = root.querySelectorAll("input.ros");
+    rosCheckboxes.forEach((checkbox) => {
+      const system = checkbox.getAttribute("data-system");
+      const value = checkbox.value;
+      const isChecked =
+        snapshot._rosData[system] && snapshot._rosData[system].includes(value);
+      checkbox.checked = isChecked;
+      checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+
   Object.entries(snapshot).forEach(([key, val]) => {
+    // Skip special ROS data key
+    if (key === "_rosData") return;
+
     const el =
       root.querySelector(`#${CSS.escape(key)}`) ||
       root.querySelector(`[name="${key}"]`);
