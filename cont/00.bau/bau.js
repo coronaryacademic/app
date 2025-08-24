@@ -393,11 +393,48 @@
         return rosCheckboxes.length > 0;
       }
 
-      let hasValue = false;
+      // Special handling for Social History - requires user interaction, not just default values
+      if (sectionKey === "social-history") {
+        let completedFields = 0;
+        const requiredFields = ["smoking", "alcohol", "occupation", "living", "travel"];
+        
+        for (const fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (!field) continue;
+          
+          const value = field.value && field.value.trim();
+          const selectedOption = field.options[field.selectedIndex];
+          
+          // Check if it's a disabled placeholder
+          const isPlaceholder = selectedOption && selectedOption.disabled;
+          
+          // For Social History, any valid selection (including first options) counts as filled
+          // as long as it's not empty, disabled, or a clear placeholder
+          const hasValue = value && 
+            !isPlaceholder && 
+            !["", "select", "choose", "default"].includes(value.toLowerCase());
+          
+          if (hasValue) {
+            completedFields++;
+          }
+        }
+        
+        return completedFields === requiredFields.length;
+      }
+
+      // Most sections should require ALL fields to be completed for proper clinical documentation
+      const requireAnyField = ["review-systems", "ice"]; // Only these sections allow partial completion
+      const checkAllFields = !requireAnyField.includes(sectionKey);
+
+      let completedFields = 0;
+      let totalFields = 0;
 
       for (const fieldId of fieldIds) {
         const field = document.getElementById(fieldId);
         if (!field) continue;
+
+        totalFields++;
+        let hasValue = false;
 
         if (field.tagName === "SELECT") {
           if (field.multiple) {
@@ -406,11 +443,21 @@
           } else {
             // Single select: check if a non-empty, non-default value is selected
             const value = field.value && field.value.trim();
-            // Consider empty string, first option (index 0), or common default values as incomplete
+            const selectedOption = field.options[field.selectedIndex];
+            
+            // Check if it's a disabled placeholder option
+            const isPlaceholder = selectedOption && selectedOption.disabled;
+            
+            // For non-SH sections, be more strict about default first options
+            const isDefaultFirstOption = field.selectedIndex === 0 && 
+              (field.options[0].value === "male"); // Only gender needs this check now
+            
+            // Consider empty string, disabled placeholder, or default first options as incomplete
             hasValue =
               value &&
-              field.selectedIndex > 0 &&
-              !["", "select", "choose", "none", "default"].includes(
+              !isPlaceholder &&
+              !isDefaultFirstOption &&
+              !["", "select", "choose", "default"].includes(
                 value.toLowerCase()
               );
           }
@@ -418,10 +465,23 @@
           hasValue = field.value && field.value.trim() !== "";
         }
 
-        if (hasValue) break; // At least one field in section has value
+        if (hasValue) {
+          completedFields++;
+        }
+
+        // For sections that don't require all fields, return true if any field has value
+        if (!checkAllFields && hasValue) {
+          return true;
+        }
       }
 
-      return hasValue;
+      // For sections that require all fields, check if all are completed
+      if (checkAllFields) {
+        return totalFields > 0 && completedFields === totalFields;
+      }
+
+      // For other sections, return true if at least one field has value
+      return completedFields > 0;
     }
 
     function updateProgressSummary() {
@@ -450,21 +510,46 @@
       console.log("[BAU] Updating all progress tracker sections...");
       Object.entries(sectionMappings).forEach(([sectionKey, fieldIds]) => {
         const isCompleted = checkSectionCompletion(sectionKey, fieldIds);
+        
+        // Special debug for social-history
+        if (sectionKey === "social-history") {
+          fieldIds.forEach((id) => {
+            const field = document.getElementById(id);
+            if (!field) {
+              console.log(`[BAU] SH DEBUG - ${id}: NOT_FOUND`);
+              return;
+            }
+            
+            const value = field.value && field.value.trim();
+            const selectedOption = field.options ? field.options[field.selectedIndex] : null;
+            const isPlaceholder = selectedOption && selectedOption.disabled;
+            
+            // Check if this is a default first option that should be considered empty
+            const isDefaultFirstOption = field.selectedIndex === 0 && 
+              (field.options[0].value === "never" || 
+               field.options[0].value === "none" || 
+               field.options[0].value === "student");
+            
+            const hasValue = value && !isPlaceholder && !isDefaultFirstOption && 
+              !["", "select", "choose", "default"].includes(value.toLowerCase());
+            
+            console.log(`[BAU] SH DEBUG - ${id}:`, {
+              rawValue: field.value,
+              trimmedValue: value,
+              selectedIndex: field.selectedIndex,
+              isPlaceholder,
+              isDefaultFirstOption,
+              hasValue,
+              optionText: selectedOption ? selectedOption.text : 'N/A'
+            });
+          });
+          console.log(`[BAU] SH DEBUG - Final result: ${isCompleted}`);
+        }
+        
         console.log(
           `[BAU] Section "${sectionKey}": ${
             isCompleted ? "COMPLETED" : "INCOMPLETE"
-          }`,
-          {
-            fieldIds,
-            values: fieldIds.map((id) => {
-              const field = document.getElementById(id);
-              return field
-                ? `${id}: "${field.value}" (index: ${
-                    field.selectedIndex || "N/A"
-                  })`
-                : `${id}: NOT_FOUND`;
-            }),
-          }
+          }`
         );
         updateSectionStatus(sectionKey, isCompleted);
       });
@@ -476,6 +561,17 @@
       // Listen for changes on all form inputs
       const formContainer = document.getElementById("history-form-container");
       if (!formContainer) return;
+
+      // Disable scroll-based active section updates during form interactions
+      formContainer.addEventListener("focusin", () => {
+        isFormInteracting = true;
+      });
+      
+      formContainer.addEventListener("focusout", () => {
+        setTimeout(() => {
+          isFormInteracting = false;
+        }, 300); // Small delay to prevent flickering
+      });
 
       // Use event delegation to catch all input changes
       formContainer.addEventListener("change", updateAllSections);
@@ -553,14 +649,18 @@
       return currentSection;
     }
 
-    // Scroll tracking with throttling
+    // Scroll tracking with throttling - disable during form interactions
     let scrollTimeout;
+    let isFormInteracting = false;
+    
     function handleScroll() {
+      if (isFormInteracting) return; // Don't update active section during form interactions
+      
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         const currentSection = getCurrentSection();
         updateActiveSection(currentSection);
-      }, 50);
+      }, 150); // Increased delay to reduce flickering
     }
 
     // Set up scroll listener
@@ -2438,12 +2538,20 @@ function enhanceOneSingleInFlow(select) {
       fontSize: "16px",
     });
     clearBtn.addEventListener("click", () => {
-      // Truly clear selection so no option is chosen
-      select.selectedIndex = -1;
+      // For Social History fields, reset to placeholder option (index 0)
+      const socialHistoryFields = ["smoking", "alcohol", "occupation", "living", "travel"];
+      if (socialHistoryFields.includes(select.id)) {
+        select.selectedIndex = 0; // Reset to placeholder
+      } else {
+        select.selectedIndex = -1; // Truly clear for other fields
+      }
       panel
         .querySelectorAll('input[type="radio"]')
         .forEach((r) => (r.checked = false));
       updateButtonText();
+      
+      // Trigger change event to update progress tracker
+      select.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
     const doneBtn = document.createElement("button");
@@ -2515,13 +2623,18 @@ function enhanceOneSingleInFlow(select) {
   wrapper.appendChild(btn);
   wrapper.appendChild(panel);
 
-  // If no option is explicitly marked selected in markup, start with no selection
+  // Handle initial selection state for Social History fields
   try {
+    const socialHistoryFields = ["smoking", "alcohol", "occupation", "living", "travel"];
     const hasDefaultSelected = Array.from(select.options).some(
       (o) => o.defaultSelected
     );
-    if (!hasDefaultSelected) {
-      // Avoid implicit browser selection of the first option
+    
+    if (socialHistoryFields.includes(select.id)) {
+      // For Social History fields, always start with placeholder (index 0)
+      select.selectedIndex = 0;
+    } else if (!hasDefaultSelected) {
+      // For other fields, avoid implicit browser selection of the first option
       select.selectedIndex = -1;
     }
   } catch {}

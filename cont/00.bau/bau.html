@@ -311,6 +311,7 @@
       padding: 20px;
       position: sticky;
       top: 130px;
+      margin-left: 18px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -983,15 +984,16 @@
         <label for="age">Age</label>
         <input type="number" id="age" />
       </div>
-    </div>
 
-    <!-- Gender -->
-    <div class="form-section">
-      <label for="gender">Gender</label>
-      <select id="gender" style="width: 100%; box-sizing: border-box">
-        <option>Male</option>
-        <option>Female</option>
-      </select>
+      <div class="form-subsection">
+        <label for="gender">Gender</label>
+        <select id="gender" style="width: 100%; box-sizing: border-box">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+          <option value="prefer-not-to-say">Prefer not to say</option>
+        </select>
+      </div>
     </div>
 
     <div id="section-social-history" class="form-section">
@@ -1008,6 +1010,7 @@
               font-size: 14px;
             "
           >
+            <option value="" disabled selected>Select smoking status</option>
             <option value="never">Never smoker</option>
             <option value="ex">Ex-smoker</option>
             <option value="current-light">
@@ -1032,6 +1035,7 @@
               font-size: 14px;
             "
           >
+            <option value="" disabled selected>Select alcohol use</option>
             <option value="none">None</option>
             <option value="occasional">Occasional</option>
             <option value="moderate">Moderate</option>
@@ -1050,6 +1054,7 @@
               font-size: 14px;
             "
           >
+            <option value="" disabled selected>Select occupation</option>
             <option value="student">Student</option>
             <option value="manual">Manual labor</option>
             <option value="office">Office/Clerical</option>
@@ -1072,6 +1077,7 @@
               font-size: 14px;
             "
           >
+            <option value="" disabled selected>Select living situation</option>
             <option value="alone">Lives alone</option>
             <option value="family">With family</option>
             <option value="partner">With partner</option>
@@ -1091,6 +1097,7 @@
               font-size: 14px;
             "
           >
+            <option value="" disabled selected>Select travel history</option>
             <option value="none">No recent travel</option>
             <option value="domestic">Domestic travel</option>
             <option value="international">International travel</option>
@@ -2400,7 +2407,7 @@
                   data-system="Endocrine"
                   title="Collapse tracker"
                 />
-                ▲ Cold intolerance</label
+                Cold intolerance</label
               >
               <label
                 ><input
