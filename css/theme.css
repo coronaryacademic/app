@@ -40,6 +40,8 @@
   --shine-end: rgba(255, 255, 255, 0);
   --borderline: white;
   --navbuttons: white;
+  --borderbottom: rgba(77, 77, 77, 0.25);
+  --borderbottomdark: rgba(85, 85, 85, 0.08);
 }
 
 /* Dark theme variables */
@@ -80,6 +82,8 @@
   --all-text: rgba(255, 255, 255, 0.818);
   --scrl: black;
   --navbuttons: white;
+  --borderbottom: rgba(169, 169, 169, 0.36);
+  --borderbottomdark: rgba(189, 189, 189, 0.09);
 }
 
 .timeline-label::before,

@@ -2338,7 +2338,7 @@ async function renderHistorySidebar() {
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
-  header.style.padding = "10.5px";
+  header.style.padding = "10px";
   header.style.paddingRight = "14px";
   // Make header sticky like the bottom user section
   header.style.position = "sticky";
@@ -2347,7 +2347,7 @@ async function renderHistorySidebar() {
   header.style.background = "transparent";
   header.style.backdropFilter = "none";
   header.style.webkitBackdropFilter = "none";
-  header.style.borderBottom = "1px solid rgba(255,255,255,0.08)";
+  header.style.borderBottom = "1px solid var(--borderbottomdark)";
 
   // Create left section with close button and title
   const leftSection = document.createElement("div");
@@ -2508,7 +2508,7 @@ async function renderHistorySidebar() {
   userSection.id = "sidebar-user-section";
   Object.assign(userSection.style, {
     padding: "16px",
-    borderTop: "1px solid rgba(255,255,255,0.08)",
+    borderTop: "1px solid var(--borderbottomdark)",
     background: "transparent",
     marginTop: "auto", // Push to bottom
     position: "sticky",
@@ -3379,11 +3379,13 @@ async function renderHistorySidebar() {
         alignItems: "center",
         gap: "12px",
         border: "none",
-        borderRadius: "8px",
-        padding: "12px",
+        borderRadius: "2px",
+        padding: "10px",
+        paddingBottom: "20px",
         marginBottom: "12px",
         cursor: "pointer",
         transition: "background-color 0.2s ease",
+        borderBottom: "1px solid var(--borderbottom)",
       });
 
       // Add header SVG icon
@@ -3873,11 +3875,11 @@ async function renderHistorySidebar() {
           menu.style.display = "block";
           positionMenu();
 
-          // activate kebab button visual state
-          menuBtn.classList.add("kebab-open");
-          menuBtn.style.background = "rgba(128, 128, 128, 0.38)";
-          menuBtn.style.boxShadow = "inset 0 0 0 1px rgba(255,255,255,0.08)";
-          menuBtn.style.transform = "translateY(-1px) scale(0.98)";
+          // keep neutral state for kebab button when menu is open
+          menuBtn.classList.remove("kebab-open");
+          menuBtn.style.background = "transparent";
+          menuBtn.style.boxShadow = "none";
+          menuBtn.style.transform = "none";
           menuBtn.setAttribute("aria-expanded", "true");
           // update global tracker and store cleanup function
           const onResize = () => positionMenu();
