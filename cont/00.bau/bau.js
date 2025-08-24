@@ -1676,6 +1676,28 @@ document
           ],
         },
         {
+          keys: [
+            "sweating",
+            "excessive sweating",
+            "hyperhidrosis",
+            "diaphoresis",
+            "profuse sweating",
+            "cold sweats",
+            "hot flashes",
+          ],
+          ddx: [
+            "Hyperthyroidism",
+            "Menopause in women",
+            "Anxiety disorders and panic attacks",
+            "Hypoglycemia",
+            "Myocardial infarction",
+            "Sepsis or systemic infection",
+            "Medication side effects including antidepressants",
+            "Primary hyperhidrosis",
+            "Pheochromocytoma",
+          ],
+        },
+        {
           keys: ["rash", "skin lesions", "itching", "pruritus", "erythema"],
           ddx: [
             "Contact dermatitis due to allergens or irritants",
