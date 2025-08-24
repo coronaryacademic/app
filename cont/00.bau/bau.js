@@ -1839,7 +1839,7 @@ function enhanceOneSingleInFlow(select) {
     borderRadius: "8px",
     background: "#fafafa",
     padding: "8px",
-    maxHeight: "260px",
+    maxHeight: "450px",
     overflowY: "auto",
     color: "black",
   });
@@ -1856,9 +1856,24 @@ function enhanceOneSingleInFlow(select) {
     border: "1px solid #ddd",
     borderRadius: "6px",
     background: "#fff",
-    color: "black",
+    color: "var(--all-text)",
     fontSize: "16px",
   });
+
+  // Set placeholder color
+  search.style.setProperty("--placeholder-color", "var(--all-text)");
+  const placeholderStyle = document.createElement("style");
+  placeholderStyle.textContent = `
+    #${select.id}-search::placeholder {
+      color: var(--all-text);
+      opacity: 0.7;
+    }
+  `;
+  search.id = `${select.id}-search`;
+  if (!document.head.querySelector(`style[data-for="${select.id}"]`)) {
+    placeholderStyle.setAttribute("data-for", select.id);
+    document.head.appendChild(placeholderStyle);
+  }
 
   const rowsContainer = document.createElement("div");
 
@@ -1905,6 +1920,19 @@ function enhanceOneSingleInFlow(select) {
     panel.innerHTML = "";
     panel.appendChild(search);
     rowsContainer.innerHTML = "";
+
+    // Check if this is a SOCRATES field that should use row layout
+    const socratesFields = [
+      "onset",
+      "character",
+      "radiation",
+      "timing",
+      "exacerbating",
+      "relieving",
+      "severity",
+    ];
+    const isSOCRATESField = socratesFields.includes(select.id);
+
     const children = Array.from(select.children);
     children.forEach((child) => {
       if (child.tagName === "OPTGROUP") {
@@ -1914,20 +1942,79 @@ function enhanceOneSingleInFlow(select) {
         groupLabel.setAttribute("data-text", child.label.toLowerCase());
         Object.assign(groupLabel.style, {
           fontWeight: "600",
-          marginTop: "6px",
-          marginBottom: "4px",
-          color: "black",
+          marginTop: "12px",
+          marginBottom: "8px",
+          color: "var(--all-text)",
         });
         rowsContainer.appendChild(groupLabel);
-        Array.from(child.children).forEach((opt) => {
-          rowsContainer.appendChild(
-            createOptionRow(opt.text, opt.value, opt.selected)
-          );
-        });
+
+        if (isSOCRATESField) {
+          // Create flex container for row layout
+          const optionsContainer = document.createElement("div");
+          Object.assign(optionsContainer.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            marginBottom: "16px",
+          });
+
+          Array.from(child.children).forEach((opt) => {
+            const optionRow = createOptionRow(
+              opt.text,
+              opt.value,
+              opt.selected
+            );
+            // Modify styling for inline display
+            Object.assign(optionRow.style, {
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              border: "none",
+              borderRadius: "20px",
+              background: opt.selected ? "#e3f2fd" : "transparent",
+              cursor: "pointer",
+              fontSize: "14px",
+              whiteSpace: "nowrap",
+              flexShrink: "0",
+            });
+            optionsContainer.appendChild(optionRow);
+          });
+
+          rowsContainer.appendChild(optionsContainer);
+        } else {
+          // Use original vertical layout for non-SOCRATES fields
+          Array.from(child.children).forEach((opt) => {
+            rowsContainer.appendChild(
+              createOptionRow(opt.text, opt.value, opt.selected)
+            );
+          });
+        }
       } else if (child.tagName === "OPTION") {
-        rowsContainer.appendChild(
-          createOptionRow(child.text, child.value, child.selected)
+        const optionRow = createOptionRow(
+          child.text,
+          child.value,
+          child.selected
         );
+        if (isSOCRATESField) {
+          // Style for inline display
+          Object.assign(optionRow.style, {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "6px 12px",
+            border: "none",
+            borderRadius: "20px",
+            background: child.selected ? "#e3f2fd" : "transparent",
+            cursor: "pointer",
+            fontSize: "14px",
+            whiteSpace: "nowrap",
+            flexShrink: "0",
+            marginRight: "8px",
+            marginBottom: "8px",
+          });
+        }
+        rowsContainer.appendChild(optionRow);
       }
     });
 
@@ -3164,10 +3251,13 @@ async function renderHistorySidebar() {
                 const inputs = form.querySelectorAll("input, select, textarea");
                 inputs.forEach((input) => {
                   // Skip student name and student number fields to preserve them
-                  if (input.id === "student-name" || input.id === "student-number") {
+                  if (
+                    input.id === "student-name" ||
+                    input.id === "student-number"
+                  ) {
                     return;
                   }
-                  
+
                   if (input.type === "checkbox" || input.type === "radio") {
                     input.checked = false;
                   } else if (input.tagName === "SELECT") {
@@ -4032,7 +4122,7 @@ function enhanceOneInFlow(select) {
     borderRadius: "8px",
     background: "#fafafa",
     padding: "8px",
-    maxHeight: "260px",
+    maxHeight: "450px",
     overflowY: "auto",
     boxShadow: "inset 0 0 0 rgba(0,0,0,0)",
     color: "black",
@@ -4056,8 +4146,22 @@ function enhanceOneInFlow(select) {
     border: "1px solid #ddd",
     borderRadius: "6px",
     background: "#fff",
-    color: "black",
+    color: "var(--all-text)",
   });
+
+  // Set placeholder color for multi-select search
+  const multiSearchStyle = document.createElement("style");
+  multiSearchStyle.textContent = `
+    #${select.id}-multisearch::placeholder {
+      color: var(--all-text);
+      opacity: 0.7;
+    }
+  `;
+  search.id = `${select.id}-multisearch`;
+  if (!document.head.querySelector(`style[data-multi-for="${select.id}"]`)) {
+    multiSearchStyle.setAttribute("data-multi-for", select.id);
+    document.head.appendChild(multiSearchStyle);
+  }
   const rowsContainer = document.createElement("div");
 
   // Track references for Other (specify)
@@ -4171,31 +4275,207 @@ function enhanceOneInFlow(select) {
     panel.innerHTML = "";
     panel.appendChild(search);
     rowsContainer.innerHTML = "";
+
+    // Check if this is a SOCRATES field that should use row layout
+    const socratesFields = ["onset", "character", "radiation", "timing", "exacerbating", "relieving", "severity"];
+    const isSOCRATESField = socratesFields.includes(select.id);
+
     const children = Array.from(select.children);
-    children.forEach((child) => {
-      if (child.tagName === "OPTGROUP") {
-        const groupLabel = document.createElement("div");
-        groupLabel.textContent = child.label;
-        groupLabel.setAttribute("data-group", "1");
-        groupLabel.setAttribute("data-text", child.label.toLowerCase());
-        Object.assign(groupLabel.style, {
-          fontWeight: "600",
-          marginTop: "6px",
-          marginBottom: "4px",
-          color: "black",
-        });
-        rowsContainer.appendChild(groupLabel);
-        Array.from(child.children).forEach((opt) => {
-          rowsContainer.appendChild(
-            createOptionRow(opt.text, opt.value, opt.selected)
+
+    if (isSOCRATESField) {
+      // Use row layout for SOCRATES fields
+      children.forEach((child) => {
+        if (child.tagName === "OPTGROUP") {
+          const groupLabel = document.createElement("div");
+          groupLabel.textContent = child.label;
+          groupLabel.setAttribute("data-group", "1");
+          groupLabel.setAttribute("data-text", child.label.toLowerCase());
+          Object.assign(groupLabel.style, {
+            fontWeight: "600",
+            marginTop: "12px",
+            marginBottom: "8px",
+            color: "var(--all-text)",
+          });
+          rowsContainer.appendChild(groupLabel);
+
+          // Create flex container for row layout
+          const optionsContainer = document.createElement("div");
+          Object.assign(optionsContainer.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px",
+            marginBottom: "16px",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+          });
+
+          Array.from(child.children).forEach((opt) => {
+            const optionRow = createOptionRow(opt.text, opt.value, opt.selected);
+            // Modify styling for inline display
+            Object.assign(optionRow.style, {
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "8px 14px",
+              border: "1px solid #e0e0e0",
+              borderRadius: "16px",
+              background: opt.selected ? "#e3f2fd" : "#f8f9fa",
+              cursor: "pointer",
+              fontSize: "13px",
+              whiteSpace: "nowrap",
+              flexShrink: "0",
+              minHeight: "32px",
+              transition: "all 0.2s ease",
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              boxSizing: "border-box",
+            });
+            optionsContainer.appendChild(optionRow);
+          });
+
+          rowsContainer.appendChild(optionsContainer);
+        } else if (child.tagName === "OPTION") {
+          const optionRow = createOptionRow(child.text, child.value, child.selected);
+          // Style for inline display
+          Object.assign(optionRow.style, {
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "8px 14px",
+            border: "1px solid #e0e0e0",
+            borderRadius: "16px",
+            background: child.selected ? "#e3f2fd" : "#f8f9fa",
+            cursor: "pointer",
+            fontSize: "13px",
+            whiteSpace: "nowrap",
+            flexShrink: "0",
+            minHeight: "32px",
+            transition: "all 0.2s ease",
+            marginRight: "8px",
+            marginBottom: "8px",
+            maxWidth: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            boxSizing: "border-box",
+          });
+          rowsContainer.appendChild(optionRow);
+        }
+      });
+    } else {
+      // Use 3-column grid layout for non-SOCRATES fields
+      const gridContainer = document.createElement("div");
+      Object.assign(gridContainer.style, {
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "12px",
+        marginTop: "8px",
+        width: "100%",
+        boxSizing: "border-box",
+      });
+
+      const columns = [[], [], []]; // Three columns for categories
+      let currentColumn = 0;
+
+      children.forEach((child) => {
+        if (child.tagName === "OPTGROUP") {
+          // Create column container for this optgroup
+          const columnDiv = document.createElement("div");
+          Object.assign(columnDiv.style, {
+            border: "1px solid #e0e0e0",
+            borderRadius: "6px",
+            padding: "8px",
+            background: "#f9f9f9",
+            height: "200px",
+            display: "flex",
+            flexDirection: "column",
+          });
+
+          const groupLabel = document.createElement("div");
+          groupLabel.textContent = child.label;
+          groupLabel.setAttribute("data-group", "1");
+          groupLabel.setAttribute("data-text", child.label.toLowerCase());
+          Object.assign(groupLabel.style, {
+            fontWeight: "600",
+            marginBottom: "8px",
+            color: "var(--all-text)",
+            fontSize: "14px",
+            borderBottom: "1px solid #ddd",
+            paddingBottom: "4px",
+            flexShrink: "0",
+          });
+          columnDiv.appendChild(groupLabel);
+
+          // Create scrollable container for options
+          const optionsContainer = document.createElement("div");
+          Object.assign(optionsContainer.style, {
+            flex: "1",
+            overflowY: "auto",
+            paddingRight: "4px",
+          });
+
+          // Add options to the scrollable container
+          Array.from(child.children).forEach((opt) => {
+            const optionRow = createOptionRow(opt.text, opt.value, opt.selected);
+            optionRow.style.marginBottom = "4px";
+            optionsContainer.appendChild(optionRow);
+          });
+
+          columnDiv.appendChild(optionsContainer);
+
+          // Add to current column and move to next
+          columns[currentColumn].push(columnDiv);
+          currentColumn = (currentColumn + 1) % 3;
+        } else if (child.tagName === "OPTION") {
+          // Handle standalone options (add to current column)
+          const optionRow = createOptionRow(
+            child.text,
+            child.value,
+            child.selected
           );
+          if (columns[currentColumn].length === 0) {
+            const columnDiv = document.createElement("div");
+            Object.assign(columnDiv.style, {
+              border: "1px solid #e0e0e0",
+              borderRadius: "6px",
+              padding: "8px",
+              background: "#f9f9f9",
+              height: "200px",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+            });
+            columnDiv.appendChild(optionRow);
+            columns[currentColumn].push(columnDiv);
+          } else {
+            // Add to last column container
+            const lastContainer =
+              columns[currentColumn][columns[currentColumn].length - 1];
+            lastContainer.appendChild(optionRow);
+          }
+        }
+      });
+
+      // Create the three column divs and populate them
+      for (let i = 0; i < 3; i++) {
+        const columnWrapper = document.createElement("div");
+        Object.assign(columnWrapper.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          minWidth: "0",
+          overflow: "hidden",
         });
-      } else if (child.tagName === "OPTION") {
-        rowsContainer.appendChild(
-          createOptionRow(child.text, child.value, child.selected)
-        );
+
+        columns[i].forEach((item) => {
+          columnWrapper.appendChild(item);
+        });
+
+        gridContainer.appendChild(columnWrapper);
       }
-    });
+
+    rowsContainer.appendChild(gridContainer);
+    }
 
     // Append the rows container before actions
     panel.appendChild(rowsContainer);
@@ -4221,6 +4501,19 @@ function enhanceOneInFlow(select) {
       color: "black",
       fontSize: "16px",
     });
+    
+    // Set placeholder color for "Other (specify)" field
+    const otherPlaceholderStyle = document.createElement("style");
+    otherPlaceholderStyle.textContent = `
+      input[placeholder="Other (specify)"]::placeholder {
+        color: var(--all-text);
+        opacity: 0.7;
+      }
+    `;
+    if (!document.head.querySelector('style[data-other-placeholder="true"]')) {
+      otherPlaceholderStyle.setAttribute("data-other-placeholder", "true");
+      document.head.appendChild(otherPlaceholderStyle);
+    }
     const applyOther = () => {
       if (otherCb.checked && otherInput.value.trim()) {
         ensureOtherOptionSelected(otherInput.value);
@@ -4339,7 +4632,7 @@ function enhanceOneInFlow(select) {
   buildPanel();
   updateButtonText();
 
-  // --- Debounced search filter behavior ---
+  // --- Enhanced search filter behavior ---
   const msDebounce = (fn, ms) => {
     let t;
     return (...a) => {
@@ -4347,21 +4640,161 @@ function enhanceOneInFlow(select) {
       t = setTimeout(() => fn(...a), ms);
     };
   };
-  search.addEventListener(
-    "input",
-    msDebounce(() => {
-      const q = search.value.trim().toLowerCase();
-      const rows = rowsContainer.querySelectorAll("[data-row], [data-group]");
-      rows.forEach((el) => {
-        const txt = (
-          el.getAttribute("data-text") ||
-          el.textContent ||
-          ""
-        ).toLowerCase();
-        el.style.display = !q || txt.includes(q) ? "" : "none";
+  
+  function performSearch() {
+    const q = search.value.trim().toLowerCase();
+    
+    // Remove existing "not found" message
+    const existingNotFound = rowsContainer.querySelector('.search-not-found');
+    if (existingNotFound) {
+      existingNotFound.remove();
+    }
+    
+    if (!q) {
+      // Completely restore original layout when search is empty
+      buildPanel();
+      return;
+    }
+    
+    let hasVisibleResults = false;
+    
+    // Handle SOCRATES fields (row layout)
+    const socratesFields = ["onset", "character", "radiation", "timing", "exacerbating", "relieving", "severity"];
+    const isSOCRATESField = socratesFields.includes(select.id);
+    
+    if (isSOCRATESField) {
+      // For SOCRATES fields, filter within flex containers
+      const groupLabels = rowsContainer.querySelectorAll("[data-group]");
+      groupLabels.forEach((groupLabel) => {
+        const optionsContainer = groupLabel.nextElementSibling;
+        if (optionsContainer && (optionsContainer.style.display === "flex" || optionsContainer.style.flexWrap === "wrap")) {
+          const options = optionsContainer.querySelectorAll("[data-row]");
+          let groupHasVisible = false;
+          
+          options.forEach((option) => {
+            const txt = (option.getAttribute("data-text") || option.textContent || "").toLowerCase();
+            const matches = txt.includes(q);
+            
+            if (matches) {
+              option.style.display = "inline-flex";
+              groupHasVisible = true;
+              hasVisibleResults = true;
+            } else {
+              option.style.display = "none";
+            }
+          });
+          
+          // Always show group label, maintain container properties
+          groupLabel.style.display = "";
+          if (groupHasVisible) {
+            optionsContainer.style.display = "flex";
+            optionsContainer.style.flexWrap = "wrap";
+            optionsContainer.style.gap = "8px";
+            optionsContainer.style.marginBottom = "16px";
+            optionsContainer.style.alignItems = "flex-start";
+            optionsContainer.style.justifyContent = "flex-start";
+          } else {
+            optionsContainer.style.display = "none";
+          }
+        }
       });
-    }, 150)
-  );
+    } else {
+      // For grid layout (non-SOCRATES fields)
+      const gridContainer = rowsContainer.querySelector('div[style*="grid"]');
+      if (gridContainer) {
+        const columnWrappers = gridContainer.children;
+        Array.from(columnWrappers).forEach((columnWrapper) => {
+          const categoryDivs = columnWrapper.children;
+          let columnHasVisible = false;
+          
+          Array.from(categoryDivs).forEach((categoryDiv) => {
+            const groupLabel = categoryDiv.querySelector("[data-group]");
+            const optionsContainer = categoryDiv.querySelector('div[style*="flex: 1"]') || categoryDiv;
+            const options = categoryDiv.querySelectorAll("[data-row]");
+            let categoryHasVisible = false;
+            
+            options.forEach((option) => {
+              const txt = (option.getAttribute("data-text") || option.textContent || "").toLowerCase();
+              const matches = txt.includes(q);
+              
+              if (matches) {
+                option.style.display = "flex";
+                categoryHasVisible = true;
+                hasVisibleResults = true;
+              } else {
+                option.style.display = "none";
+              }
+            });
+            
+            // Always show group label, maintain category structure
+            if (groupLabel) {
+              groupLabel.style.display = "";
+            }
+            
+            // Show category if it has visible options, maintain grid structure and constraints
+            if (categoryHasVisible) {
+              categoryDiv.style.display = "";
+              categoryDiv.style.height = "200px";
+              categoryDiv.style.overflowY = "auto";
+              categoryDiv.style.border = "1px solid #e0e0e0";
+              categoryDiv.style.borderRadius = "6px";
+              categoryDiv.style.padding = "8px";
+              categoryDiv.style.background = "#f9f9f9";
+              categoryDiv.style.flexDirection = "column";
+              
+              // Ensure scrollable content container maintains properties
+              const scrollableContent = categoryDiv.querySelector('div[style*="flex: 1"]');
+              if (scrollableContent) {
+                scrollableContent.style.flex = "1";
+                scrollableContent.style.overflowY = "auto";
+                scrollableContent.style.paddingRight = "4px";
+              }
+              
+              columnHasVisible = true;
+            } else {
+              categoryDiv.style.display = "none";
+            }
+          });
+          
+          // Keep column wrapper visible if it has any visible categories
+          columnWrapper.style.display = columnHasVisible ? "flex" : "none";
+        });
+      }
+    }
+    
+    // Hide the "Other (specify)" field during search
+    const otherRow = panel.querySelector('div[style*="display: flex"][style*="gap: 8px"]');
+    if (otherRow && otherRow.querySelector('input[placeholder="Other (specify)"]')) {
+      otherRow.style.display = "none";
+    }
+    
+    // Show "Not found" message if no results
+    if (!hasVisibleResults) {
+      const notFoundDiv = document.createElement("div");
+      notFoundDiv.className = "search-not-found";
+      notFoundDiv.textContent = "Not found";
+      Object.assign(notFoundDiv.style, {
+        textAlign: "center",
+        padding: "40px 20px",
+        color: "var(--all-text)",
+        fontSize: "16px",
+        fontWeight: "500",
+        opacity: "0.7",
+      });
+      
+      // Hide all other content
+      const allContent = rowsContainer.children;
+      Array.from(allContent).forEach((child) => {
+        if (!child.classList.contains('search-not-found')) {
+          child.style.display = "none";
+        }
+      });
+      
+      rowsContainer.appendChild(notFoundDiv);
+    }
+  }
+  
+  search.addEventListener("input", msDebounce(performSearch, 150));
 
   // --- Dependent prioritization logic for regular meds ---
   function applyDependentPriorities() {
@@ -4435,22 +4868,22 @@ function enhanceOneInFlow(select) {
     // Get stored student data from localStorage
     const storedStudentName = localStorage.getItem("studentName");
     const storedStudentNumber = localStorage.getItem("studentNumber");
-    
+
     // Auto-fill the student name field
     const studentNameField = document.getElementById("student-name");
     if (studentNameField && storedStudentName) {
       studentNameField.value = storedStudentName;
     }
-    
+
     // Auto-fill the student number field
     const studentNumberField = document.getElementById("student-number");
     if (studentNumberField && storedStudentNumber) {
       studentNumberField.value = storedStudentNumber;
     }
-    
-    console.log("[BAU] Auto-filled student data:", { 
-      name: storedStudentName, 
-      number: storedStudentNumber 
+
+    console.log("[BAU] Auto-filled student data:", {
+      name: storedStudentName,
+      number: storedStudentNumber,
     });
   } catch (error) {
     console.warn("[BAU] Error auto-filling student data:", error);
