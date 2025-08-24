@@ -2338,7 +2338,7 @@ async function renderHistorySidebar() {
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
-  header.style.padding = "10px";
+  header.style.padding = "10.5px";
   header.style.paddingRight = "14px";
   // Make header sticky like the bottom user section
   header.style.position = "sticky";
