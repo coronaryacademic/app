@@ -2508,6 +2508,7 @@ async function renderHistorySidebar() {
   userSection.id = "sidebar-user-section";
   Object.assign(userSection.style, {
     padding: "16px",
+    paddingBottom: "5px",
     borderTop: "1px solid var(--borderbottomdark)",
     background: "transparent",
     marginTop: "auto", // Push to bottom
