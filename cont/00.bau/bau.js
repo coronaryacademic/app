@@ -583,6 +583,8 @@ document
         const actions = document.createElement("div");
         actions.style.display = "flex";
         actions.style.gap = "8px";
+        actions.style.position = "relative"; // anchor for kebab menu
+        actions.style.position = "relative"; // anchor for menu
         actions.style.marginTop = "8px";
         actions.style.position = "sticky";
         actions.style.bottom = "0";
@@ -2306,7 +2308,7 @@ async function renderHistorySidebar() {
     position: "fixed",
     top: "0",
     left: "0",
-    height: "100vh",
+    height: "100dvh",
     width: "300px",
     transform: "translateX(-100%)",
     transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
@@ -2319,6 +2321,15 @@ async function renderHistorySidebar() {
     display: "flex",
     flexDirection: "column",
   });
+  // Account for iOS safe-area so bottom content isn't hidden by toolbars/home indicator
+  drawer.style.paddingBottom = "env(safe-area-inset-bottom, 0px)";
+  // Disable text selection inside the sidebar for smoother touch scrolling on iPad
+  drawer.style.userSelect = "none";
+  drawer.style.webkitUserSelect = "none";
+  // Prevent any accidental horizontal scrolling
+  drawer.style.overflowX = "hidden";
+  // Ensure touch scrolling is vertical and smooth on iPad (including edges)
+  drawer.style.touchAction = "pan-y";
 
   // Force sidebar z-index
   drawer.style.setProperty("z-index", "1000000", "important");
@@ -2327,8 +2338,16 @@ async function renderHistorySidebar() {
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
-  header.style.padding = "20px";
-  header.style.paddingRight = "25px";
+  header.style.padding = "10px";
+  header.style.paddingRight = "14px";
+  // Make header sticky like the bottom user section
+  header.style.position = "sticky";
+  header.style.top = "0";
+  header.style.zIndex = "2";
+  header.style.background = "transparent";
+  header.style.backdropFilter = "none";
+  header.style.webkitBackdropFilter = "none";
+  header.style.borderBottom = "1px solid rgba(255,255,255,0.08)";
 
   // Create left section with close button and title
   const leftSection = document.createElement("div");
@@ -2402,6 +2421,30 @@ async function renderHistorySidebar() {
   header.appendChild(leftSection);
   header.appendChild(actionsWrap);
 
+  // Sidebar message bar (to show status inside the sidebar)
+  const sidebarMsg = document.createElement("div");
+  Object.assign(sidebarMsg.style, {
+    display: "none",
+    margin: "0 16px",
+    marginTop: "-6px",
+    marginBottom: "8px",
+    padding: "8px 12px",
+    borderRadius: "10px",
+    fontSize: "13px",
+    lineHeight: "1.3",
+    color: "var(--all-text)",
+    background: "rgba(150,150,150,0.18)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1px solid rgba(255,255,255,0.12)",
+  });
+
+  const sidebarMessage = (_text, _kind = "info") => {
+    // Disabled per user request: do not show any sidebar messages
+    sidebarMsg.style.display = "none";
+    return;
+  };
+
   const list = document.createElement("div");
   list.id = "bau-history-list";
   Object.assign(list.style, {
@@ -2412,16 +2455,65 @@ async function renderHistorySidebar() {
     gap: "8px",
     flex: "1", // Take remaining space between header and user section
   });
+  // Smooth iOS momentum scroll and disable accidental text selection
+  list.style.WebkitOverflowScrolling = "touch";
+  list.style.userSelect = "none";
+  list.style.webkitUserSelect = "none";
+  list.style.overflowX = "hidden";
+  list.style.touchAction = "pan-y";
+  // Programmatic smooth scrolling (no effect on touch but harmless)
+  list.style.scrollBehavior = "smooth";
+
+  // Allow scrolling even when starting drag on margins/header inside the drawer
+  // Route wheel/touch drags on the drawer to the scrollable list
+  const forwardWheelToList = (ev) => {
+    // Only when the drawer itself is the target or non-scrollable areas
+    // If the event originates from the list, let native behavior handle it
+    if (list.contains(ev.target)) return;
+    if (typeof ev.deltaY === "number" && ev.deltaY !== 0) {
+      list.scrollTop += ev.deltaY;
+      ev.preventDefault();
+    }
+  };
+  const touchState = { y: 0, active: false };
+  const onTouchStart = (ev) => {
+    if (list.contains(ev.target)) return; // native scroll
+    const t = ev.touches && ev.touches[0];
+    if (!t) return;
+    touchState.y = t.clientY;
+    touchState.active = true;
+  };
+  const onTouchMove = (ev) => {
+    if (!touchState.active) return;
+    const t = ev.touches && ev.touches[0];
+    if (!t) return;
+    const dy = touchState.y - t.clientY;
+    if (Math.abs(dy) > 0) {
+      list.scrollTop += dy;
+      touchState.y = t.clientY;
+      ev.preventDefault();
+    }
+  };
+  const onTouchEnd = () => {
+    touchState.active = false;
+  };
+  // Attach with passive:false so we can preventDefault
+  drawer.addEventListener("wheel", forwardWheelToList, { passive: false });
+  drawer.addEventListener("touchstart", onTouchStart, { passive: false });
+  drawer.addEventListener("touchmove", onTouchMove, { passive: false });
+  drawer.addEventListener("touchend", onTouchEnd, { passive: true });
 
   // Create user dropdown section at bottom
   const userSection = document.createElement("div");
   userSection.id = "sidebar-user-section";
   Object.assign(userSection.style, {
     padding: "16px",
-    borderTop: "none",
+    borderTop: "1px solid rgba(255,255,255,0.08)",
     background: "transparent",
     marginTop: "auto", // Push to bottom
-    position: "relative",
+    position: "sticky",
+    bottom: "0",
+    zIndex: "1",
   });
 
   const userDropdown = document.createElement("div");
@@ -2550,10 +2642,26 @@ async function renderHistorySidebar() {
     "Note: Items here are automatically deleted after 7 days. You can swipe each history to the left to delete it or use the recycle bin icon to delete all.";
 
   drawer.appendChild(header);
+  drawer.appendChild(sidebarMsg);
   drawer.appendChild(list);
   drawer.appendChild(note);
   drawer.appendChild(userSection);
   document.body.appendChild(drawer);
+
+  // Ensure the list never hides behind the sticky user section
+  const adjustForUserSection = () => {
+    try {
+      const userH = userSection.getBoundingClientRect().height || 0;
+      // 16px base padding + safe area + user section height
+      list.style.paddingBottom = `calc(16px + env(safe-area-inset-bottom, 0px) + ${Math.ceil(
+        userH
+      )}px)`;
+    } catch {}
+  };
+  // Recompute when fonts load/resize/orientation changes
+  window.addEventListener("resize", adjustForUserSection, { passive: true });
+  window.addEventListener("orientationchange", adjustForUserSection);
+  setTimeout(adjustForUserSection, 0);
 
   // Open/Close helpers with responsive main content
   let isOpen = false;
@@ -2633,6 +2741,28 @@ async function renderHistorySidebar() {
       window.sidebarCleanupFunctions = [];
     }
 
+    // Also close any open history kebab menu (appended to body)
+    try {
+      const openRef = window.__bauOpenHistoryMenu;
+      if (openRef && openRef.menu) {
+        if (typeof openRef.off === "function") {
+          try {
+            openRef.off();
+          } catch {}
+        }
+        openRef.menu.style.display = "none";
+        if (openRef.btn) {
+          openRef.btn.classList.remove("kebab-open");
+          openRef.btn.style.background = "transparent";
+          openRef.btn.style.boxShadow = "none";
+          openRef.btn.style.transform = "none";
+          openRef.btn.setAttribute &&
+            openRef.btn.setAttribute("aria-expanded", "false");
+        }
+        window.__bauOpenHistoryMenu = { btn: null, menu: null, off: null };
+      }
+    } catch {}
+
     isOpen = false;
   };
 
@@ -2683,6 +2813,12 @@ async function renderHistorySidebar() {
     isOpen = true;
     // Load or refresh histories each time drawer opens
     loadHistories();
+
+    // Make sure user section is accounted for and list starts at top
+    setTimeout(() => {
+      adjustForUserSection();
+      list.scrollTop = 0;
+    }, 50);
 
     // Add click-anywhere-to-close functionality
     setTimeout(() => {
@@ -3056,7 +3192,7 @@ async function renderHistorySidebar() {
       const auth = window.auth;
       const user = auth?.currentUser || null;
       if (!user) {
-        inlineMessage("Please sign in to manage histories.");
+        sidebarMessage("Please sign in to manage histories.");
         return;
       }
       // Show confirmation dialog for clear all
@@ -3068,7 +3204,7 @@ async function renderHistorySidebar() {
         const { deleteDoc } = window;
         if (!deleteDoc) {
           console.warn("[BAU] deleteDoc not available on window");
-          inlineMessage("Clear failed: delete API unavailable.");
+          sidebarMessage("Clear failed: delete API unavailable.", "error");
           return;
         }
 
@@ -3076,23 +3212,52 @@ async function renderHistorySidebar() {
         const q = query(col);
         const snap = await getDocs(q);
         if (snap.empty) {
-          inlineMessage("No histories to clear.");
+          sidebarMessage("No histories to clear.");
           return;
         }
 
+        // Animate collapse of all visible items while deleting in background
+        const items = Array.from(list.querySelectorAll(".bau-history-item"));
+        items.forEach((el, idx) => {
+          const h = el.offsetHeight;
+          el.style.height = h + "px";
+          el.style.overflow = "hidden";
+          el.style.transition =
+            "height 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease, transform 300ms ease, margin 300ms ease";
+          // stagger a bit for nicer effect
+          const delay = idx * 30;
+          el.style.transitionDelay = `${delay}ms, ${delay}ms, ${delay}ms, ${delay}ms`;
+          // force reflow
+          void el.offsetHeight;
+          el.style.opacity = "0";
+          el.style.transform = "translateY(-6px)";
+          el.style.marginTop = "0";
+          el.style.marginBottom = "0";
+          el.style.height = "0px";
+        });
+
+        // Begin deletions in background
         const deletions = [];
         snap.forEach((docSnap) => {
-          // Use ref when available for correctness
           if (docSnap.ref) deletions.push(deleteDoc(docSnap.ref));
         });
+
+        // After animation completes, clear the list visually
+        const totalAnim = (items.length ? (items.length - 1) * 30 : 0) + 400;
+        await new Promise((r) => setTimeout(r, totalAnim));
+        // Remove children after animation
+        items.forEach((el) => el.remove());
+
+        // Wait for deletions to settle then show message and refresh state
         await Promise.allSettled(deletions);
-        inlineMessage("All histories cleared.");
+        sidebarMessage("All histories cleared.", "success");
+        // Optionally repopulate (no flicker since list is already empty)
         await loadHistories();
       });
     } catch (error) {
       console.error("[BAU] Failed to clear histories:", error);
     }
-    inlineMessage("Failed to clear histories.");
+    sidebarMessage("Failed to clear histories.", "error");
   });
 
   // Add additional event listeners for Clear button
@@ -3386,6 +3551,7 @@ async function renderHistorySidebar() {
       snap.forEach((doc) => {
         const data = doc.data();
         const item = document.createElement("div");
+        item.classList.add("bau-history-item");
         Object.assign(item.style, {
           display: "grid",
           gridTemplateColumns: "1fr auto",
@@ -3396,146 +3562,81 @@ async function renderHistorySidebar() {
           padding: "8px",
           position: "relative",
           transition: "transform 0.3s ease",
-          cursor: "grab",
+          cursor: "default",
         });
 
-        // Add swipe/drag to delete functionality for all devices
-        let startX = 0;
-        let currentX = 0;
-        let isDragging = false;
-        let deleteThreshold = -100; // Swipe/drag left 100px to delete
-        let confirmationShown = false; // Track if confirmation dialog is already shown
-
-        const getClientX = (e) => {
-          return e.touches ? e.touches[0].clientX : e.clientX;
-        };
-
-        const handleStart = (e) => {
-          // Don't start drag if clicking on Load button
-          if (e.target.closest("button")) {
-            return;
-          }
-          startX = getClientX(e);
-          isDragging = true;
-          item.style.transition = "none";
-          item.style.cursor = "grabbing";
-          e.preventDefault(); // Prevent text selection on desktop
-        };
-
-        const handleMove = (e) => {
-          if (!isDragging) return;
-          currentX = getClientX(e);
-          const deltaX = currentX - startX;
-
-          // Only allow left swipe/drag (negative delta)
-          if (deltaX < 0) {
-            item.style.transform = `translateX(${deltaX}px)`;
-
-            if (deltaX < deleteThreshold) {
-              // Add red border and background when threshold is reached
-              item.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
-              item.style.border = "3px solid #ff4444";
-
-              // Show confirmation dialog immediately when threshold is reached
-              if (!confirmationShown) {
-                confirmationShown = true;
-                showDeleteConfirmation(
-                  data.patientName || "Unknown",
-                  async (confirmed) => {
-                    confirmationShown = false;
-                    if (confirmed) {
+        // Helper to load this history into the form
+        const loadHistory = () => {
+          try {
+            // Navigate to BAU page first if we're not already there
+            if (typeof window.loadContent === "function") {
+              window.loadContent("bau").then(() => {
+                if (typeof window.updateNavActiveState === "function") {
+                  window.updateNavActiveState("bau");
+                }
+                // Wait until the BAU form is present before applying (iPad/Safari fix)
+                const waitFor = (pred, timeout = 4000, interval = 50) =>
+                  new Promise((resolve, reject) => {
+                    const start = Date.now();
+                    (function tick() {
                       try {
-                        const { deleteDoc } = window;
-                        if (deleteDoc) {
-                          await deleteDoc(doc.ref);
-                          item.style.transform = "translateX(-100%)";
-                          item.style.opacity = "0";
-                          setTimeout(() => {
-                            if (item.parentNode) {
-                              item.parentNode.removeChild(item);
-                            }
-                          }, 300);
-                        } else {
-                          console.warn("[BAU] deleteDoc not available");
-                        }
-                      } catch (error) {
-                        console.error("[BAU] Failed to delete history:", error);
-                        item.style.transform = "translateX(0)";
-                        item.style.backgroundColor = "";
-                        item.style.border = "none";
-                      }
-                    } else {
-                      // Reset position if user cancels
-                      item.style.transform = "translateX(0)";
-                      item.style.backgroundColor = "";
-                      item.style.border = "none";
+                        if (pred()) return resolve();
+                      } catch {}
+                      if (Date.now() - start >= timeout)
+                        return reject(new Error("timeout"));
+                      setTimeout(tick, interval);
+                    })();
+                  });
+
+                waitFor(() => document.getElementById("history-form-container"))
+                  .then(
+                    () =>
+                      new Promise((r) =>
+                        requestAnimationFrame(() => requestAnimationFrame(r))
+                      )
+                  )
+                  .then(() => {
+                    applySnapshotToForm(data.data || {});
+                    const patientName = data.patientName || "Unknown";
+                    const loadHistoryMessage = document.getElementById(
+                      "load-history-message"
+                    );
+                    if (loadHistoryMessage) {
+                      loadHistoryMessage.textContent = `${patientName} History loaded successfully.`;
+                      loadHistoryMessage.style.display = "block";
+                      loadHistoryMessage.style.marginBottom = "10px";
+                      setTimeout(() => {
+                        loadHistoryMessage.style.opacity = "1";
+                        loadHistoryMessage.style.transform =
+                          "translateY(0) scale(1)";
+                      }, 10);
+                      setTimeout(() => {
+                        loadHistoryMessage.style.opacity = "0";
+                        loadHistoryMessage.style.transform =
+                          "translateY(-20px) scale(0.95)";
+                        loadHistoryMessage.style.marginBottom = "0";
+                        setTimeout(() => {
+                          loadHistoryMessage.style.display = "none";
+                        }, 500);
+                      }, 3000);
                     }
-                  }
-                );
-              }
+                  })
+                  .catch(() => {
+                    // Fallback: attempt apply anyway
+                    try {
+                      applySnapshotToForm(data.data || {});
+                    } catch {}
+                  });
+              });
             } else {
-              // Show lighter visual feedback while dragging
-              item.style.backgroundColor = "rgba(255, 0, 0, 0.05)";
-              item.style.border = "2px solid rgba(255, 68, 68, 0.3)";
+              applySnapshotToForm(data.data || {});
             }
-          }
-          e.preventDefault();
-        };
-
-        const handleEnd = async (e) => {
-          if (!isDragging) return;
-          isDragging = false;
-          item.style.transition =
-            "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease";
-          item.style.cursor = "grab";
-
-          // If confirmation dialog wasn't shown during drag, reset position
-          if (!confirmationShown) {
-            item.style.transform = "translateX(0)";
-            item.style.backgroundColor = "";
-            item.style.border = "none";
+            close();
+          } catch (e) {
+            console.warn("[BAU] Failed to apply snapshot:", e);
+            inlineMessage("Failed to load history.");
           }
         };
-
-        // Cleanup function to reset drag state
-        const cleanupDrag = () => {
-          if (isDragging) {
-            isDragging = false;
-            confirmationShown = false;
-            item.style.transition =
-              "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease";
-            item.style.cursor = "grab";
-            item.style.transform = "translateX(0)";
-            item.style.backgroundColor = "";
-            item.style.border = "none";
-          }
-        };
-
-        // Add touch event listeners for mobile
-        item.addEventListener("touchstart", handleStart, { passive: false });
-        item.addEventListener("touchmove", handleMove, { passive: false });
-        item.addEventListener("touchend", handleEnd, { passive: false });
-        item.addEventListener("touchcancel", cleanupDrag);
-
-        // Add mouse event listeners for desktop
-        item.addEventListener("mousedown", handleStart);
-        item.addEventListener("mousemove", handleMove);
-        item.addEventListener("mouseup", handleEnd);
-        item.addEventListener("mouseleave", cleanupDrag);
-
-        // Global cleanup when sidebar closes or page changes
-        const globalCleanup = () => {
-          const trashIcon = document.querySelector(".drag-trash-icon");
-          if (trashIcon) {
-            trashIcon.remove();
-          }
-        };
-
-        // Store cleanup function for later use
-        if (!window.sidebarCleanupFunctions) {
-          window.sidebarCleanupFunctions = [];
-        }
-        window.sidebarCleanupFunctions.push(globalCleanup);
 
         const meta = document.createElement("div");
         const dt = parseDateSafe(data.createdAt);
@@ -3590,100 +3691,235 @@ async function renderHistorySidebar() {
           alignSelf: "center",
         });
 
-        const loadBtn = document.createElement("button");
-        loadBtn.type = "button";
-        loadBtn.textContent = "Load";
-        Object.assign(loadBtn.style, {
-          padding: "6px 10px",
+        // Kebab menu button (three horizontal dots)
+        const menuBtn = document.createElement("button");
+        menuBtn.type = "button";
+        menuBtn.setAttribute("aria-label", "History actions");
+        menuBtn.setAttribute("aria-expanded", "false");
+        Object.assign(menuBtn.style, {
+          padding: "4px 6px",
           border: "none",
-          borderRadius: "6px",
           background: "transparent",
           color: "var(--all-text)",
           cursor: "pointer",
+          borderRadius: "6px",
+          transition: "background-color 120ms ease, transform 120ms ease",
         });
-        loadBtn.addEventListener("click", (e) => {
-          e.preventDefault();
+        menuBtn.classList.add("bau-kebab-btn");
+        menuBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="5" cy="12" r="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="19" cy="12" r="2"/>
+          </svg>
+        `;
+
+        // Dropdown menu panel (opens to the right, above sidebar)
+        const menu = document.createElement("div");
+        menu.className = "bau-history-menu";
+        Object.assign(menu.style, {
+          position: "fixed", // take out of sidebar flow to avoid horizontal scroll
+          background: "rgba(150, 150, 150, 0.205)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          borderRadius: "25px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+          border: "none",
+          padding: "10px 12px 8px",
+          display: "none",
+          zIndex: "1000002", // above sidebar
+          minWidth: "140px",
+          pointerEvents: "auto",
+        });
+
+        const makeMenuItem = (label, opts = {}) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = label;
+          Object.assign(btn.style, {
+            width: "100%",
+            textAlign: "left",
+            padding: "10px 14px",
+            border: "none",
+            background: "transparent",
+            color: opts.color || "var(--all-text)",
+            cursor: "pointer",
+            borderRadius: "6px",
+            margin: "1px 0",
+          });
+          btn.addEventListener("mouseenter", () => {
+            btn.style.background = "rgba(var(--all-text-rgb,0,0,0),0.08)";
+          });
+          btn.addEventListener("mouseleave", () => {
+            btn.style.background = "transparent";
+          });
+          return btn;
+        };
+
+        const loadOption = makeMenuItem("Load");
+        loadOption.addEventListener("click", (e) => {
           e.stopPropagation();
-          console.log("[BAU] Load history button clicked");
-          try {
-            // Navigate to BAU page first if we're not already there
-            if (typeof window.loadContent === "function") {
-              console.log("[BAU] Navigating to BAU page to load history");
-              window.loadContent("bau").then(() => {
-                if (typeof window.updateNavActiveState === "function") {
-                  window.updateNavActiveState("bau");
-                }
-                // Apply the history data after navigation
-                setTimeout(() => {
-                  applySnapshotToForm(data.data || {});
-                  const patientName = data.patientName || "Unknown";
-                  // Show success message
-                  const loadHistoryMessage = document.getElementById(
-                    "load-history-message"
-                  );
-                  if (loadHistoryMessage) {
-                    loadHistoryMessage.textContent = `${patientName} History loaded successfully.`;
-                    loadHistoryMessage.style.display = "block";
-                    loadHistoryMessage.style.marginBottom = "10px";
-                    // Auto-hide after 3 seconds
-                    setTimeout(() => {
-                      loadHistoryMessage.style.display = "none";
-                    }, 3000);
-                    setTimeout(() => {
-                      loadHistoryMessage.style.opacity = "1";
-                      loadHistoryMessage.style.transform =
-                        "translateY(0) scale(1)";
-                    }, 10);
-                    setTimeout(() => {
-                      loadHistoryMessage.style.opacity = "0";
-                      loadHistoryMessage.style.transform =
-                        "translateY(-20px) scale(0.95)";
-                      loadHistoryMessage.style.marginBottom = "0";
-                      setTimeout(() => {
-                        loadHistoryMessage.style.display = "none";
-                      }, 500);
-                    }, 3000);
-                  }
-                }, 100);
-              });
-            } else {
-              console.log(
-                "[BAU] loadContent function not available, applying data only"
-              );
-              // Fallback: just apply the data
-              applySnapshotToForm(data.data || {});
-              const patientName = data.patientName || "Unknown";
-              const loadHistoryMessage = document.getElementById(
-                "load-history-message"
-              );
-              if (loadHistoryMessage) {
-                loadHistoryMessage.textContent = `The ${patientName} History is loaded successfully.`;
-                loadHistoryMessage.style.display = "block";
-                loadHistoryMessage.style.marginBottom = "10px";
-                setTimeout(() => {
-                  loadHistoryMessage.style.opacity = "1";
-                  loadHistoryMessage.style.transform = "translateY(0) scale(1)";
-                }, 10);
-                setTimeout(() => {
-                  loadHistoryMessage.style.opacity = "0";
-                  loadHistoryMessage.style.transform =
-                    "translateY(-20px) scale(0.95)";
-                  loadHistoryMessage.style.marginBottom = "0";
-                  setTimeout(() => {
-                    loadHistoryMessage.style.display = "none";
-                  }, 500);
-                }, 3000);
+          // use central hide to clear global state
+          hideMenu();
+          loadHistory();
+        });
+
+        const deleteOption = makeMenuItem("Delete", { color: "#ff4444" });
+        deleteOption.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          // use central hide to clear global state
+          hideMenu();
+          showDeleteConfirmation(data.patientName || "Unknown", async (ok) => {
+            if (!ok) return;
+            try {
+              const { deleteDoc } = window;
+              if (deleteDoc && doc.ref) {
+                await deleteDoc(doc.ref);
+                // Smooth collapse animation
+                const h = item.offsetHeight;
+                item.style.height = h + "px";
+                item.style.overflow = "hidden";
+                item.style.transition =
+                  "height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease, transform 260ms ease, margin 260ms ease";
+                // force reflow
+                void item.offsetHeight;
+                item.style.opacity = "0";
+                item.style.transform = "translateY(-6px)";
+                item.style.marginTop = "0";
+                item.style.marginBottom = "0";
+                item.style.height = "0px";
+                setTimeout(() => item.remove(), 360);
               }
+            } catch (err) {
+              console.error("[BAU] Failed to delete history:", err);
             }
-            close();
-          } catch (e) {
-            console.warn("[BAU] Failed to apply snapshot:", e);
-            inlineMessage("Failed to load history.");
+          });
+        });
+
+        menu.appendChild(loadOption);
+        menu.appendChild(deleteOption);
+
+        // Global tracker for a single open menu at a time
+        window.__bauOpenHistoryMenu = window.__bauOpenHistoryMenu || {
+          btn: null,
+          menu: null,
+          off: null,
+        };
+        let outsideHandler;
+        let cleanupHandlers = [];
+        const hideMenu = () => {
+          menu.style.display = "none";
+          document.removeEventListener("click", outsideHandler, true);
+          // remove window listeners
+          cleanupHandlers.forEach((off) => {
+            try {
+              off && off();
+            } catch {}
+          });
+          cleanupHandlers = [];
+          // deactivate kebab button visual state
+          menuBtn.classList.remove("kebab-open");
+          menuBtn.style.background = "transparent";
+          menuBtn.style.boxShadow = "none";
+          menuBtn.style.transform = "none";
+          menuBtn.setAttribute("aria-expanded", "false");
+          // clear global tracker if it's us
+          if (window.__bauOpenHistoryMenu.btn === menuBtn) {
+            window.__bauOpenHistoryMenu = { btn: null, menu: null, off: null };
           }
+        };
+        const showMenu = () => {
+          // Close previously open menu if different
+          const openRef = window.__bauOpenHistoryMenu;
+          if (openRef.btn && openRef.btn !== menuBtn) {
+            openRef.menu && (openRef.menu.style.display = "none");
+            openRef.btn.classList.remove("kebab-open");
+            openRef.btn.style.background = "transparent";
+            openRef.btn.style.boxShadow = "none";
+            openRef.btn.style.transform = "none";
+            openRef.btn.setAttribute &&
+              openRef.btn.setAttribute("aria-expanded", "false");
+            if (typeof openRef.off === "function") {
+              try {
+                openRef.off();
+              } catch {}
+            }
+            window.__bauOpenHistoryMenu = { btn: null, menu: null, off: null };
+          }
+          // Move to body so it's guaranteed above the sidebar stacking context
+          if (menu.parentElement !== document.body) {
+            document.body.appendChild(menu);
+          }
+          // Compute and apply screen position
+          const positionMenu = () => {
+            // Do not show menu if hidden
+            if (menu.style.display !== "block") return;
+            const rect = menuBtn.getBoundingClientRect();
+            const menuWidth = menu.offsetWidth || 160;
+            const menuHeight = menu.offsetHeight || 10;
+            let left = rect.right + 6;
+            // Center vertically relative to the button, bias slightly more upward
+            let top = rect.top + (rect.height - menuHeight) / 2 - 4;
+            const maxLeft = window.innerWidth - menuWidth - 8;
+            const maxTop = window.innerHeight - menuHeight - 8;
+            const minTop = 8;
+            if (left > maxLeft) left = Math.max(8, maxLeft);
+            if (top > maxTop) top = maxTop;
+            if (top < minTop) top = minTop;
+            menu.style.left = `${left}px`;
+            menu.style.top = `${top}px`;
+          };
+          // Make visible before first position (position function is guarded)
+          menu.style.display = "block";
+          positionMenu();
+
+          // activate kebab button visual state
+          menuBtn.classList.add("kebab-open");
+          menuBtn.style.background = "rgba(128, 128, 128, 0.38)";
+          menuBtn.style.boxShadow = "inset 0 0 0 1px rgba(255,255,255,0.08)";
+          menuBtn.style.transform = "translateY(-1px) scale(0.98)";
+          menuBtn.setAttribute("aria-expanded", "true");
+          // update global tracker and store cleanup function
+          const onResize = () => positionMenu();
+          const onScroll = () => positionMenu();
+          window.addEventListener("resize", onResize, { passive: true });
+          window.addEventListener("scroll", onScroll, { passive: true });
+          cleanupHandlers.push(() =>
+            window.removeEventListener("resize", onResize)
+          );
+          cleanupHandlers.push(() =>
+            window.removeEventListener("scroll", onScroll)
+          );
+          window.__bauOpenHistoryMenu = {
+            btn: menuBtn,
+            menu,
+            off: () => cleanupHandlers.forEach((off) => off()),
+          };
+
+          // close on outside click
+          outsideHandler = (ev) => {
+            const target = ev.target;
+            const clickedBtn = menuBtn.contains(target);
+            const clickedMenu = menu.contains(target);
+            if (!clickedBtn && !clickedMenu) hideMenu();
+          };
+          setTimeout(
+            () => document.addEventListener("click", outsideHandler, true),
+            0
+          );
+        };
+        menuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          // Toggle: if this button already owns the open menu, close it
+          const openRef = window.__bauOpenHistoryMenu;
+          if (openRef.btn === menuBtn) hideMenu();
+          else showMenu();
         });
 
         actions.appendChild(remainBadge);
-        actions.appendChild(loadBtn);
+        actions.appendChild(menuBtn);
+        // Note: menu is appended to document.body on open to escape sidebar bounds
+        // actions.appendChild(menu);
         item.appendChild(meta);
         item.appendChild(actions);
         list.appendChild(item);
@@ -4299,7 +4535,15 @@ function enhanceOneInFlow(select) {
     rowsContainer.innerHTML = "";
 
     // Check if this is a SOCRATES field that should use row layout
-    const socratesFields = ["onset", "character", "radiation", "timing", "exacerbating", "relieving", "severity"];
+    const socratesFields = [
+      "onset",
+      "character",
+      "radiation",
+      "timing",
+      "exacerbating",
+      "relieving",
+      "severity",
+    ];
     const isSOCRATESField = socratesFields.includes(select.id);
 
     const children = Array.from(select.children);
@@ -4332,7 +4576,11 @@ function enhanceOneInFlow(select) {
           });
 
           Array.from(child.children).forEach((opt) => {
-            const optionRow = createOptionRow(opt.text, opt.value, opt.selected);
+            const optionRow = createOptionRow(
+              opt.text,
+              opt.value,
+              opt.selected
+            );
             // Modify styling for inline display
             Object.assign(optionRow.style, {
               display: "inline-flex",
@@ -4358,7 +4606,11 @@ function enhanceOneInFlow(select) {
 
           rowsContainer.appendChild(optionsContainer);
         } else if (child.tagName === "OPTION") {
-          const optionRow = createOptionRow(child.text, child.value, child.selected);
+          const optionRow = createOptionRow(
+            child.text,
+            child.value,
+            child.selected
+          );
           // Style for inline display
           Object.assign(optionRow.style, {
             display: "inline-flex",
@@ -4438,7 +4690,11 @@ function enhanceOneInFlow(select) {
 
           // Add options to the scrollable container
           Array.from(child.children).forEach((opt) => {
-            const optionRow = createOptionRow(opt.text, opt.value, opt.selected);
+            const optionRow = createOptionRow(
+              opt.text,
+              opt.value,
+              opt.selected
+            );
             optionRow.style.marginBottom = "4px";
             optionsContainer.appendChild(optionRow);
           });
@@ -4496,7 +4752,7 @@ function enhanceOneInFlow(select) {
         gridContainer.appendChild(columnWrapper);
       }
 
-    rowsContainer.appendChild(gridContainer);
+      rowsContainer.appendChild(gridContainer);
     }
 
     // Append the rows container before actions
@@ -4523,7 +4779,7 @@ function enhanceOneInFlow(select) {
       color: "black",
       fontSize: "16px",
     });
-    
+
     // Set placeholder color for "Other (specify)" field
     const otherPlaceholderStyle = document.createElement("style");
     otherPlaceholderStyle.textContent = `
@@ -4662,41 +4918,57 @@ function enhanceOneInFlow(select) {
       t = setTimeout(() => fn(...a), ms);
     };
   };
-  
+
   function performSearch() {
     const q = search.value.trim().toLowerCase();
-    
+
     // Remove existing "not found" message
-    const existingNotFound = rowsContainer.querySelector('.search-not-found');
+    const existingNotFound = rowsContainer.querySelector(".search-not-found");
     if (existingNotFound) {
       existingNotFound.remove();
     }
-    
+
     if (!q) {
       // Completely restore original layout when search is empty
       buildPanel();
       return;
     }
-    
+
     let hasVisibleResults = false;
-    
+
     // Handle SOCRATES fields (row layout)
-    const socratesFields = ["onset", "character", "radiation", "timing", "exacerbating", "relieving", "severity"];
+    const socratesFields = [
+      "onset",
+      "character",
+      "radiation",
+      "timing",
+      "exacerbating",
+      "relieving",
+      "severity",
+    ];
     const isSOCRATESField = socratesFields.includes(select.id);
-    
+
     if (isSOCRATESField) {
       // For SOCRATES fields, filter within flex containers
       const groupLabels = rowsContainer.querySelectorAll("[data-group]");
       groupLabels.forEach((groupLabel) => {
         const optionsContainer = groupLabel.nextElementSibling;
-        if (optionsContainer && (optionsContainer.style.display === "flex" || optionsContainer.style.flexWrap === "wrap")) {
+        if (
+          optionsContainer &&
+          (optionsContainer.style.display === "flex" ||
+            optionsContainer.style.flexWrap === "wrap")
+        ) {
           const options = optionsContainer.querySelectorAll("[data-row]");
           let groupHasVisible = false;
-          
+
           options.forEach((option) => {
-            const txt = (option.getAttribute("data-text") || option.textContent || "").toLowerCase();
+            const txt = (
+              option.getAttribute("data-text") ||
+              option.textContent ||
+              ""
+            ).toLowerCase();
             const matches = txt.includes(q);
-            
+
             if (matches) {
               option.style.display = "inline-flex";
               groupHasVisible = true;
@@ -4705,7 +4977,7 @@ function enhanceOneInFlow(select) {
               option.style.display = "none";
             }
           });
-          
+
           // Always show group label, maintain container properties
           groupLabel.style.display = "";
           if (groupHasVisible) {
@@ -4728,17 +5000,22 @@ function enhanceOneInFlow(select) {
         Array.from(columnWrappers).forEach((columnWrapper) => {
           const categoryDivs = columnWrapper.children;
           let columnHasVisible = false;
-          
+
           Array.from(categoryDivs).forEach((categoryDiv) => {
             const groupLabel = categoryDiv.querySelector("[data-group]");
-            const optionsContainer = categoryDiv.querySelector('div[style*="flex: 1"]') || categoryDiv;
+            const optionsContainer =
+              categoryDiv.querySelector('div[style*="flex: 1"]') || categoryDiv;
             const options = categoryDiv.querySelectorAll("[data-row]");
             let categoryHasVisible = false;
-            
+
             options.forEach((option) => {
-              const txt = (option.getAttribute("data-text") || option.textContent || "").toLowerCase();
+              const txt = (
+                option.getAttribute("data-text") ||
+                option.textContent ||
+                ""
+              ).toLowerCase();
               const matches = txt.includes(q);
-              
+
               if (matches) {
                 option.style.display = "flex";
                 categoryHasVisible = true;
@@ -4747,12 +5024,12 @@ function enhanceOneInFlow(select) {
                 option.style.display = "none";
               }
             });
-            
+
             // Always show group label, maintain category structure
             if (groupLabel) {
               groupLabel.style.display = "";
             }
-            
+
             // Show category if it has visible options, maintain grid structure and constraints
             if (categoryHasVisible) {
               categoryDiv.style.display = "";
@@ -4763,33 +5040,40 @@ function enhanceOneInFlow(select) {
               categoryDiv.style.padding = "8px";
               categoryDiv.style.background = "#f9f9f9";
               categoryDiv.style.flexDirection = "column";
-              
+
               // Ensure scrollable content container maintains properties
-              const scrollableContent = categoryDiv.querySelector('div[style*="flex: 1"]');
+              const scrollableContent = categoryDiv.querySelector(
+                'div[style*="flex: 1"]'
+              );
               if (scrollableContent) {
                 scrollableContent.style.flex = "1";
                 scrollableContent.style.overflowY = "auto";
                 scrollableContent.style.paddingRight = "4px";
               }
-              
+
               columnHasVisible = true;
             } else {
               categoryDiv.style.display = "none";
             }
           });
-          
+
           // Keep column wrapper visible if it has any visible categories
           columnWrapper.style.display = columnHasVisible ? "flex" : "none";
         });
       }
     }
-    
+
     // Hide the "Other (specify)" field during search
-    const otherRow = panel.querySelector('div[style*="display: flex"][style*="gap: 8px"]');
-    if (otherRow && otherRow.querySelector('input[placeholder="Other (specify)"]')) {
+    const otherRow = panel.querySelector(
+      'div[style*="display: flex"][style*="gap: 8px"]'
+    );
+    if (
+      otherRow &&
+      otherRow.querySelector('input[placeholder="Other (specify)"]')
+    ) {
       otherRow.style.display = "none";
     }
-    
+
     // Show "Not found" message if no results
     if (!hasVisibleResults) {
       const notFoundDiv = document.createElement("div");
@@ -4803,19 +5087,19 @@ function enhanceOneInFlow(select) {
         fontWeight: "500",
         opacity: "0.7",
       });
-      
+
       // Hide all other content
       const allContent = rowsContainer.children;
       Array.from(allContent).forEach((child) => {
-        if (!child.classList.contains('search-not-found')) {
+        if (!child.classList.contains("search-not-found")) {
           child.style.display = "none";
         }
       });
-      
+
       rowsContainer.appendChild(notFoundDiv);
     }
   }
-  
+
   search.addEventListener("input", msDebounce(performSearch, 150));
 
   // --- Dependent prioritization logic for regular meds ---
