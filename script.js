@@ -449,6 +449,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Rest of your functions remain the same...
 function goHome() {
+  // Check if we're on the BAU page and refresh it
+  if (window.location.pathname.includes('bau') || document.getElementById("history-form-container")) {
+    // Refresh the page to ensure clean state
+    window.location.href = window.location.href;
+    return;
+  }
+  
+  // Original home navigation logic for other pages
   // Clear form and show success message when header SVG is clicked
   const form = document.getElementById("history-form-container");
   if (form) {

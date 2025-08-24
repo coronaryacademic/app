@@ -324,6 +324,382 @@
   }
 })();
 
+// === Progress Tracker Functionality ===
+(function initProgressTracker() {
+  try {
+    const tracker = document.getElementById("progress-tracker");
+    if (!tracker) return;
+
+    // Section mapping - maps tracker sections to form field groups
+    const sectionMappings = {
+      "student-info": [
+        "student-name",
+        "student-number",
+        "rotation",
+        "group-number",
+      ],
+      "patient-info": ["patient-name", "age", "gender"],
+      "social-history": [
+        "smoking",
+        "alcohol",
+        "occupation",
+        "living",
+        "travel",
+      ],
+      "chief-complaint": ["chief-complaint"],
+      socrates: [
+        "site",
+        "onset",
+        "character",
+        "radiation",
+        "associated",
+        "timing",
+        "exacerbating",
+        "relieving",
+        "severity",
+      ],
+      "past-medical": ["past-medical"],
+      "past-surgical": ["past-surgical"],
+      "drug-history": ["regular-meds", "otc", "drug-allergies"],
+      "family-history": ["family-history"],
+      "review-systems": ["ros"], // ROS checkboxes have class 'ros'
+      ice: ["ice"],
+    };
+
+    function updateSectionStatus(sectionKey, isCompleted) {
+      const trackerItem = tracker.querySelector(
+        `[data-section="${sectionKey}"]`
+      );
+      if (!trackerItem) return;
+
+      const dot = trackerItem.querySelector(".tracker-dot");
+      const icon = trackerItem.querySelector(".tracker-icon");
+
+      if (isCompleted) {
+        dot.style.background = "#4CAF50";
+        icon.style.borderColor = "#4CAF50";
+        trackerItem.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
+      } else {
+        dot.style.background = "transparent";
+        icon.style.borderColor = "var(--all-text)";
+        trackerItem.style.backgroundColor = "transparent";
+      }
+    }
+
+    function checkSectionCompletion(sectionKey, fieldIds) {
+      if (sectionKey === "review-systems") {
+        // Special handling for ROS checkboxes
+        const rosCheckboxes = document.querySelectorAll("input.ros:checked");
+        return rosCheckboxes.length > 0;
+      }
+
+      let hasValue = false;
+
+      for (const fieldId of fieldIds) {
+        const field = document.getElementById(fieldId);
+        if (!field) continue;
+
+        if (field.tagName === "SELECT") {
+          if (field.multiple) {
+            // Multi-select: check if any options are selected
+            hasValue = field.selectedOptions.length > 0;
+          } else {
+            // Single select: check if a non-empty, non-default value is selected
+            const value = field.value && field.value.trim();
+            // Consider empty string, first option (index 0), or common default values as incomplete
+            hasValue =
+              value &&
+              field.selectedIndex > 0 &&
+              !["", "select", "choose", "none", "default"].includes(
+                value.toLowerCase()
+              );
+          }
+        } else if (field.tagName === "TEXTAREA" || field.tagName === "INPUT") {
+          hasValue = field.value && field.value.trim() !== "";
+        }
+
+        if (hasValue) break; // At least one field in section has value
+      }
+
+      return hasValue;
+    }
+
+    function updateProgressSummary() {
+      const completedSections = Object.keys(sectionMappings).filter(
+        (sectionKey) => {
+          const fieldIds = sectionMappings[sectionKey];
+          return checkSectionCompletion(sectionKey, fieldIds);
+        }
+      );
+
+      const completedCount = completedSections.length;
+      const totalCount = Object.keys(sectionMappings).length;
+      const percentage = Math.round((completedCount / totalCount) * 100);
+
+      // Update counters
+      const completedCountEl = document.getElementById("completed-count");
+      const totalCountEl = document.getElementById("total-count");
+      const progressFill = document.getElementById("progress-fill");
+
+      if (completedCountEl) completedCountEl.textContent = completedCount;
+      if (totalCountEl) totalCountEl.textContent = totalCount;
+      if (progressFill) progressFill.style.width = `${percentage}%`;
+    }
+
+    function updateAllSections() {
+      console.log("[BAU] Updating all progress tracker sections...");
+      Object.entries(sectionMappings).forEach(([sectionKey, fieldIds]) => {
+        const isCompleted = checkSectionCompletion(sectionKey, fieldIds);
+        console.log(
+          `[BAU] Section "${sectionKey}": ${
+            isCompleted ? "COMPLETED" : "INCOMPLETE"
+          }`,
+          {
+            fieldIds,
+            values: fieldIds.map((id) => {
+              const field = document.getElementById(id);
+              return field
+                ? `${id}: "${field.value}" (index: ${
+                    field.selectedIndex || "N/A"
+                  })`
+                : `${id}: NOT_FOUND`;
+            }),
+          }
+        );
+        updateSectionStatus(sectionKey, isCompleted);
+      });
+      updateProgressSummary();
+    }
+
+    // Set up event listeners for form changes
+    function setupEventListeners() {
+      // Listen for changes on all form inputs
+      const formContainer = document.getElementById("history-form-container");
+      if (!formContainer) return;
+
+      // Use event delegation to catch all input changes
+      formContainer.addEventListener("change", updateAllSections);
+      formContainer.addEventListener("input", updateAllSections);
+
+      // Special handling for custom dropdowns that might not trigger standard events
+      const observer = new MutationObserver(() => {
+        // Debounce the update to avoid excessive calls
+        clearTimeout(observer.timeout);
+        observer.timeout = setTimeout(updateAllSections, 100);
+      });
+
+      observer.observe(formContainer, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["value", "selected", "checked"],
+      });
+    }
+
+    // Initialize tracker
+    setupEventListeners();
+
+    // Initial update after a short delay to ensure all form elements are loaded
+    setTimeout(updateAllSections, 500);
+
+    // Navigation functionality
+    function scrollToSection(sectionKey) {
+      const sectionElement = document.getElementById(`section-${sectionKey}`);
+      if (sectionElement) {
+        const headerHeight = 100; // Account for fixed header
+        const elementTop = sectionElement.offsetTop - headerHeight;
+
+        window.scrollTo({
+          top: elementTop,
+          behavior: "smooth",
+        });
+
+        // Update active state immediately
+        updateActiveSection(sectionKey);
+      }
+    }
+
+    function updateActiveSection(activeSectionKey) {
+      // Remove active state from all items
+      const allTrackerItems = tracker.querySelectorAll(".tracker-item");
+      allTrackerItems.forEach((item) => {
+        item.style.backgroundColor = "transparent";
+        item.style.borderLeft = "none";
+      });
+
+      // Add active state to current section
+      const activeItem = tracker.querySelector(
+        `[data-section="${activeSectionKey}"]`
+      );
+      if (activeItem) {
+        activeItem.style.backgroundColor = "rgba(44, 201, 199, 0.15)";
+        activeItem.style.borderLeft = "3px solid #2cc9c7";
+      }
+    }
+
+    function getCurrentSection() {
+      const sections = Object.keys(sectionMappings);
+      const scrollPosition = window.scrollY + 150; // Offset for better detection
+
+      let currentSection = sections[0]; // Default to first section
+
+      for (const sectionKey of sections) {
+        const sectionElement = document.getElementById(`section-${sectionKey}`);
+        if (sectionElement && sectionElement.offsetTop <= scrollPosition) {
+          currentSection = sectionKey;
+        }
+      }
+
+      return currentSection;
+    }
+
+    // Scroll tracking with throttling
+    let scrollTimeout;
+    function handleScroll() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const currentSection = getCurrentSection();
+        updateActiveSection(currentSection);
+      }, 50);
+    }
+
+    // Set up scroll listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Make functions globally available
+    window.scrollToSection = scrollToSection;
+    window.updateProgressTracker = updateAllSections;
+
+    // Initialize active section
+    setTimeout(() => {
+      const currentSection = getCurrentSection();
+      updateActiveSection(currentSection);
+    }, 1000);
+  } catch (e) {
+    console.warn("[BAU] Progress tracker init error:", e);
+  }
+})();
+
+// Dynamic tracker positioning on scroll
+(function () {
+  let isScrolling = false;
+  const tracker = document.getElementById("progress-tracker");
+
+  if (!tracker) return;
+
+  function updateTrackerPosition() {
+    const scrollY = window.scrollY;
+
+    if (scrollY > 50) {
+      // When scrolled, reduce top position
+      tracker.style.top = "95px";
+    } else {
+      // At top of page, use default position
+      tracker.style.top = "130px";
+    }
+  }
+
+  // Throttled scroll handler for better performance
+  function handleScroll() {
+    if (!isScrolling) {
+      window.requestAnimationFrame(() => {
+        updateTrackerPosition();
+        isScrolling = false;
+      });
+      isScrolling = true;
+    }
+  }
+
+  // Add scroll listener
+  window.addEventListener("scroll", handleScroll, { passive: true });
+
+  // Set initial position
+  updateTrackerPosition();
+})();
+
+// Tracker collapse/expand functionality
+function toggleTracker() {
+  const trackerContent = document.getElementById("tracker-content");
+  const toggleButton = document.getElementById("tracker-toggle");
+  const chevronIcon = document.getElementById("userMenuChevron");
+
+  if (!trackerContent || !toggleButton || !chevronIcon) return;
+
+  // Check if collapsed by looking at computed style or actual maxHeight
+  const computedStyle = window.getComputedStyle(trackerContent);
+  const currentMaxHeight =
+    trackerContent.style.maxHeight || computedStyle.maxHeight;
+  const isCollapsed =
+    currentMaxHeight === "0px" || trackerContent.offsetHeight === 0;
+
+  if (isCollapsed) {
+    // Expand
+    trackerContent.style.maxHeight = trackerContent.scrollHeight + "px";
+    trackerContent.style.opacity = "1";
+    chevronIcon.style.transform = "rotate(180deg)";
+    toggleButton.title = "Collapse tracker";
+  } else {
+    // Collapse
+    trackerContent.style.maxHeight = "0px";
+    trackerContent.style.opacity = "0";
+    chevronIcon.style.transform = "rotate(0deg)";
+    toggleButton.title = "Expand tracker";
+  }
+}
+
+// Enhanced form clearing function
+function clearFormExceptStudentInfo() {
+  const form = document.getElementById("history-form-container");
+  if (!form) return;
+
+  console.log("[BAU] Clearing form except student info");
+
+  // Get all form inputs
+  const inputs = form.querySelectorAll("input, select, textarea");
+
+  inputs.forEach((input) => {
+    // Skip student name and student number fields
+    if (input.id === "student-name" || input.id === "student-number") {
+      return;
+    }
+
+    // Clear different input types appropriately
+    if (input.type === "checkbox" || input.type === "radio") {
+      input.checked = false;
+    } else if (input.tagName === "SELECT") {
+      // Reset to first option (usually empty or default)
+      input.selectedIndex = 0;
+      // Clear any custom dropdown selections
+      const customOptions = input.parentElement?.querySelectorAll(
+        'input[type="radio"]'
+      );
+      if (customOptions) {
+        customOptions.forEach((radio) => (radio.checked = false));
+      }
+    } else if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
+      input.value = "";
+    }
+
+    // Trigger change events to update UI and tracker
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  // Re-fill student data after clearing
+  setTimeout(() => {
+    autoFillStudentData();
+    // Force a complete tracker update after clearing and re-filling
+    if (window.updateProgressTracker) {
+      setTimeout(() => {
+        window.updateProgressTracker();
+        console.log("[BAU] Progress tracker updated after form clear");
+      }, 200);
+    }
+  }, 100);
+
+  console.log("[BAU] Form cleared successfully");
+}
+
 document
   .getElementById("submit-and-download")
   .addEventListener("click", async () => {
@@ -3428,76 +3804,17 @@ async function renderHistorySidebar() {
             if (typeof window.updateNavActiveState === "function") {
               window.updateNavActiveState("bau");
             }
-            // Clear the form after navigation (preserve student data)
+            // Refresh the page to ensure clean state
             setTimeout(() => {
-              const form = document.getElementById("history-form-container");
-              if (form) {
-                const inputs = form.querySelectorAll("input, select, textarea");
-                inputs.forEach((input) => {
-                  // Skip student name and student number fields to preserve them
-                  if (
-                    input.id === "student-name" ||
-                    input.id === "student-number"
-                  ) {
-                    return;
-                  }
-
-                  if (input.type === "checkbox" || input.type === "radio") {
-                    input.checked = false;
-                  } else if (input.tagName === "SELECT") {
-                    input.selectedIndex = 0;
-                  } else {
-                    input.value = "";
-                  }
-                  input.dispatchEvent(new Event("change", { bubbles: true }));
-                  input.dispatchEvent(new Event("input", { bubbles: true }));
-                });
-              }
-              // Show success message
-              const loadHistoryMessage = document.getElementById(
-                "load-history-message"
-              );
-              if (loadHistoryMessage) {
-                loadHistoryMessage.textContent =
-                  "New form is loaded successfully.";
-                loadHistoryMessage.style.display = "block";
-                loadHistoryMessage.style.marginBottom = "10px";
-                setTimeout(() => {
-                  loadHistoryMessage.style.opacity = "1";
-                  loadHistoryMessage.style.transform = "translateY(0) scale(1)";
-                }, 10);
-                setTimeout(() => {
-                  loadHistoryMessage.style.opacity = "0";
-                  loadHistoryMessage.style.transform =
-                    "translateY(-20px) scale(0.95)";
-                  loadHistoryMessage.style.marginBottom = "0";
-                  setTimeout(() => {
-                    loadHistoryMessage.style.display = "none";
-                  }, 500);
-                }, 3000);
-              }
+              window.location.href = window.location.href;
             }, 100);
           });
         } else {
           console.log(
-            "[BAU] loadContent function not available, clearing form only"
+            "[BAU] loadContent function not available, refreshing page"
           );
-          // Fallback: just clear the form
-          const form = document.getElementById("history-form-container");
-          if (form) {
-            const inputs = form.querySelectorAll("input, select, textarea");
-            inputs.forEach((input) => {
-              if (input.type === "checkbox" || input.type === "radio") {
-                input.checked = false;
-              } else if (input.tagName === "SELECT") {
-                input.selectedIndex = 0;
-              } else {
-                input.value = "";
-              }
-              input.dispatchEvent(new Event("change", { bubbles: true }));
-              input.dispatchEvent(new Event("input", { bubbles: true }));
-            });
-          }
+          // Fallback: refresh the page
+          window.location.href = window.location.href;
         }
         close();
       });
@@ -5160,7 +5477,8 @@ function enhanceOneInFlow(select) {
 }
 
 // ---- Auto-fill student data from localStorage on page load ----
-(function autoFillStudentData() {
+// Modified to work with new form clearing functionality
+function autoFillStudentData() {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", autoFillStudentData);
     return;
@@ -5172,13 +5490,17 @@ function enhanceOneInFlow(select) {
 
     // Auto-fill the student name field
     const studentNameField = document.getElementById("student-name");
-    if (studentNameField && storedStudentName) {
+    if (studentNameField && storedStudentName && !studentNameField.value) {
       studentNameField.value = storedStudentName;
     }
 
     // Auto-fill the student number field
     const studentNumberField = document.getElementById("student-number");
-    if (studentNumberField && storedStudentNumber) {
+    if (
+      studentNumberField &&
+      storedStudentNumber &&
+      !studentNumberField.value
+    ) {
       studentNumberField.value = storedStudentNumber;
     }
 
@@ -5189,7 +5511,10 @@ function enhanceOneInFlow(select) {
   } catch (error) {
     console.warn("[BAU] Error auto-filling student data:", error);
   }
-})();
+}
+
+// Call it initially
+autoFillStudentData();
 
 // ---- Ensure SH and Gender use custom single-select UI on page load ----
 (function enhanceSHGenderOnLoad() {
@@ -5434,9 +5759,8 @@ function enhanceOneInFlow(select) {
   } catch {}
 })();
 
-// ============================
-// Auto-fill Demo (Random)
-// ============================
+// Auto-fill functionality removed to prevent random data generation
+/*
 (function attachAutofillRandom() {
   function onReady(fn) {
     if (document.readyState === "loading") {
@@ -5758,6 +6082,7 @@ function enhanceOneInFlow(select) {
     });
   });
 })();
+*/
 
 // ============================
 // Auth-gated Firebase AI demo
