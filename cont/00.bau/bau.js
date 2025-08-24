@@ -3716,9 +3716,7 @@ async function renderHistorySidebar() {
         menu.className = "bau-history-menu";
         Object.assign(menu.style, {
           position: "fixed", // take out of sidebar flow to avoid horizontal scroll
-          background: "rgba(150, 150, 150, 0.205)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
+          background: "var(--header-bg)",
           borderRadius: "25px",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
           border: "none",
