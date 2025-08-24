@@ -137,9 +137,7 @@ function getTodoContent() {
       border: none;
       max-width: 80%;
       margin: 4px auto;
-      background: rgba(150, 150, 150, 0.205);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: var(--header-bg);
       border-radius: 25px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       border: none;
@@ -1862,8 +1860,7 @@ function initDashboard() {
       : "N/A";
 
     return `
-      <h1 style="padding-bottom:20px; text-align:center; margin-top: 30px;">Your Profile</h1>
-      <div id="user-profile" style="text-align: center;margin-top: 10px; padding: 30px; width: 60%; margin: 0 auto;">
+      <div id="user-profile" style="text-align: center;margin-top: 10px; padding: 30px; width: 80%; margin: 0 auto;">
         <div class="user-profile-wrapper">
           <p><strong>UID:</strong> ${user.uid}</p>
           <p><strong>Email:</strong> ${user.email}</p>

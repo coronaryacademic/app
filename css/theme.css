@@ -41,7 +41,8 @@
   --borderline: white;
   --navbuttons: white;
   --borderbottom: rgba(77, 77, 77, 0.25);
-  --borderbottomdark: rgba(85, 85, 85, 0.08);
+  --borderbottomdark: rgba(0, 0, 0, 0.311);
+  --userdiv: rgba(243, 243, 243, 0.971);
 }
 
 /* Dark theme variables */
@@ -83,7 +84,8 @@
   --scrl: black;
   --navbuttons: white;
   --borderbottom: rgba(169, 169, 169, 0.36);
-  --borderbottomdark: rgba(189, 189, 189, 0.09);
+  --borderbottomdark: rgba(251, 251, 251, 0.534);
+  --userdiv: rgba(67, 67, 67, 0.8);
 }
 
 .timeline-label::before,

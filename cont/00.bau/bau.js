@@ -2312,9 +2312,7 @@ async function renderHistorySidebar() {
     width: "300px",
     transform: "translateX(-100%)",
     transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-    background: "rgba(150, 150, 150, 0.205)",
-    backdropFilter: "blur(30px)",
-    WebkitBackdropFilter: "blur(30px)",
+    background: "var(--header-bg)",
     border: "none",
     color: "var(--all-text)",
     zIndex: "1000000",
@@ -2338,7 +2336,7 @@ async function renderHistorySidebar() {
   header.style.display = "flex";
   header.style.alignItems = "center";
   header.style.justifyContent = "space-between";
-  header.style.padding = "10px";
+  header.style.padding = "10.5px";
   header.style.paddingRight = "14px";
   // Make header sticky like the bottom user section
   header.style.position = "sticky";
@@ -2508,7 +2506,7 @@ async function renderHistorySidebar() {
   userSection.id = "sidebar-user-section";
   Object.assign(userSection.style, {
     padding: "16px",
-    paddingBottom: "5px",
+    paddingBottom: "0px",
     borderTop: "1px solid var(--borderbottomdark)",
     background: "transparent",
     marginTop: "auto", // Push to bottom
@@ -2522,12 +2520,11 @@ async function renderHistorySidebar() {
   userDropdown.innerHTML = `
     <button id="sidebarUserToggle" style="
       width: 100%;
-      padding: 12px 16px;
+      padding: 10px 16px;
+      margin-bottom: -20px;
       border: none;
-      border-radius: 12px;
-      background: rgba(150, 150, 150, 0.205);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      border-radius: 16px;
+      background: var(--userdiv);
       color: var(--all-text);
       cursor: pointer;
       display: flex;
@@ -2536,7 +2533,6 @@ async function renderHistorySidebar() {
       font-size: 14px;
       font-weight: 500;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     ">
       <div style="display: flex; align-items: center; gap: 10px;">
           <div id="sidebarUserAvatar" style="
@@ -2558,13 +2554,11 @@ async function renderHistorySidebar() {
         <div id="sidebarUserMenu" style="
           position: relative;
           width: 100%;
-          background: rgba(150, 150, 150, 0.205);
-          backdrop-filter: blur(30px);
-          -webkit-backdrop-filter: blur(30px);
-          border-radius: 12px;
+          background: var(--userdiv);
+          border-radius: 16px;
           padding: 0;
-          margin: 8px 0 0 0;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+          margin: 25px 0 0 0;
+          margin-bottom: 9px;
           border: 1px solid rgba(255, 255, 255, 0.1);
           opacity: 0;
           visibility: hidden;
