@@ -340,11 +340,12 @@
       ],
       "patient-info": ["patient-name", "age", "gender"],
       "social-history": [
-        "smoking",
-        "alcohol",
-        "occupation",
-        "living",
-        "travel",
+        "sh-smoking",
+        "sh-alcohol",
+        "sh-drugs",
+        "sh-occupation",
+        "sh-living",
+        "sh-travel",
       ],
       "chief-complaint": ["chief-complaint"],
       socrates: [
@@ -393,35 +394,6 @@
         return rosCheckboxes.length > 0;
       }
 
-      // Special handling for Social History - requires user interaction, not just default values
-      if (sectionKey === "social-history") {
-        let completedFields = 0;
-        const requiredFields = ["smoking", "alcohol", "occupation", "living", "travel"];
-        
-        for (const fieldId of requiredFields) {
-          const field = document.getElementById(fieldId);
-          if (!field) continue;
-          
-          const value = field.value && field.value.trim();
-          const selectedOption = field.options[field.selectedIndex];
-          
-          // Check if it's a disabled placeholder
-          const isPlaceholder = selectedOption && selectedOption.disabled;
-          
-          // For Social History, any valid selection (including first options) counts as filled
-          // as long as it's not empty, disabled, or a clear placeholder
-          const hasValue = value && 
-            !isPlaceholder && 
-            !["", "select", "choose", "default"].includes(value.toLowerCase());
-          
-          if (hasValue) {
-            completedFields++;
-          }
-        }
-        
-        return completedFields === requiredFields.length;
-      }
-
       // Most sections should require ALL fields to be completed for proper clinical documentation
       const requireAnyField = ["review-systems", "ice"]; // Only these sections allow partial completion
       const checkAllFields = !requireAnyField.includes(sectionKey);
@@ -444,14 +416,14 @@
             // Single select: check if a non-empty, non-default value is selected
             const value = field.value && field.value.trim();
             const selectedOption = field.options[field.selectedIndex];
-            
+
             // Check if it's a disabled placeholder option
             const isPlaceholder = selectedOption && selectedOption.disabled;
-            
+
             // For non-SH sections, be more strict about default first options
-            const isDefaultFirstOption = field.selectedIndex === 0 && 
-              (field.options[0].value === "male"); // Only gender needs this check now
-            
+            const isDefaultFirstOption =
+              field.selectedIndex === 0 && field.options[0].value === "male"; // Only gender needs this check now
+
             // Consider empty string, disabled placeholder, or default first options as incomplete
             hasValue =
               value &&
@@ -510,42 +482,7 @@
       console.log("[BAU] Updating all progress tracker sections...");
       Object.entries(sectionMappings).forEach(([sectionKey, fieldIds]) => {
         const isCompleted = checkSectionCompletion(sectionKey, fieldIds);
-        
-        // Special debug for social-history
-        if (sectionKey === "social-history") {
-          fieldIds.forEach((id) => {
-            const field = document.getElementById(id);
-            if (!field) {
-              console.log(`[BAU] SH DEBUG - ${id}: NOT_FOUND`);
-              return;
-            }
-            
-            const value = field.value && field.value.trim();
-            const selectedOption = field.options ? field.options[field.selectedIndex] : null;
-            const isPlaceholder = selectedOption && selectedOption.disabled;
-            
-            // Check if this is a default first option that should be considered empty
-            const isDefaultFirstOption = field.selectedIndex === 0 && 
-              (field.options[0].value === "never" || 
-               field.options[0].value === "none" || 
-               field.options[0].value === "student");
-            
-            const hasValue = value && !isPlaceholder && !isDefaultFirstOption && 
-              !["", "select", "choose", "default"].includes(value.toLowerCase());
-            
-            console.log(`[BAU] SH DEBUG - ${id}:`, {
-              rawValue: field.value,
-              trimmedValue: value,
-              selectedIndex: field.selectedIndex,
-              isPlaceholder,
-              isDefaultFirstOption,
-              hasValue,
-              optionText: selectedOption ? selectedOption.text : 'N/A'
-            });
-          });
-          console.log(`[BAU] SH DEBUG - Final result: ${isCompleted}`);
-        }
-        
+
         console.log(
           `[BAU] Section "${sectionKey}": ${
             isCompleted ? "COMPLETED" : "INCOMPLETE"
@@ -566,7 +503,7 @@
       formContainer.addEventListener("focusin", () => {
         isFormInteracting = true;
       });
-      
+
       formContainer.addEventListener("focusout", () => {
         setTimeout(() => {
           isFormInteracting = false;
@@ -652,10 +589,10 @@
     // Scroll tracking with throttling - disable during form interactions
     let scrollTimeout;
     let isFormInteracting = false;
-    
+
     function handleScroll() {
       if (isFormInteracting) return; // Don't update active section during form interactions
-      
+
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         const currentSection = getCurrentSection();
@@ -894,12 +831,14 @@ document
         "severity",
         // Also enhance Patient Info + Social History with same custom UI
         "gender",
-        "smoking",
-        "alcohol",
-        "occupation",
-        "living",
-        "travel",
+        "sh-smoking",
+        "sh-alcohol",
+        "sh-drugs",
+        "sh-occupation",
+        "sh-living",
+        "sh-travel",
       ];
+
       ids.forEach((id) => {
         const select = document.getElementById(id);
         if (!select) return;
@@ -1012,7 +951,17 @@ document
           if (e.target !== radio) {
             radio.checked = true;
             select.value = value;
+            select.selectedIndex = Array.from(select.options).findIndex(
+              (opt) => opt.value === value
+            );
             updateButtonText();
+            // Trigger form validation update
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            select.dispatchEvent(new Event("input", { bubbles: true }));
+            // Update progress tracker
+            if (window.updateProgressTracker) {
+              setTimeout(window.updateProgressTracker, 50);
+            }
           }
         });
 
@@ -1086,10 +1035,18 @@ document
         });
         clearBtn.addEventListener("click", () => {
           select.value = "";
+          select.selectedIndex = -1;
           panel
             .querySelectorAll('input[type="radio"]')
             .forEach((r) => (r.checked = false));
           updateButtonText();
+          // Trigger form validation update
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          // Update progress tracker
+          if (window.updateProgressTracker) {
+            setTimeout(window.updateProgressTracker, 50);
+          }
         });
 
         const doneBtn = document.createElement("button");
@@ -2539,7 +2496,13 @@ function enhanceOneSingleInFlow(select) {
     });
     clearBtn.addEventListener("click", () => {
       // For Social History fields, reset to placeholder option (index 0)
-      const socialHistoryFields = ["smoking", "alcohol", "occupation", "living", "travel"];
+      const socialHistoryFields = [
+        "smoking",
+        "alcohol",
+        "occupation",
+        "living",
+        "travel",
+      ];
       if (socialHistoryFields.includes(select.id)) {
         select.selectedIndex = 0; // Reset to placeholder
       } else {
@@ -2549,7 +2512,7 @@ function enhanceOneSingleInFlow(select) {
         .querySelectorAll('input[type="radio"]')
         .forEach((r) => (r.checked = false));
       updateButtonText();
-      
+
       // Trigger change event to update progress tracker
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
@@ -2625,11 +2588,17 @@ function enhanceOneSingleInFlow(select) {
 
   // Handle initial selection state for Social History fields
   try {
-    const socialHistoryFields = ["smoking", "alcohol", "occupation", "living", "travel"];
+    const socialHistoryFields = [
+      "smoking",
+      "alcohol",
+      "occupation",
+      "living",
+      "travel",
+    ];
     const hasDefaultSelected = Array.from(select.options).some(
       (o) => o.defaultSelected
     );
-    
+
     if (socialHistoryFields.includes(select.id)) {
       // For Social History fields, always start with placeholder (index 0)
       select.selectedIndex = 0;
@@ -4639,6 +4608,18 @@ function applySnapshotToForm(snapshot) {
     );
     if (match) sel.value = match.value;
     else if (opts.length) sel.selectedIndex = 0; // fallback to first
+
+    // Update custom dropdown button text if it exists
+    const wrapper = sel.parentElement?.querySelector(
+      ".dropdown-single-wrapper"
+    );
+    if (wrapper) {
+      const button = wrapper.querySelector(".dropdown-single-button");
+      if (button && match) {
+        button.textContent = match.text.trim();
+      }
+    }
+
     sel.dispatchEvent(new Event("change", { bubbles: true }));
     sel.dispatchEvent(new Event("input", { bubbles: true }));
   };
@@ -4678,6 +4659,24 @@ function applySnapshotToForm(snapshot) {
         el.dispatchEvent(new Event("input", { bubbles: true }));
       } else {
         setSelectByText(el, val);
+        // Also update any custom dropdown UI for single selects
+        setTimeout(() => {
+          const wrapper = el.parentElement?.querySelector(
+            ".dropdown-single-wrapper"
+          );
+          if (wrapper) {
+            const button = wrapper.querySelector(".dropdown-single-button");
+            if (button) {
+              const currentValue = el.value;
+              const matchingOption = Array.from(el.options).find(
+                (opt) => opt.value === currentValue
+              );
+              if (matchingOption) {
+                button.textContent = matchingOption.text.trim();
+              }
+            }
+          }
+        }, 100);
       }
     } else if (el.type === "checkbox") {
       el.checked = !!val;
@@ -5707,7 +5706,14 @@ autoFillStudentData();
         const base = labelEl
           ? `${labelEl.innerText.trim()} — select...`
           : "Select option";
-        const text = select.options[select.selectedIndex]?.text?.trim();
+
+        // Find the option that matches the current value instead of relying on selectedIndex
+        const currentValue = select.value;
+        const matchingOption = Array.from(select.options).find(
+          (opt) => opt.value === currentValue
+        );
+        const text = matchingOption?.text?.trim();
+
         btn.textContent = text || base;
       }
 
@@ -5727,7 +5733,17 @@ autoFillStudentData();
         radio.checked = !!selected;
         radio.addEventListener("change", () => {
           select.value = value;
+          select.selectedIndex = Array.from(select.options).findIndex(
+            (opt) => opt.value === value
+          );
           updateButtonText();
+          // Trigger form validation update
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          // Update progress tracker
+          if (window.updateProgressTracker) {
+            setTimeout(window.updateProgressTracker, 50);
+          }
         });
 
         const span = document.createElement("span");
@@ -5740,7 +5756,17 @@ autoFillStudentData();
           if (e.target !== radio) {
             radio.checked = true;
             select.value = value;
+            select.selectedIndex = Array.from(select.options).findIndex(
+              (opt) => opt.value === value
+            );
             updateButtonText();
+            // Trigger form validation update
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            select.dispatchEvent(new Event("input", { bubbles: true }));
+            // Update progress tracker
+            if (window.updateProgressTracker) {
+              setTimeout(window.updateProgressTracker, 50);
+            }
           }
         });
 
@@ -5753,6 +5779,7 @@ autoFillStudentData();
         panel.innerHTML = "";
         panel.appendChild(search);
         rowsContainer.innerHTML = "";
+        const currentValue = select.value;
         const children = Array.from(select.children);
         children.forEach((child) => {
           if (child.tagName === "OPTGROUP") {
@@ -5770,13 +5797,15 @@ autoFillStudentData();
               groupLabel.style.setProperty("color", "black", "important");
             rowsContainer.appendChild(groupLabel);
             Array.from(child.children).forEach((opt) => {
+              const isSelected = opt.value === currentValue;
               rowsContainer.appendChild(
-                createOptionRow(opt.text, opt.value, opt.selected)
+                createOptionRow(opt.text, opt.value, isSelected)
               );
             });
           } else if (child.tagName === "OPTION") {
+            const isSelected = child.value === currentValue;
             rowsContainer.appendChild(
-              createOptionRow(child.text, child.value, child.selected)
+              createOptionRow(child.text, child.value, isSelected)
             );
           }
         });
@@ -5799,10 +5828,18 @@ autoFillStudentData();
         });
         clearBtn.addEventListener("click", () => {
           select.value = "";
+          select.selectedIndex = -1;
           panel
             .querySelectorAll('input[type="radio"]')
             .forEach((r) => (r.checked = false));
           updateButtonText();
+          // Trigger form validation update
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          // Update progress tracker
+          if (window.updateProgressTracker) {
+            setTimeout(window.updateProgressTracker, 50);
+          }
         });
 
         const doneBtn = document.createElement("button");
@@ -5868,6 +5905,15 @@ autoFillStudentData();
         updateButtonText();
       });
       mo.observe(select, { subtree: true, childList: true, attributes: true });
+
+      // Listen for native select changes to sync custom dropdown
+      select.addEventListener("change", () => {
+        updateButtonText();
+        // Update progress tracker
+        if (window.updateProgressTracker) {
+          setTimeout(window.updateProgressTracker, 50);
+        }
+      });
     });
   } catch {}
 })();

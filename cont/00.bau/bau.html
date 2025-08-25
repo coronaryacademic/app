@@ -265,7 +265,7 @@
             >
             <span
               >If signed in, your file will be automatically saved to your
-              <strong>Dashboard</strong></span
+              Google Drive</span
             >
           </div>
         </div>
@@ -286,7 +286,9 @@
     </div>
   </div>
 </div>
+
 -->
+<script type="module" src="bau-new.js"></script>
 
 <div
   id="form-with-tracker-container"
@@ -324,7 +326,6 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         padding-bottom: 0px;
       "
     >
@@ -996,13 +997,14 @@
       </div>
     </div>
 
+    <!-- Social History -->
     <div id="section-social-history" class="form-section">
       <label>Social History (SH)</label>
       <div class="boxed-section">
         <div class="form-subsection">
-          <label for="smoking">Smoking</label>
+          <label for="sh-smoking">Smoking Status</label>
           <select
-            id="smoking"
+            id="sh-smoking"
             style="
               width: 100%;
               box-sizing: border-box;
@@ -1011,23 +1013,25 @@
             "
           >
             <option value="" disabled selected>Select smoking status</option>
-            <option value="never">Never smoker</option>
-            <option value="ex">Ex-smoker</option>
-            <option value="current-light">
-              Current smoker (1–10 cigs/day)
+            <option value="never-smoker">Never smoker</option>
+            <option value="ex-smoker">Ex-smoker (quit >1 year ago)</option>
+            <option value="recent-ex">
+              Recent ex-smoker (quit <1 year ago)
             </option>
-            <option value="current-moderate">
-              Current smoker (11–20 cigs/day)
+            <option value="light-smoker">Light smoker (1-10 cigs/day)</option>
+            <option value="moderate-smoker">
+              Moderate smoker (11-20 cigs/day)
             </option>
-            <option value="current-heavy">Current smoker (>20 cigs/day)</option>
-            <option value="vape">Vapes/e-cigarettes</option>
-            <option value="unknown">Unknown</option>
+            <option value="heavy-smoker">Heavy smoker (>20 cigs/day)</option>
+            <option value="vaper">E-cigarette/Vape user</option>
+            <option value="other-tobacco">Other tobacco products</option>
           </select>
         </div>
+
         <div class="form-subsection">
-          <label for="alcohol">Alcohol Use</label>
+          <label for="sh-alcohol">Alcohol Consumption</label>
           <select
-            id="alcohol"
+            id="sh-alcohol"
             style="
               width: 100%;
               box-sizing: border-box;
@@ -1035,18 +1039,45 @@
               font-size: 14px;
             "
           >
-            <option value="" disabled selected>Select alcohol use</option>
-            <option value="none">None</option>
-            <option value="occasional">Occasional</option>
-            <option value="moderate">Moderate</option>
-            <option value="heavy">Heavy</option>
-            <option value="unknown">Unknown</option>
+            <option value="" disabled selected>
+              Select alcohol consumption
+            </option>
+            <option value="none">None/Teetotal</option>
+            <option value="social">Social drinker (occasional)</option>
+            <option value="moderate">Moderate (within guidelines)</option>
+            <option value="heavy">Heavy drinker (exceeds guidelines)</option>
+            <option value="binge">Binge drinking pattern</option>
+            <option value="recovering">Recovering alcoholic</option>
           </select>
         </div>
+
         <div class="form-subsection">
-          <label for="occupation">Occupation</label>
+          <label for="sh-drugs">Recreational Drug Use</label>
           <select
-            id="occupation"
+            id="sh-drugs"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 8px;
+              font-size: 14px;
+            "
+          >
+            <option value="" disabled selected>Select drug use status</option>
+            <option value="none">No recreational drug use</option>
+            <option value="cannabis">Cannabis use</option>
+            <option value="cocaine">Cocaine use</option>
+            <option value="opiates">Opiate use</option>
+            <option value="stimulants">Stimulant use</option>
+            <option value="multiple">Multiple substances</option>
+            <option value="recovering">Recovering drug user</option>
+            <option value="prefer-not-say">Prefer not to say</option>
+          </select>
+        </div>
+
+        <div class="form-subsection">
+          <label for="sh-occupation">Occupation</label>
+          <select
+            id="sh-occupation"
             style="
               width: 100%;
               box-sizing: border-box;
@@ -1055,21 +1086,23 @@
             "
           >
             <option value="" disabled selected>Select occupation</option>
-            <option value="student">Student</option>
-            <option value="manual">Manual labor</option>
-            <option value="office">Office/Clerical</option>
-            <option value="healthcare">Healthcare</option>
-            <option value="education">Education</option>
-            <option value="service">Service industry</option>
             <option value="unemployed">Unemployed</option>
+            <option value="student">Student</option>
+            <option value="employed">Employed</option>
+            <option value="healthcare">Healthcare worker</option>
+            <option value="manual-labor">Manual labor</option>
+            <option value="office">Office/Administrative</option>
+            <option value="professional">Professional</option>
+            <option value="homemaker">Homemaker</option>
             <option value="retired">Retired</option>
             <option value="other">Other</option>
           </select>
         </div>
+
         <div class="form-subsection">
-          <label for="living">Living Situation & Support</label>
+          <label for="sh-living">Living Situation & Support</label>
           <select
-            id="living"
+            id="sh-living"
             style="
               width: 100%;
               box-sizing: border-box;
@@ -1079,17 +1112,18 @@
           >
             <option value="" disabled selected>Select living situation</option>
             <option value="alone">Lives alone</option>
-            <option value="family">With family</option>
-            <option value="partner">With partner</option>
-            <option value="shared">Shared housing</option>
-            <option value="care-home">Care home</option>
-            <option value="homeless">Homeless/unstable</option>
+            <option value="with-family">With family/partner</option>
+            <option value="with-roommates">With roommates</option>
+            <option value="assisted-living">Assisted living</option>
+            <option value="care-home">Care/Nursing home</option>
+            <option value="homeless">Homeless/Unstable housing</option>
           </select>
         </div>
+
         <div class="form-subsection">
-          <label for="travel">Recent Travel</label>
+          <label for="sh-travel">Recent Travel</label>
           <select
-            id="travel"
+            id="sh-travel"
             style="
               width: 100%;
               box-sizing: border-box;
@@ -1097,11 +1131,16 @@
               font-size: 14px;
             "
           >
-            <option value="" disabled selected>Select travel history</option>
+            <option value="" disabled selected>Select recent travel</option>
             <option value="none">No recent travel</option>
-            <option value="domestic">Domestic travel</option>
-            <option value="international">International travel</option>
-            <option value="endemic">Travel to endemic area</option>
+            <option value="domestic-1m">Domestic travel (last 1 month)</option>
+            <option value="international-1m">
+              International travel (last 1 month)
+            </option>
+            <option value="international-3m">
+              International travel (last 3 months)
+            </option>
+            <option value="high-risk">Travel to high-risk regions</option>
           </select>
         </div>
       </div>
