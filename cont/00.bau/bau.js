@@ -3092,7 +3092,7 @@ async function renderHistorySidebar() {
   note.style.color = "var(--all-text)";
   note.style.opacity = "0.7";
   note.textContent =
-    "Note: Items here are automatically deleted after 7 days. You can swipe each history to the left to delete it or use the recycle bin icon to delete all.";
+    "Note: Items here are automatically deleted after 7 days. You can archive each history to your account to save it. Use the recycle bin icon to delete all.";
 
   drawer.appendChild(header);
   drawer.appendChild(sidebarMsg);

@@ -575,8 +575,39 @@
             console.error("Failed to load default page:", err);
             const mainContainer = document.querySelector(".main");
             if (mainContainer) {
-              mainContainer.innerHTML =
-                "<p>Welcome! Please login to continue.</p>";
+              mainContainer.innerHTML = `
+               <div
+                style="
+                  min-height: calc(100vh - 120px);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 20px;
+                "
+              >
+                <div
+                  style="
+                    text-align: center;
+                    max-width: 560px;
+                    color: var(--all-text);
+                    background: rgba(150, 150, 150, 0.12);
+                    border: 1px solid rgba(150, 150, 150, 0.3);
+                    border-radius: 12px;
+                    padding: 24px 18px;
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
+                  "
+                >
+                  <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px">
+                    Oops!
+                  </div>
+                  <div style="font-size: 16px; font-weight: 400">
+                    Seems like your connection is weak or disturbed :(<br />
+                    If things aren't loading, re-connect to the Wi‑Fi or use mobile data.
+                  </div>
+                </div>
+              </div>
+              `;
             }
           });
       }
@@ -708,5 +739,98 @@
       });
     </script>
     <script type="module" src="cont/00.dashboard/dashboard.js"></script>
+
+    <script>
+      (function () {
+        // Inject into main container instead of using a full-page overlay
+        const MAIN_SEL = ".main, #mainContainer";
+        const FOOTER_ID = "index-offline-footer";
+        let savedMainHTML = null;
+        let footerInterval = null;
+
+        function nowText() {
+          try {
+            return new Date().toLocaleString();
+          } catch (e) {
+            return new Date().toString();
+          }
+        }
+
+        function getMain() {
+          return (
+            document.querySelector("#mainContainer") ||
+            document.querySelector(".main")
+          );
+        }
+
+        function showInMain() {
+          const main = getMain();
+          if (!main) return;
+          if (savedMainHTML === null) savedMainHTML = main.innerHTML;
+
+          main.innerHTML = `
+            <div style="min-height: calc(100vh - 120px); display: flex; align-items: center; justify-content: center; padding: 20px;">
+              <div style="text-align: center; max-width: 560px; color: var(--all-text); background: rgba(150,150,150,0.12); border: 1px solid rgba(150,150,150,0.3); border-radius: 12px; padding: 24px 18px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
+                <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Oops!</div>
+                <div style="font-size: 16px; font-weight: 400;">
+                  Seems like your connection is weak or disturbed :(<br/>
+                  If things aren't loading, re-connect to Wi‑Fi or use mobile data.
+                </div>
+              </div>
+            </div>
+            <div id="${FOOTER_ID}" style="position: fixed; left: 0; right: 0; bottom: 0; padding: 8px 12px; font-size: 12px; text-align: center; color: var(--all-text); background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 1000;">
+              Socrates Beta. ${nowText()}. v1.13 LS. v1.20v GS.
+            </div>
+          `;
+
+          const footer = document.getElementById(FOOTER_ID);
+          function renderFooter() {
+            if (footer) footer.textContent = `Socrates Beta. ${nowText()}. v1.13 LS. v1.20v GS.`;
+          }
+          renderFooter();
+          if (!footerInterval) footerInterval = setInterval(renderFooter, 1000);
+        }
+
+        function restoreMain() {
+          const main = getMain();
+          if (!main) return;
+          const footer = document.getElementById(FOOTER_ID);
+          if (footer) footer.remove();
+          if (footerInterval) {
+            clearInterval(footerInterval);
+            footerInterval = null;
+          }
+
+          // Prefer reloading the current page content to ensure scripts/states are correct
+          try {
+            const savedPage = sessionStorage.getItem("currentPage") || "bau";
+            if (typeof window.loadContent === "function") {
+              window.loadContent(savedPage).catch(() => {
+                if (typeof window.loadDefaultPage === "function") window.loadDefaultPage();
+              });
+            } else if (typeof window.loadDefaultPage === "function") {
+              window.loadDefaultPage();
+            } else if (savedMainHTML !== null) {
+              main.innerHTML = savedMainHTML;
+            }
+          } finally {
+            savedMainHTML = null;
+          }
+        }
+
+        function sync() {
+          if (navigator.onLine === false) showInMain();
+          else restoreMain();
+        }
+
+        window.addEventListener("offline", showInMain);
+        window.addEventListener("online", restoreMain);
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", sync);
+        } else {
+          sync();
+        }
+      })();
+    </script>
   </body>
 </html>

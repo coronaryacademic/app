@@ -2739,3 +2739,117 @@ Sign in to use AI.
     </section>
   </div>
 </div>
+
+<script>
+  (function () {
+    const OVERLAY_ID = "offline-overlay-bau";
+    const FOOTER_ID = "offline-footer-bau";
+
+    function formatNow() {
+      try {
+        return new Date().toLocaleString();
+      } catch (e) {
+        return new Date().toString();
+      }
+    }
+
+    function buildOverlay() {
+      if (document.getElementById(OVERLAY_ID)) return;
+      const overlay = document.createElement("div");
+      overlay.id = OVERLAY_ID;
+      overlay.style.position = "fixed";
+      overlay.style.inset = "0";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "flex-start"; // lift slightly upward
+      overlay.style.justifyContent = "center";
+      overlay.style.paddingTop = "37vh";
+      overlay.style.paddingLeft = "20px";
+      overlay.style.paddingRight = "20px";
+      overlay.style.background = "rgba(0,0,0,0.25)";
+      overlay.style.backdropFilter = "blur(4px)";
+      overlay.style.WebkitBackdropFilter = "blur(4px)";
+      overlay.style.zIndex = "9999";
+
+      const card = document.createElement("div");
+      card.style.textAlign = "center";
+      card.style.maxWidth = "560px";
+      card.style.color = "var(--all-text)";
+      card.style.background = "rgba(150,150,150,0.12)";
+      card.style.border = "1px solid rgba(150,150,150,0.3)";
+      card.style.borderRadius = "12px";
+      card.style.padding = "24px 18px";
+      card.style.backdropFilter = "blur(6px)";
+      card.style.WebkitBackdropFilter = "blur(6px)";
+
+      const title = document.createElement("div");
+      title.textContent = "Oops!";
+      title.style.fontSize = "20px";
+      title.style.fontWeight = "600";
+      title.style.marginBottom = "8px";
+
+      const msg = document.createElement("div");
+      msg.style.fontSize = "16px";
+      msg.style.fontWeight = "400";
+      msg.innerHTML =
+        "Seems like your connection is weak or disturbed :( If things aren't loading, re-connect to Wi‑Fi or use mobile data.";
+
+      card.appendChild(title);
+      card.appendChild(msg);
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      // footer
+      if (!document.getElementById(FOOTER_ID)) {
+        const footer = document.createElement("div");
+        footer.id = FOOTER_ID;
+        footer.style.position = "fixed";
+        footer.style.left = "0";
+        footer.style.right = "0";
+        footer.style.bottom = "0";
+        footer.style.padding = "8px 12px";
+        footer.style.fontSize = "12px";
+        footer.style.textAlign = "center";
+        footer.style.color = "var(--all-text)";
+        footer.style.background = "rgba(0,0,0,0.25)";
+        footer.style.backdropFilter = "blur(6px)";
+        footer.style.WebkitBackdropFilter = "blur(6px)";
+        footer.style.zIndex = "10000";
+
+        function renderFooter() {
+          footer.textContent = `Socrates Beta. ${formatNow()}. v1.13 LS. v1.20v GS.`;
+        }
+        renderFooter();
+        document.body.appendChild(footer);
+
+        // update time periodically while offline
+        if (!footer._interval) {
+          footer._interval = setInterval(renderFooter, 1000);
+        }
+      }
+    }
+
+    function removeOverlay() {
+      const overlay = document.getElementById(OVERLAY_ID);
+      if (overlay) overlay.remove();
+      const footer = document.getElementById(FOOTER_ID);
+      if (footer) {
+        if (footer._interval) clearInterval(footer._interval);
+        footer.remove();
+      }
+    }
+
+    function refreshState() {
+      if (navigator.onLine === false) buildOverlay();
+      else removeOverlay();
+    }
+
+    window.addEventListener("offline", buildOverlay);
+    window.addEventListener("online", removeOverlay);
+    // initialize after DOM ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", refreshState);
+    } else {
+      refreshState();
+    }
+  })();
+</script>
