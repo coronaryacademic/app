@@ -212,7 +212,6 @@ export function initProgressTracker() {
     function scrollToFormSection(sectionKey) {
       // Map section keys to actual form elements
       const sectionMappings = {
-        'student-info': 'student-name',
         'patient-info': 'patient-name', 
         'chief-complaint': 'chief-complaint',
         'history-presenting-complaint': 'site',

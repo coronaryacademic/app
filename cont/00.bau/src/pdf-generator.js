@@ -58,27 +58,15 @@ export function initPDFGenerator() {
       y += 10;
 
       // Patient Details
-      const studentName = getElementValue("student-name");
-      const studentNumber = getElementValue("student-number");
       const patientName = getElementValue("patient-name");
-      const patientAge = getElementValue("patient-age");
+      const patientAge = getElementValue("age");
       const gender = getElementValue("gender");
-      const rotation = getElementValue("rotation");
-
-      if (studentName || studentNumber) {
-        addText("STUDENT INFORMATION", 12, true);
-        y += 2;
-        if (studentName) addText(`Student Name: ${studentName}`);
-        if (studentNumber) addText(`Student Number: ${studentNumber}`);
-        y += 4;
-      }
 
       addText("PATIENT INFORMATION", 12, true);
       y += 2;
       if (patientName) addText(`Patient Name: ${patientName}`);
       if (patientAge) addText(`Age: ${patientAge}`);
       if (gender) addText(`Gender: ${gender}`);
-      if (rotation) addText(`Rotation: ${rotation}`);
       y += 4;
 
       // Chief Complaint
@@ -126,11 +114,11 @@ export function initPDFGenerator() {
       addSection("FAMILY HISTORY", familyHistory);
 
       // Social History
-      const smoking = getElementValue("smoking");
-      const alcohol = getElementValue("alcohol");
-      const occupation = getElementValue("occupation");
-      const living = getElementValue("living");
-      const travel = getElementValue("travel");
+      const smoking = getElementValue("sh-smoking");
+      const alcohol = getElementValue("sh-alcohol");
+      const occupation = getElementValue("sh-occupation");
+      const living = getElementValue("sh-living");
+      const travel = getElementValue("sh-travel");
 
       let socialContent = "";
       if (smoking) socialContent += `Smoking: ${smoking}\n`;

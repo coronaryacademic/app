@@ -38,7 +38,7 @@
 
 /* Dark theme variables */
 [data-theme="dark"] {
-  --bg-color: #343434;
+  --bg-color: #494949;
   --text-color: #f0f0f0; /* General text color */
   --specific-text-color: rgb(
     255,

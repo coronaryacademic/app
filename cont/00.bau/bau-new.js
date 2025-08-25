@@ -8,7 +8,6 @@ import { enhanceSocratesSelectsInFlow } from "./src/dropdown-ui.js";
 import { initFormDataManagement } from "./src/form-data.js";
 import { initPDFGenerator } from "./src/pdf-generator.js";
 import { initAIDemo } from "./src/ai-demo.js";
-import { initStudentAutofill } from "./src/student-autofill.js";
 
 // Main initialization function
 (function initBAU() {
@@ -19,7 +18,6 @@ import { initStudentAutofill } from "./src/student-autofill.js";
     initAIModelAndToken();
     initProgressTracker();
     initFormDataManagement();
-    initStudentAutofill();
     initPDFGenerator();
 
     // Initialize dropdown UI enhancements after DOM is ready
