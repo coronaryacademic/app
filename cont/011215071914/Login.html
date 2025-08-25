@@ -139,15 +139,16 @@
                   onmouseout="this.style.background='rgba(150, 150, 150, 0.205)'"
                 >
                   <span>What does logging in offer?</span>
-                  <span
+                  <i
+                    class="fa fa-chevron-down"
                     id="benefitsArrow"
                     style="
                       position: absolute;
                       right: 16px;
                       transition: transform 0.3s ease;
                     "
-                    >▼</span
-                  >
+                    aria-hidden="true"
+                  ></i>
                 </button>
                 <div
                   id="benefitsContent"
@@ -524,7 +525,7 @@
                 </div>
               </div>
               <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--all-text); opacity: 0.85;">
-                Socrates Beta. <span id=\"offline-datetime\"></span>. v1.13 LS. v1.20v GS.
+                Socrates Beta. <span id=\"offline-datetime\"></span>. v1.13 LS. v1.20 GS.
               </div>
           `;
 

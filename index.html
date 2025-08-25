@@ -779,13 +779,13 @@
               </div>
             </div>
             <div id="${FOOTER_ID}" style="position: fixed; left: 0; right: 0; bottom: 0; padding: 8px 12px; font-size: 12px; text-align: center; color: var(--all-text); background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 1000;">
-              Socrates Beta. ${nowText()}. v1.13 LS. v1.20v GS.
+              Socrates Beta. ${nowText()}. v1.13 LS. v1.20 GS.
             </div>
           `;
 
           const footer = document.getElementById(FOOTER_ID);
           function renderFooter() {
-            if (footer) footer.textContent = `Socrates Beta. ${nowText()}. v1.13 LS. v1.20v GS.`;
+            if (footer) footer.textContent = `Socrates Beta. ${nowText()}. v1.13 LS. v1.20 GS.`;
           }
           renderFooter();
           if (!footerInterval) footerInterval = setInterval(renderFooter, 1000);
