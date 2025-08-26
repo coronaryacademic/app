@@ -3,7 +3,6 @@
 
 // Import all modules
 import { initAIModelAndToken } from "./src/ai-model.js";
-import { initProgressTracker } from "./src/progress-tracker.js";
 import { enhanceSocratesSelectsInFlow } from "./src/dropdown-ui.js";
 import { initFormDataManagement } from "./src/form-data.js";
 import { initPDFGenerator } from "./src/pdf-generator.js";
@@ -16,7 +15,6 @@ import { initAIDemo } from "./src/ai-demo.js";
 
     // Initialize all modules in the correct order
     initAIModelAndToken();
-    initProgressTracker();
     initFormDataManagement();
     initPDFGenerator();
 

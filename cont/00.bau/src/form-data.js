@@ -3,7 +3,6 @@ export function initFormDataManagement() {
   try {
     // Add modern form enhancements
     addFormValidationStyling();
-    addFormNotifications();
 
     // Auto-save functionality
     function saveFormData() {
@@ -203,7 +202,6 @@ export function initFormDataManagement() {
         e.preventDefault();
         if (confirm("Are you sure you want to clear all form data?")) {
           clearFormData();
-          showNotification("Form cleared successfully!", "info");
         }
       });
     }
@@ -269,82 +267,6 @@ export function initFormDataManagement() {
       `;
       document.head.appendChild(style);
     }
-
-    function addFormNotifications() {
-      // Create notification container
-      if (!document.getElementById("notification-container")) {
-        const container = document.createElement("div");
-        container.id = "notification-container";
-        container.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          z-index: 10000;
-          pointer-events: none;
-        `;
-        document.body.appendChild(container);
-      }
-    }
-
-    function showNotification(message, type = "info") {
-      const container = document.getElementById("notification-container");
-      if (!container) return;
-
-      const notification = document.createElement("div");
-      notification.className = `notification notification-${type}`;
-
-      const colors = {
-        success: "#28a745",
-        error: "#dc3545",
-        warning: "#ffc107",
-        info: "#17a2b8",
-      };
-
-      notification.style.cssText = `
-        background: ${colors[type] || colors.info};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        pointer-events: auto;
-        cursor: pointer;
-      `;
-
-      notification.textContent = message;
-      container.appendChild(notification);
-
-      // Animate in
-      setTimeout(() => {
-        notification.style.transform = "translateX(0)";
-      }, 100);
-
-      // Auto remove
-      setTimeout(() => {
-        notification.style.transform = "translateX(100%)";
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.parentElement.removeChild(notification);
-          }
-        }, 300);
-      }, 3000);
-
-      // Click to dismiss
-      notification.addEventListener("click", () => {
-        notification.style.transform = "translateX(100%)";
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.parentElement.removeChild(notification);
-          }
-        }, 300);
-      });
-    }
-
-    // Export notification function
-    window.showNotification = showNotification;
   } catch (e) {
     console.warn("[BAU] Form data management init error:", e);
   }

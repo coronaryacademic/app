@@ -46,13 +46,10 @@ textarea {
   margin: auto;
   padding: 20px;
   margin-top: 20px;
-  background: var(--header-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border: none;
   color: var(--all-text); /* Same here */
   border-radius: 25px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   font-family: Nunito, Arial;
 }
 

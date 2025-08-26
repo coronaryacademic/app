@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load stored page
-  const storedPage = sessionStorage.getItem("currentPage") || "main";
+  const storedPage = sessionStorage.getItem("currentPage") || "bau";
   loadContent(storedPage).then(() => {
     updateNavActiveState(storedPage);
     // Ensure sidebar button is visible if we're on dashboard
@@ -278,7 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof window.ensureHistorySidebar === "function") {
           window.ensureHistorySidebar();
         } else {
-          console.log("[SCRIPT] ensureHistorySidebar function not available on page load");
+          console.log(
+            "[SCRIPT] ensureHistorySidebar function not available on page load"
+          );
         }
       }, 500);
     }
@@ -321,15 +323,13 @@ function setHeaderTitleByPage(page) {
 
     const map = {
       bau: "Socrates Beta",
-      main: "Home",
-      contact: "About Us",
-      library: "Library",
       dashboard: "Dashboard",
     };
 
     const title = map[page] || "Socrates Beta";
     if (title === "Socrates Beta") {
-      el.innerHTML = 'Socrates<sup style="font-size: 12px; margin-left: 5px">Beta</sup>';
+      el.innerHTML =
+        'Socrates<sup style="font-size: 12px; margin-left: 5px">Beta</sup>';
     } else {
       el.textContent = title;
     }
@@ -450,12 +450,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // Rest of your functions remain the same...
 function goHome() {
   // Check if we're on the BAU page and refresh it
-  if (window.location.pathname.includes('bau') || document.getElementById("history-form-container")) {
+  if (
+    window.location.pathname.includes("bau") ||
+    document.getElementById("history-form-container")
+  ) {
     // Refresh the page to ensure clean state
     window.location.href = window.location.href;
     return;
   }
-  
+
   // Original home navigation logic for other pages
   // Clear form and show success message when header SVG is clicked
   const form = document.getElementById("history-form-container");
@@ -466,7 +469,7 @@ function goHome() {
       if (input.id === "student-name" || input.id === "student-number") {
         return;
       }
-      
+
       if (input.type === "checkbox" || input.type === "radio") {
         input.checked = false;
       } else if (input.tagName === "SELECT") {
@@ -545,18 +548,6 @@ function loadContent(page) {
       filePath = "cont/00.bau/bau.html";
       scriptPath = "cont/00.bau/bau.js";
       break;
-    case "main":
-      filePath = "cont/00.home/home.html";
-      scriptPath = "cont/00.home/home.js";
-      break;
-    case "contact":
-      filePath = "cont/00.contact/contact.html";
-      scriptPath = "cont/00.contact/contact.js";
-      break;
-    case "library":
-      filePath = "cont/00.library/library.html";
-      scriptPath = "cont/00.library/library.js";
-      break;
     case "dashboard":
       filePath = "cont/00.dashboard/dashboard.html";
       scriptPath = "cont/00.dashboard/dashboard.js";
@@ -615,19 +606,15 @@ function loadContent(page) {
               console.warn(`🧩 No initializer function found: ${initFnName}()`);
             }
 
-            if (page === "main") {
-              if (typeof window.loadFirebasePosts === "function") {
-                window.loadFirebasePosts();
-              }
-              if (typeof window.initHomeScroll === "function") {
-                window.initHomeScroll();
-              }
-            }
             // If dashboard page, ensure BAU sidebar exists
             if (page === "dashboard") {
-              console.log("[SCRIPT] Dashboard page loaded, ensuring BAU sidebar");
+              console.log(
+                "[SCRIPT] Dashboard page loaded, ensuring BAU sidebar"
+              );
               // Force load BAU script and ensure sidebar
-              const bauScript = document.querySelector('script[src="cont/00.bau/bau.js"]');
+              const bauScript = document.querySelector(
+                'script[src="cont/00.bau/bau.js"]'
+              );
               if (!bauScript) {
                 console.log("[SCRIPT] BAU script not found, loading it");
                 const s = document.createElement("script");
@@ -637,10 +624,14 @@ function loadContent(page) {
                   console.log("[SCRIPT] BAU script loaded successfully");
                   setTimeout(() => {
                     if (typeof window.renderHistorySidebar === "function") {
-                      console.log("[SCRIPT] Calling renderHistorySidebar after BAU script load");
+                      console.log(
+                        "[SCRIPT] Calling renderHistorySidebar after BAU script load"
+                      );
                       window.renderHistorySidebar();
                     } else {
-                      console.log("[SCRIPT] renderHistorySidebar still not available after BAU load");
+                      console.log(
+                        "[SCRIPT] renderHistorySidebar still not available after BAU load"
+                      );
                     }
                     resolve();
                   }, 100);
@@ -651,13 +642,19 @@ function loadContent(page) {
                 };
                 document.body.appendChild(s);
               } else {
-                console.log("[SCRIPT] BAU script already exists, calling renderHistorySidebar");
+                console.log(
+                  "[SCRIPT] BAU script already exists, calling renderHistorySidebar"
+                );
                 setTimeout(() => {
                   if (typeof window.renderHistorySidebar === "function") {
-                    console.log("[SCRIPT] Calling renderHistorySidebar with existing BAU script");
+                    console.log(
+                      "[SCRIPT] Calling renderHistorySidebar with existing BAU script"
+                    );
                     window.renderHistorySidebar();
                   } else {
-                    console.log("[SCRIPT] renderHistorySidebar not available with existing script");
+                    console.log(
+                      "[SCRIPT] renderHistorySidebar not available with existing script"
+                    );
                   }
                   resolve();
                 }, 100);
@@ -887,7 +884,10 @@ function ensureHistorySidebar() {
   return new Promise((resolve) => {
     // Always try to render the sidebar to ensure button visibility
     const tryRender = () => {
-      console.log("[SCRIPT] Trying to render sidebar, function exists:", typeof window.renderHistorySidebar);
+      console.log(
+        "[SCRIPT] Trying to render sidebar, function exists:",
+        typeof window.renderHistorySidebar
+      );
       try {
         if (typeof window.renderHistorySidebar === "function") {
           console.log("[SCRIPT] Calling renderHistorySidebar");
@@ -908,7 +908,9 @@ function ensureHistorySidebar() {
       return resolve();
     }
 
-    const hasBauScript = !!document.querySelector('script[src="cont/00.bau/bau.js"]');
+    const hasBauScript = !!document.querySelector(
+      'script[src="cont/00.bau/bau.js"]'
+    );
     const afterReady = () => {
       try {
         if (typeof window.renderHistorySidebar === "function") {

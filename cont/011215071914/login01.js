@@ -177,14 +177,17 @@ function updateAuthUI(user) {
     avatarElem.style.width = "24px";
     avatarElem.style.height = "24px";
     avatarElem.style.borderRadius = "50%";
-    avatarElem.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    avatarElem.style.background =
+      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
     avatarElem.style.display = "flex";
     avatarElem.style.alignItems = "center";
     avatarElem.style.justifyContent = "center";
     avatarElem.style.color = "white";
     avatarElem.style.fontWeight = "bold";
     avatarElem.style.fontSize = "12px";
-    avatarElem.textContent = (user.displayName || "User").charAt(0).toUpperCase();
+    avatarElem.textContent = (user.displayName || "User")
+      .charAt(0)
+      .toUpperCase();
 
     console.log("[DEBUG] avatarElem created:", avatarElem);
 

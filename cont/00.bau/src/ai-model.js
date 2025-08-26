@@ -109,7 +109,9 @@ export function initAIModelAndToken() {
             ? `${labelEl.innerText.trim()} — select...`
             : "Select AI model";
           const currentValue = modelSel.value;
-          const matchingOption = Array.from(modelSel.options).find(opt => opt.value === currentValue);
+          const matchingOption = Array.from(modelSel.options).find(
+            (opt) => opt.value === currentValue
+          );
           const text = matchingOption?.text?.trim();
           btn.textContent = text || base;
         }
