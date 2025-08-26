@@ -137,9 +137,7 @@ function getTodoContent() {
       border: none;
       max-width: 80%;
       margin: 4px auto;
-      background: var(--header-bg);
       border-radius: 25px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       border: none;
     "
   >
