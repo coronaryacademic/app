@@ -338,7 +338,7 @@
         "rotation",
         "group-number",
       ],
-      "patient-info": ["patient-name", "age", "gender"],
+      "patient-info": ["patient-name", "age"],
       "social-history": [
         "sh-smoking",
         "sh-alcohol",
@@ -420,15 +420,10 @@
             // Check if it's a disabled placeholder option
             const isPlaceholder = selectedOption && selectedOption.disabled;
 
-            // For non-SH sections, be more strict about default first options
-            const isDefaultFirstOption =
-              field.selectedIndex === 0 && field.options[0].value === "male"; // Only gender needs this check now
-
-            // Consider empty string, disabled placeholder, or default first options as incomplete
+            // Consider empty string or disabled placeholder as incomplete
             hasValue =
               value &&
               !isPlaceholder &&
-              !isDefaultFirstOption &&
               !["", "select", "choose", "default"].includes(
                 value.toLowerCase()
               );
@@ -830,7 +825,6 @@ document
         "relieving",
         "severity",
         // Also enhance Patient Info + Social History with same custom UI
-        "gender",
         "sh-smoking",
         "sh-alcohol",
         "sh-drugs",
@@ -842,9 +836,39 @@ document
       ids.forEach((id) => {
         const select = document.getElementById(id);
         if (!select) return;
-        if (select.multiple) return; // Only single-selects here
+        // Respect native opt-out: remove previous wrapper if any, then skip
+        if (select.dataset && select.dataset.native === "1") {
+          try {
+            const prev = select.previousElementSibling;
+            if (
+              prev &&
+              prev.classList &&
+              prev.classList.contains("dropdown-single-wrapper")
+            ) {
+              prev.remove();
+            }
+            select.style.display = "";
+            if (select.dataset.enhanced === "1") delete select.dataset.enhanced;
+          } catch (e) {}
+          return;
+        }
         if (select.dataset.enhanced === "1") return;
-        enhanceOneSingleInFlow(select);
+        // Single-select (radio dropdown) for Social History
+        if (
+          id === "smoking" ||
+          id === "alcohol" ||
+          id === "occupation" ||
+          id === "living" ||
+          id === "travel"
+        ) {
+          select.multiple = false;
+          select.removeAttribute("data-dropdown-checkbox");
+          enhanceOneSingleInFlow(select);
+        } else {
+          select.multiple = true;
+          select.setAttribute("data-dropdown-checkbox", "");
+          enhanceOneInFlow(select);
+        }
       });
     }
 
@@ -862,21 +886,14 @@ document
       Object.assign(btn.style, {
         width: "100%",
         textAlign: "left",
-        padding: "12px",
-        fontSize: "16px",
+        padding: "10px",
+        fontSize: "14px",
         border: "1px solid var(--all-text)",
         borderRadius: "6px",
         background: "#fff",
         cursor: "pointer",
         color: "black",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
       });
-      // ARIA for accessibility
-      btn.setAttribute("role", "combobox");
-      btn.setAttribute("aria-haspopup", "listbox");
-      btn.setAttribute("aria-expanded", "false");
 
       const panel = document.createElement("div");
       panel.className = "dropdown-single-panel";
@@ -887,17 +904,12 @@ document
         borderRadius: "8px",
         background: "#fafafa",
         padding: "8px",
-        maxHeight: "260px",
+        maxHeight: "450px",
         overflowY: "auto",
-        WebkitOverflowScrolling: "touch",
         color: "black",
       });
-      const panelId = `${select.id}-listbox`;
-      panel.id = panelId;
-      panel.setAttribute("role", "listbox");
-      btn.setAttribute("aria-controls", panelId);
 
-      // --- Typeahead search for single-select ---
+      // --- Typeahead search UI ---
       const search = document.createElement("input");
       search.type = "search";
       search.placeholder = "Type to filter...";
@@ -909,9 +921,24 @@ document
         border: "1px solid #ddd",
         borderRadius: "6px",
         background: "#fff",
-        color: "black",
+        color: "var(--all-text)",
         fontSize: "16px",
       });
+
+      // Set placeholder color
+      search.style.setProperty("--placeholder-color", "var(--all-text)");
+      const placeholderStyle = document.createElement("style");
+      placeholderStyle.textContent = `
+        #${select.id}-search::placeholder {
+          color: var(--all-text);
+          opacity: 0.7;
+        }
+      `;
+      search.id = `${select.id}-search`;
+      if (!document.head.querySelector(`style[data-for="${select.id}"]`)) {
+        placeholderStyle.setAttribute("data-for", select.id);
+        document.head.appendChild(placeholderStyle);
+      }
 
       const rowsContainer = document.createElement("div");
 
@@ -931,37 +958,21 @@ document
         radio.name = `${select.id}-radio`;
         radio.value = value;
         radio.checked = !!selected;
-        Object.assign(radio.style, { width: "20px", height: "20px" });
         radio.addEventListener("change", () => {
           select.value = value;
-          row.setAttribute("aria-selected", "true");
           updateButtonText();
         });
 
         const span = document.createElement("span");
         span.textContent = text;
-        if (span.style && span.style.setProperty) {
-          span.style.setProperty("color", "black", "important");
-        } else {
-          span.style.color = "black";
-        }
+        span.style.color = "black";
 
         // Also make row clickable
         row.addEventListener("click", (e) => {
           if (e.target !== radio) {
             radio.checked = true;
             select.value = value;
-            select.selectedIndex = Array.from(select.options).findIndex(
-              (opt) => opt.value === value
-            );
             updateButtonText();
-            // Trigger form validation update
-            select.dispatchEvent(new Event("change", { bubbles: true }));
-            select.dispatchEvent(new Event("input", { bubbles: true }));
-            // Update progress tracker
-            if (window.updateProgressTracker) {
-              setTimeout(window.updateProgressTracker, 50);
-            }
           }
         });
 
@@ -974,6 +985,19 @@ document
         panel.innerHTML = "";
         panel.appendChild(search);
         rowsContainer.innerHTML = "";
+
+        // Check if this is a SOCRATES field that should use row layout
+        const socratesFields = [
+          "onset",
+          "character",
+          "radiation",
+          "timing",
+          "exacerbating",
+          "relieving",
+          "severity",
+        ];
+        const isSOCRATESField = socratesFields.includes(select.id);
+
         const children = Array.from(select.children);
         children.forEach((child) => {
           if (child.tagName === "OPTGROUP") {
@@ -983,19 +1007,53 @@ document
             groupLabel.setAttribute("data-text", child.label.toLowerCase());
             Object.assign(groupLabel.style, {
               fontWeight: "600",
-              marginTop: "6px",
-              marginBottom: "4px",
-              color: "black",
+              marginTop: "12px",
+              marginBottom: "8px",
+              color: "var(--all-text)",
             });
-            if (groupLabel.style && groupLabel.style.setProperty) {
-              groupLabel.style.setProperty("color", "black", "important");
-            }
             rowsContainer.appendChild(groupLabel);
-            Array.from(child.children).forEach((opt) => {
-              rowsContainer.appendChild(
-                createOptionRow(opt.text, opt.value, opt.selected)
-              );
-            });
+
+            if (isSOCRATESField) {
+              // Create flex container for row layout
+              const optionsContainer = document.createElement("div");
+              Object.assign(optionsContainer.style, {
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+                marginBottom: "16px",
+              });
+
+              Array.from(child.children).forEach((opt) => {
+                const optionRow = createOptionRow(
+                  opt.text,
+                  opt.value,
+                  opt.selected
+                );
+                // Modify styling for inline display
+                Object.assign(optionRow.style, {
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  border: "none",
+                  borderRadius: "20px",
+                  background: opt.selected ? "#e3f2fd" : "transparent",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  flexShrink: "0",
+                });
+                optionsContainer.appendChild(optionRow);
+              });
+
+              rowsContainer.appendChild(optionsContainer);
+            } else {
+              Array.from(child.children).forEach((opt) => {
+                rowsContainer.appendChild(
+                  createOptionRow(opt.text, opt.value, opt.selected)
+                );
+              });
+            }
           } else if (child.tagName === "OPTION") {
             rowsContainer.appendChild(
               createOptionRow(child.text, child.value, child.selected)
@@ -1004,72 +1062,6 @@ document
         });
 
         panel.appendChild(rowsContainer);
-
-        const actions = document.createElement("div");
-        actions.style.display = "flex";
-        actions.style.gap = "8px";
-        actions.style.position = "relative"; // anchor for kebab menu
-        actions.style.position = "relative"; // anchor for menu
-        actions.style.marginTop = "8px";
-        actions.style.position = "sticky";
-        actions.style.bottom = "0";
-        actions.style.background = "#fafafa";
-        actions.style.padding = "8px";
-        actions.style.paddingBottom = "calc(8px + env(safe-area-inset-bottom))";
-        actions.style.position = "sticky";
-        actions.style.bottom = "0";
-        actions.style.background = "#fafafa";
-        actions.style.padding = "8px";
-        actions.style.paddingBottom = "calc(8px + env(safe-area-inset-bottom))";
-
-        const clearBtn = document.createElement("button");
-        clearBtn.type = "button";
-        clearBtn.textContent = "Clear";
-        Object.assign(clearBtn.style, {
-          padding: "12px 14px",
-          border: "1px solid var(--all-text)",
-          borderRadius: "4px",
-          background: "#f7f7f7",
-          cursor: "pointer",
-          fontSize: "16px",
-        });
-        clearBtn.addEventListener("click", () => {
-          select.value = "";
-          select.selectedIndex = -1;
-          panel
-            .querySelectorAll('input[type="radio"]')
-            .forEach((r) => (r.checked = false));
-          updateButtonText();
-          // Trigger form validation update
-          select.dispatchEvent(new Event("change", { bubbles: true }));
-          select.dispatchEvent(new Event("input", { bubbles: true }));
-          // Update progress tracker
-          if (window.updateProgressTracker) {
-            setTimeout(window.updateProgressTracker, 50);
-          }
-        });
-
-        const doneBtn = document.createElement("button");
-        doneBtn.type = "button";
-        doneBtn.textContent = "Done";
-        Object.assign(doneBtn.style, {
-          padding: "12px 14px",
-          border: "1px solid #2cc9c7",
-          borderRadius: "4px",
-          color: "black",
-          background: "#e8fbfb",
-          cursor: "pointer",
-          marginLeft: "auto",
-          fontSize: "16px",
-        });
-        doneBtn.addEventListener("click", () => {
-          search.blur();
-          hidePanel();
-        });
-
-        actions.appendChild(clearBtn);
-        actions.appendChild(doneBtn);
-        panel.appendChild(actions);
       }
 
       function updateButtonText() {
@@ -1174,6 +1166,7 @@ document
       });
       mo.observe(select, { subtree: true, childList: true, attributes: true });
     }
+
     const { jsPDF } = window.jspdf;
     if (!jsPDF) {
       console.error("jsPDF not loaded correctly.");
@@ -1236,11 +1229,10 @@ document
         const rosCheckboxes = root.querySelectorAll("input.ros");
         const rosData = {};
         rosCheckboxes.forEach((checkbox) => {
-          if (checkbox.checked) {
-            const system = checkbox.getAttribute("data-system") || "Other";
-            if (!rosData[system]) rosData[system] = [];
-            rosData[system].push(checkbox.value);
-          }
+          if (!checkbox.checked) return;
+          const system = checkbox.getAttribute("data-system") || "Other";
+          if (!rosData[system]) rosData[system] = [];
+          rosData[system].push(checkbox.value);
         });
         if (Object.keys(rosData).length > 0) {
           data._rosData = rosData;
@@ -1369,7 +1361,7 @@ document
     const sections = [
       {
         title: "Patient Information",
-        fields: ["patient-name", "date", "age", "gender"],
+        fields: ["patient-name", "date", "age"],
       },
       { title: "Chief Complaint", fields: ["chief-complaint"] },
       {
@@ -1754,7 +1746,6 @@ document
 
       const patientName = getElementValue("patient-name") || "The patient";
       const age = getElementValue("age");
-      const gender = getElementValue("gender");
 
       const cc = getSelectedTexts("chief-complaint");
 
@@ -1792,9 +1783,7 @@ document
 
       // Build paragraph
       let paragraph = patientName;
-      if (age && gender) paragraph += ` is a ${age}-year-old ${gender}`;
-      else if (age) paragraph += ` is a ${age}-year-old`;
-      else if (gender) paragraph += ` is a ${gender}`;
+      if (age) paragraph += ` is a ${age}-year-old`;
 
       if (cc.length) paragraph += ` presenting with ${joinNatural(cc)}`;
 
@@ -2221,7 +2210,7 @@ document
     );
   });
 
-// ===== Global enhancer: CC/SOCRATES as multi-select, Gender/Social as single-select =====
+// ===== Global enhancer: CC/SOCRATES as multi-select, Social History as single-select =====
 function enhanceSocratesSelectsInFlow() {
   // Multi-select (checkbox dropdown)
   const multiIds = [
@@ -2245,18 +2234,27 @@ function enhanceSocratesSelectsInFlow() {
     enhanceOneInFlow(select);
   });
 
-  // Single-select (radio dropdown) for Gender & Social
-  const singleIds = [
-    "gender",
-    "smoking",
-    "alcohol",
-    "occupation",
-    "living",
-    "travel",
-  ];
+  // Single-select (radio dropdown) for Social History
+  const singleIds = ["smoking", "alcohol", "occupation", "living", "travel"];
   singleIds.forEach((id) => {
     const select = document.getElementById(id);
     if (!select) return;
+    // Respect native opt-out: remove previous wrapper if any, then skip
+    if (select.dataset && select.dataset.native === "1") {
+      try {
+        const prev = select.previousElementSibling;
+        if (
+          prev &&
+          prev.classList &&
+          prev.classList.contains("dropdown-single-wrapper")
+        ) {
+          prev.remove();
+        }
+        select.style.display = "";
+        if (select.dataset.enhanced === "1") delete select.dataset.enhanced;
+      } catch (e) {}
+      return;
+    }
     if (select.dataset.enhanced === "1") return;
     select.multiple = false;
     select.removeAttribute("data-dropdown-checkbox");
@@ -4114,15 +4112,17 @@ async function renderHistorySidebar() {
         const menu = document.createElement("div");
         menu.className = "bau-history-menu";
         Object.assign(menu.style, {
-          position: "fixed", // take out of sidebar flow to avoid horizontal scroll
+          position: "absolute", // Position relative to sidebar
           background: "var(--header-bg)",
-          borderRadius: "25px",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+          borderRadius: "0 0 25px 25px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.15)",
           border: "none",
+          borderTop: "none",
           padding: "10px 12px 8px",
           display: "none",
           zIndex: "1000002", // above sidebar
-          minWidth: "140px",
+          width: "100%", // Full width of parent
+          boxSizing: "border-box",
           pointerEvents: "auto",
         });
 
@@ -4240,28 +4240,31 @@ async function renderHistorySidebar() {
             }
             window.__bauOpenHistoryMenu = { btn: null, menu: null, off: null };
           }
-          // Move to body so it's guaranteed above the sidebar stacking context
-          if (menu.parentElement !== document.body) {
-            document.body.appendChild(menu);
+          // Append to the same container as the button
+          const buttonContainer = menuBtn.parentElement;
+          if (menu.parentElement !== buttonContainer) {
+            buttonContainer.appendChild(menu);
+            buttonContainer.style.position = "relative"; // Make it a positioning context
           }
           // Compute and apply screen position
           const positionMenu = () => {
-            // Do not show menu if hidden
             if (menu.style.display !== "block") return;
-            const rect = menuBtn.getBoundingClientRect();
-            const menuWidth = menu.offsetWidth || 160;
-            const menuHeight = menu.offsetHeight || 10;
-            let left = rect.right + 6;
-            // Center vertically relative to the button, bias slightly more upward
-            let top = rect.top + (rect.height - menuHeight) / 2 - 4;
-            const maxLeft = window.innerWidth - menuWidth - 8;
-            const maxTop = window.innerHeight - menuHeight - 8;
-            const minTop = 8;
-            if (left > maxLeft) left = Math.max(8, maxLeft);
-            if (top > maxTop) top = maxTop;
-            if (top < minTop) top = minTop;
-            menu.style.left = `${left}px`;
-            menu.style.top = `${top}px`;
+
+            // Get button and sidebar positions
+            const btnRect = menuBtn.getBoundingClientRect();
+            const sidebar = menuBtn.closest(".bau-history-sidebar");
+
+            // Position menu directly below the button with right margin
+            menu.style.position = "absolute";
+            menu.style.left = "auto";
+            menu.style.right = "-12px"; // Add 16px from the right edge
+            menu.style.top = "100%";
+            menu.style.width = "120px"; // Fixed width for better appearance
+            menu.style.borderRadius = "25px";
+            menu.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.15)";
+            menu.style.border = "1px solid rgba(0,0,0,0.1)";
+            menu.style.borderTop = "none";
+            menu.style.marginTop = "-1px"; // Overlap the border with button
           };
           // Make visible before first position (position function is guarded)
           menu.style.display = "block";
@@ -5628,21 +5631,14 @@ function autoFillStudentData() {
 // Call it initially
 autoFillStudentData();
 
-// ---- Ensure SH and Gender use custom single-select UI on page load ----
-(function enhanceSHGenderOnLoad() {
+// ---- Ensure Social History uses custom single-select UI on page load ----
+(function enhanceSHOnLoad() {
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", enhanceSHGenderOnLoad);
+    document.addEventListener("DOMContentLoaded", enhanceSHOnLoad);
     return;
   }
   try {
-    const ids = [
-      "gender",
-      "smoking",
-      "alcohol",
-      "occupation",
-      "living",
-      "travel",
-    ];
+    const ids = ["smoking", "alcohol", "occupation", "living", "travel"];
     ids.forEach((id) => {
       const select = document.getElementById(id);
       if (!select || select.multiple || select.dataset.enhanced === "1") return;
@@ -6399,7 +6395,6 @@ autoFillStudentData();
               const joinNat = (arr) => arr.filter(Boolean).join(", ");
               const name = getVal("patient-name") || "The patient";
               const age = getVal("age");
-              const gender = getVal("gender");
               const cc = (() => {
                 const ccEl = document.getElementById("chief-complaint");
                 if (!ccEl) return "";
@@ -6410,9 +6405,7 @@ autoFillStudentData();
               })();
               const parts = [];
               let first = name;
-              if (age && gender) first += ` is a ${age}-year-old ${gender}`;
-              else if (age) first += ` is a ${age}-year-old`;
-              else if (gender) first += ` is a ${gender}`;
+              if (age) first += ` is a ${age}-year-old`;
               if (cc) first += ` presenting with ${cc}`;
               parts.push(first + ".");
               const socrates = [

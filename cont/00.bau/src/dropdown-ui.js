@@ -249,9 +249,8 @@ export function enhanceSocratesSelectsInFlow() {
     mo.observe(select, { subtree: true, childList: true, attributes: true });
   });
 
-  // Single-select (radio dropdown) for Gender and Social History
+  // Single-select (radio dropdown) for Social History
   const singleIds = [
-    "gender",
     "smoking",
     "alcohol",
     "occupation",
@@ -260,7 +259,29 @@ export function enhanceSocratesSelectsInFlow() {
   ];
   singleIds.forEach((id) => {
     const select = document.getElementById(id);
-    if (!select || select.multiple || select.dataset.enhanced === "1") return;
+    // If explicitly marked native, remove any previous enhancement and skip
+    if (select && select.dataset.native === "1") {
+      try {
+        const prev = select.previousElementSibling;
+        if (prev && prev.classList && prev.classList.contains("dropdown-single-wrapper")) {
+          prev.remove();
+        }
+        // Restore native select visibility/state
+        select.style.display = "";
+        if (select.dataset.enhanced === "1") delete select.dataset.enhanced;
+      } catch (e) {
+        // no-op
+      }
+    }
+    // Opt-out: skip enhancement if explicitly marked native or invalid
+    if (
+      !select ||
+      select.multiple ||
+      select.dataset.enhanced === "1" ||
+      select.dataset.native === "1"
+    ) {
+      return;
+    }
 
     select.dataset.enhanced = "1";
 

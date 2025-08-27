@@ -60,13 +60,11 @@ export function initPDFGenerator() {
       // Patient Details
       const patientName = getElementValue("patient-name");
       const patientAge = getElementValue("age");
-      const gender = getElementValue("gender");
 
       addText("PATIENT INFORMATION", 12, true);
       y += 2;
       if (patientName) addText(`Patient Name: ${patientName}`);
       if (patientAge) addText(`Age: ${patientAge}`);
-      if (gender) addText(`Gender: ${gender}`);
       y += 4;
 
       // Chief Complaint

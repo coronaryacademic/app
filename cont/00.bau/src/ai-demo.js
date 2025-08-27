@@ -90,7 +90,6 @@ export function initAIDemo() {
       return {
         patientName: getElementValue("patient-name"),
         patientAge: getElementValue("patient-age"),
-        gender: getElementValue("gender"),
         chiefComplaint: getElementValue("chief-complaint"),
         site: getElementValue("site"),
         onset: getElementValue("onset"),
@@ -119,10 +118,8 @@ export function initAIDemo() {
     function buildAIPrompt(data) {
       let prompt = `Please analyze this patient case and provide clinical insights:\n\n`;
 
-      if (data.patientAge || data.gender) {
-        prompt += `Patient: ${
-          data.patientAge ? data.patientAge + " year old" : ""
-        } ${data.gender || "patient"}\n`;
+      if (data.patientAge) {
+        prompt += `Patient: ${data.patientAge} year old\n`;
       }
 
       if (data.chiefComplaint) {

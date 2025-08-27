@@ -6,7 +6,7 @@ export function initProgressTracker() {
 
     // Enhanced section mapping with better organization
     const sections = {
-      "patient-info": ["patient-name", "age", "gender"],
+      "patient-info": ["patient-name", "age"],
       "social-history": [
         "sh-smoking",
         "sh-alcohol",
