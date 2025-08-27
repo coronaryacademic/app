@@ -139,6 +139,7 @@ function getTodoContent() {
       margin: 4px auto;
       border-radius: 25px;
       border: none;
+      background-color: var(--header-bg);
     "
   >
     <p

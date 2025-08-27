@@ -106,6 +106,7 @@
   flex-direction: column;
   gap: 0.75rem;
   color: var(--all-text-color);
+  background-color: var(--header-bg);
   border-radius: 25px;
   border: none;
   width: 100%;

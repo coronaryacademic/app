@@ -30,7 +30,7 @@
   /* Defensive override: any element inside history form that explicitly used white-ish bg */
   #history-form-container * {
     /* neutralize hard-coded white backgrounds without affecting layout */
-    background: transparent !important;
+    background: var(--header-bg) !important;
     color: var(--all-text);
   }
 
@@ -53,169 +53,40 @@
   }
 </style>
 
-<!--
-
-<div id="overall">
-  <div class="help-container">
-    <button
-      id="helpButton"
-      class="btnhelp"
-      style="background-color: transparent; border: none; cursor: pointer"
-      title="Help"
-      onclick="toggleFAQ()"
-    >
-      <i class="fa" id="helpicon" style="padding-bottom: 10px; font-size: 22px">
-        &#xf059;
-      </i>
-    </button>
-
-    <span id="helpLabel"> Click for more information. </span>
-  </div>
-
-  <div class="FAQ">
-    <div
-      id="faqSection"
-      style="
-        overflow: hidden;
-        max-height: 0;
-        transition: max-height 0.5s ease;
-        margin-top: 15px;
-        text-align: left;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-      "
-    >
-      <div
-        style="
-          background: rgba(150, 150, 150, 0.152);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px); /* for Safari */
-          border-radius: 25px;
-          border: none;
-          padding: 20px;
-        "
-      >
-        <h3
-          style="
-            margin: 0 0 15px 0;
-            color: var(--all-text);
-            font-size: 20px;
-            font-weight: 600;
-            text-align: center;
-          "
-        >
-          How to Use This Form
-        </h3>
-
-        <div
-          style="display: grid; gap: 12px; font-size: 14px; line-height: 1.5"
-        >
-          <div style="display: flex; align-items: flex-start; gap: 12px">
-            <span
-              style="
-                background: rgba(150, 150, 150, 0.205);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px); /* for Safari */
-                border-radius: 20px;
-                border: 1px solid rgba(255, 255, 255, 0.077);
-                color: var(--all-text);
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 15px;
-                font-weight: bold;
-                flex-shrink: 0;
-                margin-top: 2px;
-              "
-              >1</span
-            >
-            <span
-              >Fill out the form fields below - empty fields will remain blank
-              in your generated PDF</span
-            >
-          </div>
-
-          <div style="display: flex; align-items: flex-start; gap: 12px">
-            <span
-              style="
-                background: rgba(150, 150, 150, 0.205);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px); /* for Safari */
-                border-radius: 20px;
-                border: 1px solid rgba(255, 255, 255, 0.077);
-                color: var(--all-text);
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 15px;
-                font-weight: bold;
-                flex-shrink: 0;
-                margin-top: 2px;
-              "
-              >2</span
-            >
-            <span
-              >Click <strong>"Submit & Download PDF"</strong> to generate your
-              clinical history report</span
-            >
-          </div>
-
-          <div style="display: flex; align-items: flex-start; gap: 12px">
-            <span
-              style="
-                background: rgba(150, 150, 150, 0.205);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px); /* for Safari */
-                border-radius: 20px;
-                border: 1px solid rgba(255, 255, 255, 0.077);
-                color: var(--all-text);
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 15px;
-                font-weight: bold;
-                flex-shrink: 0;
-                margin-top: 2px;
-              "
-              >3</span
-            >
-            <span
-              >If signed in, your file will be automatically saved to your
-              Google Drive</span
-            >
-          </div>
-        </div>
-
-        <div
-          style="
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 13px;
-            color: rgba(var(--all-text-rgb), 0.7);
-            text-align: center;
-          "
-        >
-          All information entered is included in the final documentation
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
--->
 <script type="module" src="bau-new.js"></script>
 
+<div
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    background: radial-gradient(
+        circle at 20% 30%,
+        rgba(52, 164, 162, 0.35),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(173, 216, 230, 0.25),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 70% 80%,
+        rgba(186, 85, 211, 0.168),
+        transparent 60%
+      ),
+      radial-gradient(
+        circle at 30% 70%,
+        rgba(255, 182, 193, 0.123),
+        transparent 60%
+      );
+    background-blend-mode: screen;
+    z-index: -1;
+  "
+></div>
 <!-- Form Container -->
 <div
   id="history-form-container"
@@ -224,7 +95,10 @@
     width: 95%;
     max-width: 900px;
     margin: 35px auto 0 auto;
-    padding: 0 15px;
+    margin-top: 17px;
+    margin-bottom: -50px;
+    padding: 28px 32px;
+    background-color: var(--header-bg);
   "
 >
   <!-- Load saved history message -->
