@@ -107,8 +107,8 @@
   gap: 0.75rem;
   color: var(--all-text-color);
   background-color: var(--header-bg);
+  border: 1px solid var(--borderbottomdark);
   border-radius: 25px;
-  border: none;
   width: 100%;
   margin: auto;
   padding: 20px;

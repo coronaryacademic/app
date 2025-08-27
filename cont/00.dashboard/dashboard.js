@@ -140,6 +140,7 @@ function getTodoContent() {
       border-radius: 25px;
       border: none;
       background-color: var(--header-bg);
+      border: 1px solid var(--borderbottomdark);
     "
   >
     <p
