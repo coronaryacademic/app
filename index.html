@@ -65,8 +65,8 @@
         peContent.style.display = 'block';
         setTimeout(() => {
           peContent.style.opacity = '1';
-          // Initialize touch-friendly multi-select after PE section is shown
-          initTouchMultiSelect();
+          // Initialize PE checkbox UI after section is shown
+          try { initPECheckboxes(); } catch (e) { console.warn('initPECheckboxes failed', e); }
         }, 10);
         
         // Update switch to ON state
@@ -249,6 +249,142 @@
         selectedDisplay.textContent = `Selected: ${selectedOptions.map(opt => opt.text).join(', ')}`;
         selectedDisplay.style.fontStyle = 'normal';
       }
+    }
+    
+    // Convert PE <select multiple> to checkbox groups, keeping original selects hidden and in sync
+    function initPECheckboxes() {
+      const peRoot = document.getElementById('pe-content');
+      if (!peRoot) return;
+
+      const peSelects = peRoot.querySelectorAll("select[multiple][id^='pe-']");
+      peSelects.forEach((sel) => {
+        // Don't re-run if already checkboxified
+        if (sel.dataset.checkboxified === '1') return;
+
+        // If a touch wrapper was created earlier, remove it to avoid double UI
+        const maybeWrapper = sel.nextElementSibling;
+        if (maybeWrapper && maybeWrapper.classList.contains('touch-multiselect-wrapper')) {
+          maybeWrapper.remove();
+          sel.style.display = '';
+        }
+
+        // Section wrapper per select
+        const section = document.createElement('div');
+        section.className = 'pe-section';
+        section.style.display = 'block';
+        section.style.marginTop = '6px';
+
+        // Grid for options inside a group
+        const makeGrid = () => {
+          const grid = document.createElement('div');
+          grid.className = 'pe-checkbox-group';
+          grid.style.display = 'grid';
+          grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(230px, 1fr))';
+          grid.style.gap = '8px 12px';
+          grid.style.marginTop = '6px';
+          return grid;
+        };
+
+        const makeCheckbox = (opt) => {
+          const id = `${sel.id}__${opt.value}`;
+          const label = document.createElement('label');
+          label.style.display = 'flex';
+          label.style.alignItems = 'center';
+          label.style.gap = '8px';
+          label.style.padding = '6px 8px';
+          label.style.border = '1px solid var(--all-text)';
+          label.style.borderRadius = '6px';
+          label.style.background = 'transparent';
+          label.style.color = 'var(--all-text)';
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.name = sel.id + '[]';
+          cb.value = opt.value;
+          cb.id = id;
+          cb.checked = !!opt.selected;
+          cb.style.accentColor = 'rgb(86, 212, 254)';
+          cb.addEventListener('change', () => {
+            opt.selected = cb.checked;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+
+          const text = document.createElement('span');
+          text.textContent = opt.textContent.trim();
+          text.style.fontSize = '13px';
+
+          label.appendChild(cb);
+          label.appendChild(text);
+          return label;
+        };
+
+        const children = Array.from(sel.children);
+        if (children.some((n) => n.tagName === 'OPTGROUP')) {
+          children.forEach((node) => {
+            if (node.tagName === 'OPTGROUP') {
+              // Container per optgroup
+              const og = document.createElement('div');
+              og.className = 'pe-optgroup';
+              og.style.marginTop = '10px';
+
+              const legend = document.createElement('div');
+              legend.textContent = node.getAttribute('label') || '';
+              legend.style.fontWeight = '700';
+              legend.style.fontSize = '13px';
+              legend.style.opacity = '0.9';
+              legend.style.marginTop = '4px';
+              section.appendChild(legend);
+
+              const grid = makeGrid();
+              Array.from(node.children).forEach((opt) => {
+                if (opt.tagName === 'OPTION' && !opt.disabled) {
+                  grid.appendChild(makeCheckbox(opt));
+                }
+              });
+              og.appendChild(grid);
+              section.appendChild(og);
+            }
+          });
+          // Handle any top-level options outside optgroups
+          const topLevel = children.filter((n) => n.tagName === 'OPTION' && !n.disabled);
+          if (topLevel.length) {
+            const legend = document.createElement('div');
+            legend.textContent = 'General';
+            legend.style.fontWeight = '700';
+            legend.style.fontSize = '13px';
+            legend.style.opacity = '0.9';
+            legend.style.marginTop = '10px';
+            section.appendChild(legend);
+            const grid = makeGrid();
+            topLevel.forEach((opt) => grid.appendChild(makeCheckbox(opt)));
+            section.appendChild(grid);
+          }
+        } else {
+          const grid = makeGrid();
+          Array.from(sel.options).forEach((opt) => {
+            if (!opt.disabled) grid.appendChild(makeCheckbox(opt));
+          });
+          section.appendChild(grid);
+        }
+
+        // Insert the section before the hidden select
+        sel.parentNode.insertBefore(section, sel);
+        // Hide original select
+        sel.style.display = 'none';
+        sel.dataset.checkboxified = '1';
+
+        // Hook the search input for this select if present
+        const search = sel.parentNode.querySelector(`.pe-search[data-target='${sel.id}']`);
+        if (search) {
+          search.addEventListener('input', () => {
+            const q = search.value.trim().toLowerCase();
+            section.querySelectorAll('label').forEach((lab) => {
+              const txt = lab.textContent.toLowerCase();
+              lab.style.display = q === '' || txt.includes(q) ? 'flex' : 'none';
+            });
+          });
+        }
+      });
     }
     </script>
 
