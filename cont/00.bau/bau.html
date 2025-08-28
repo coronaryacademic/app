@@ -1744,39 +1744,63 @@
   <!-- Physical Examination (PE) -->
   <div id="section-pe" class="form-section" style="margin-top: 35px">
     <div
-      style="display: flex; align-items: center; margin-bottom: 20px; gap: 15px;"
+      style="display: flex; align-items: center; margin-bottom: 20px; gap: 15px"
     >
       <label style="font-size: 25px; font-weight: 800; margin: 0"
         >Physical Examination (PE)</label
       >
-      <div class="pe-toggle-container" style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 14px; font-weight: 600; color: var(--all-text);">PE</span>
-        <label class="pe-switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
-          <input type="checkbox" id="pe-toggle" style="opacity: 0; width: 0; height: 0;" onclick="togglePESection()">
-          <span class="pe-slider" style="
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-          "></span>
-          <span class="pe-slider-dot" style="
-            position: absolute;
-            content: '';
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-          "></span>
+      <div
+        class="pe-toggle-container"
+        style="display: flex; align-items: center; gap: 10px"
+      >
+        <span style="font-size: 14px; font-weight: 600; color: var(--all-text)"
+          >PE</span
+        >
+        <label
+          class="pe-switch"
+          style="
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+          "
+        >
+          <input
+            type="checkbox"
+            id="pe-toggle"
+            style="opacity: 0; width: 0; height: 0"
+            onclick="togglePESection()"
+          />
+          <span
+            class="pe-slider"
+            style="
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ccc;
+              transition: 0.4s;
+              border-radius: 34px;
+              box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          ></span>
+          <span
+            class="pe-slider-dot"
+            style="
+              position: absolute;
+              content: '';
+              height: 26px;
+              width: 26px;
+              left: 4px;
+              bottom: 4px;
+              background-color: white;
+              transition: 0.4s;
+              border-radius: 50%;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            "
+          ></span>
         </label>
       </div>
     </div>
@@ -1788,10 +1812,40 @@
       <div id="pe-wrapper">
         <!-- General Appearance -->
         <div class="form-subsection">
-          <label for="pe-general" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">General Appearance</label>
-          <input type="text" placeholder="Search general appearance..." class="pe-search" data-target="pe-general" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-general" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px;">
-            <option value="well-appearing">Well-appearing, no acute distress</option>
+          <label
+            for="pe-general"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >General Appearance</label
+          >
+          <input
+            type="text"
+            placeholder="Search general appearance..."
+            class="pe-search"
+            data-target="pe-general"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-general"
+            multiple
+            style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px"
+          >
+            <option value="well-appearing">
+              Well-appearing, no acute distress
+            </option>
             <option value="mild-distress">Mild distress</option>
             <option value="moderate-distress">Moderate distress</option>
             <option value="severe-distress">Severe distress</option>
@@ -1805,10 +1859,43 @@
         </div>
 
         <!-- Hands -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-hands" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Hands</label>
-          <input type="text" placeholder="Search hand findings..." class="pe-search" data-target="pe-hands" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-hands" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-hands"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Hands</label
+          >
+          <input
+            type="text"
+            placeholder="Search hand findings..."
+            class="pe-search"
+            data-target="pe-hands"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-hands"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="General">
               <option value="hands-normal">Normal hands and fingers</option>
               <option value="hands-warm">Warm hands</option>
@@ -1828,7 +1915,9 @@
               <option value="finger-joints-normal">Normal finger joints</option>
               <option value="finger-swelling">Finger joint swelling</option>
               <option value="finger-deformity">Finger joint deformity</option>
-              <option value="limited-finger-rom">Limited finger range of motion</option>
+              <option value="limited-finger-rom">
+                Limited finger range of motion
+              </option>
               <option value="trigger-finger">Trigger finger</option>
               <option value="dupuytren">Dupuytren's contracture</option>
             </optgroup>
@@ -1837,16 +1926,46 @@
               <option value="palmar-erythema">Palmar erythema</option>
               <option value="palmar-calluses">Palmar calluses</option>
               <option value="thenar-wasting">Thenar muscle wasting</option>
-              <option value="hypothenar-wasting">Hypothenar muscle wasting</option>
+              <option value="hypothenar-wasting">
+                Hypothenar muscle wasting
+              </option>
             </optgroup>
           </select>
         </div>
 
         <!-- Vital Signs -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-vitals" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Vital Signs</label>
-          <input type="text" placeholder="Search vital signs..." class="pe-search" data-target="pe-vitals" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-vitals" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-vitals"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Vital Signs</label
+          >
+          <input
+            type="text"
+            placeholder="Search vital signs..."
+            class="pe-search"
+            data-target="pe-vitals"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-vitals"
+            multiple
+            style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px"
+          >
             <option value="stable">Stable vital signs</option>
             <option value="hypertensive">Hypertensive</option>
             <option value="hypotensive">Hypotensive</option>
@@ -1861,12 +1980,47 @@
         </div>
 
         <!-- Cardiovascular -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-cardiovascular" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Cardiovascular</label>
-          <input type="text" placeholder="Search cardiovascular findings..." class="pe-search" data-target="pe-cardiovascular" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-cardiovascular" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-cardiovascular"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Cardiovascular</label
+          >
+          <input
+            type="text"
+            placeholder="Search cardiovascular findings..."
+            class="pe-search"
+            data-target="pe-cardiovascular"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-cardiovascular"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="Heart Sounds">
-              <option value="rrr-normal">Regular rate and rhythm, normal S1/S2</option>
+              <option value="rrr-normal">
+                Regular rate and rhythm, normal S1/S2
+              </option>
               <option value="irregular">Irregular rhythm</option>
               <option value="s3-gallop">S3 gallop</option>
               <option value="s4-gallop">S4 gallop</option>
@@ -1877,7 +2031,9 @@
             </optgroup>
             <optgroup label="Peripheral">
               <option value="pulses-normal">Normal peripheral pulses</option>
-              <option value="pulses-diminished">Diminished peripheral pulses</option>
+              <option value="pulses-diminished">
+                Diminished peripheral pulses
+              </option>
               <option value="pulses-absent">Absent peripheral pulses</option>
               <option value="edema-none">No peripheral edema</option>
               <option value="edema-mild">Mild peripheral edema</option>
@@ -1889,24 +2045,65 @@
         </div>
 
         <!-- Respiratory -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-respiratory" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Respiratory</label>
-          <input type="text" placeholder="Search respiratory findings..." class="pe-search" data-target="pe-respiratory" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-respiratory" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-respiratory"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Respiratory</label
+          >
+          <input
+            type="text"
+            placeholder="Search respiratory findings..."
+            class="pe-search"
+            data-target="pe-respiratory"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-respiratory"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="Inspection">
               <option value="chest-normal">Normal chest expansion</option>
-              <option value="chest-asymmetric">Asymmetric chest expansion</option>
+              <option value="chest-asymmetric">
+                Asymmetric chest expansion
+              </option>
               <option value="barrel-chest">Barrel chest</option>
               <option value="retractions">Intercostal retractions</option>
-              <option value="accessory-muscles">Use of accessory muscles</option>
+              <option value="accessory-muscles">
+                Use of accessory muscles
+              </option>
             </optgroup>
             <optgroup label="Auscultation">
-              <option value="clear-bilateral">Clear to auscultation bilaterally</option>
+              <option value="clear-bilateral">
+                Clear to auscultation bilaterally
+              </option>
               <option value="wheeze">Wheeze</option>
               <option value="crackles">Crackles/Rales</option>
               <option value="rhonchi">Rhonchi</option>
               <option value="stridor">Stridor</option>
-              <option value="diminished-sounds">Diminished breath sounds</option>
+              <option value="diminished-sounds">
+                Diminished breath sounds
+              </option>
               <option value="absent-sounds">Absent breath sounds</option>
               <option value="pleural-rub">Pleural friction rub</option>
             </optgroup>
@@ -1914,21 +2111,60 @@
         </div>
 
         <!-- Abdominal -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-abdominal" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Abdominal</label>
-          <input type="text" placeholder="Search abdominal findings..." class="pe-search" data-target="pe-abdominal" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-abdominal" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 120px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-abdominal"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Abdominal</label
+          >
+          <input
+            type="text"
+            placeholder="Search abdominal findings..."
+            class="pe-search"
+            data-target="pe-abdominal"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-abdominal"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 120px;
+            "
+          >
             <optgroup label="Inspection">
-              <option value="soft-nontender">Soft, non-tender, non-distended</option>
+              <option value="soft-nontender">
+                Soft, non-tender, non-distended
+              </option>
               <option value="distended">Distended</option>
               <option value="scars">Surgical scars present</option>
               <option value="striae">Striae present</option>
             </optgroup>
             <optgroup label="Palpation">
               <option value="tender-generalized">Generalized tenderness</option>
-              <option value="tender-ruq">Right upper quadrant tenderness</option>
+              <option value="tender-ruq">
+                Right upper quadrant tenderness
+              </option>
               <option value="tender-luq">Left upper quadrant tenderness</option>
-              <option value="tender-rlq">Right lower quadrant tenderness</option>
+              <option value="tender-rlq">
+                Right lower quadrant tenderness
+              </option>
               <option value="tender-llq">Left lower quadrant tenderness</option>
               <option value="tender-epigastric">Epigastric tenderness</option>
               <option value="tender-suprapubic">Suprapubic tenderness</option>
@@ -1941,18 +2177,55 @@
             </optgroup>
             <optgroup label="Auscultation">
               <option value="bowel-sounds-normal">Normal bowel sounds</option>
-              <option value="bowel-sounds-hyperactive">Hyperactive bowel sounds</option>
-              <option value="bowel-sounds-hypoactive">Hypoactive bowel sounds</option>
+              <option value="bowel-sounds-hyperactive">
+                Hyperactive bowel sounds
+              </option>
+              <option value="bowel-sounds-hypoactive">
+                Hypoactive bowel sounds
+              </option>
               <option value="bowel-sounds-absent">Absent bowel sounds</option>
             </optgroup>
           </select>
         </div>
 
         <!-- Neurological -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-neurological" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Neurological</label>
-          <input type="text" placeholder="Search neurological findings..." class="pe-search" data-target="pe-neurological" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-neurological" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 120px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-neurological"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Neurological</label
+          >
+          <input
+            type="text"
+            placeholder="Search neurological findings..."
+            class="pe-search"
+            data-target="pe-neurological"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-neurological"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 120px;
+            "
+          >
             <optgroup label="Mental Status">
               <option value="alert-oriented">Alert and oriented x3</option>
               <option value="confused">Confused</option>
@@ -1963,8 +2236,12 @@
             <optgroup label="Cranial Nerves">
               <option value="cn-intact">Cranial nerves II-XII intact</option>
               <option value="cn-deficit">Cranial nerve deficit present</option>
-              <option value="pupils-equal">Pupils equal, round, reactive to light</option>
-              <option value="pupils-unequal">Anisocoria (unequal pupils)</option>
+              <option value="pupils-equal">
+                Pupils equal, round, reactive to light
+              </option>
+              <option value="pupils-unequal">
+                Anisocoria (unequal pupils)
+              </option>
               <option value="pupils-fixed">Fixed pupils</option>
             </optgroup>
             <optgroup label="Motor/Sensory">
@@ -1972,7 +2249,9 @@
               <option value="motor-weakness">Motor weakness present</option>
               <option value="sensory-intact">Sensation intact</option>
               <option value="sensory-deficit">Sensory deficit present</option>
-              <option value="reflexes-normal">Normal deep tendon reflexes</option>
+              <option value="reflexes-normal">
+                Normal deep tendon reflexes
+              </option>
               <option value="reflexes-hyperactive">Hyperactive reflexes</option>
               <option value="reflexes-diminished">Diminished reflexes</option>
               <option value="reflexes-absent">Absent reflexes</option>
@@ -1987,10 +2266,43 @@
         </div>
 
         <!-- Musculoskeletal -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-musculoskeletal" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Musculoskeletal</label>
-          <input type="text" placeholder="Search musculoskeletal findings..." class="pe-search" data-target="pe-musculoskeletal" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-musculoskeletal" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-musculoskeletal"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Musculoskeletal</label
+          >
+          <input
+            type="text"
+            placeholder="Search musculoskeletal findings..."
+            class="pe-search"
+            data-target="pe-musculoskeletal"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-musculoskeletal"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="General">
               <option value="normal-rom">Normal range of motion</option>
               <option value="limited-rom">Limited range of motion</option>
@@ -1999,7 +2311,9 @@
               <option value="atrophy">Muscle atrophy</option>
             </optgroup>
             <optgroup label="Joints">
-              <option value="joints-normal">No joint swelling or deformity</option>
+              <option value="joints-normal">
+                No joint swelling or deformity
+              </option>
               <option value="joint-swelling">Joint swelling present</option>
               <option value="joint-deformity">Joint deformity present</option>
               <option value="joint-warmth">Joint warmth/erythema</option>
@@ -2016,10 +2330,43 @@
         </div>
 
         <!-- Dermatological -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-dermatological" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Dermatological</label>
-          <input type="text" placeholder="Search skin findings..." class="pe-search" data-target="pe-dermatological" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-dermatological" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-dermatological"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Dermatological</label
+          >
+          <input
+            type="text"
+            placeholder="Search skin findings..."
+            class="pe-search"
+            data-target="pe-dermatological"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-dermatological"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="General">
               <option value="skin-normal">Normal skin color and texture</option>
               <option value="pallor">Pallor</option>
@@ -2040,7 +2387,9 @@
             </optgroup>
             <optgroup label="Other">
               <option value="turgor-normal">Normal skin turgor</option>
-              <option value="turgor-poor">Poor skin turgor (dehydration)</option>
+              <option value="turgor-poor">
+                Poor skin turgor (dehydration)
+              </option>
               <option value="diaphoresis">Diaphoresis</option>
               <option value="dry-skin">Dry skin</option>
             </optgroup>
@@ -2048,18 +2397,57 @@
         </div>
 
         <!-- ENT (Ear, Nose, Throat) -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-ent" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">ENT (Ear, Nose, Throat)</label>
-          <input type="text" placeholder="Search ENT findings..." class="pe-search" data-target="pe-ent" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-ent" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 120px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-ent"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >ENT (Ear, Nose, Throat)</label
+          >
+          <input
+            type="text"
+            placeholder="Search ENT findings..."
+            class="pe-search"
+            data-target="pe-ent"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-ent"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 120px;
+            "
+          >
             <optgroup label="Ears">
               <option value="ears-normal">Normal external ears</option>
               <option value="ear-discharge">Ear discharge</option>
               <option value="ear-erythema">Ear canal erythema</option>
               <option value="tympanic-normal">Normal tympanic membranes</option>
-              <option value="tympanic-erythema">Erythematous tympanic membranes</option>
-              <option value="tympanic-bulging">Bulging tympanic membranes</option>
-              <option value="tympanic-perforation">Tympanic membrane perforation</option>
+              <option value="tympanic-erythema">
+                Erythematous tympanic membranes
+              </option>
+              <option value="tympanic-bulging">
+                Bulging tympanic membranes
+              </option>
+              <option value="tympanic-perforation">
+                Tympanic membrane perforation
+              </option>
             </optgroup>
             <optgroup label="Nose">
               <option value="nose-normal">Normal nasal passages</option>
@@ -2080,43 +2468,121 @@
         </div>
 
         <!-- Ophthalmological -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-ophthalmological" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Ophthalmological</label>
-          <input type="text" placeholder="Search eye findings..." class="pe-search" data-target="pe-ophthalmological" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-ophthalmological" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-ophthalmological"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Ophthalmological</label
+          >
+          <input
+            type="text"
+            placeholder="Search eye findings..."
+            class="pe-search"
+            data-target="pe-ophthalmological"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-ophthalmological"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="External">
               <option value="eyes-normal">Normal external eyes</option>
               <option value="conjunctiva-normal">Normal conjunctiva</option>
-              <option value="conjunctiva-injection">Conjunctival injection</option>
+              <option value="conjunctiva-injection">
+                Conjunctival injection
+              </option>
               <option value="sclera-icterus">Scleral icterus</option>
               <option value="eyelid-swelling">Eyelid swelling</option>
               <option value="eye-discharge">Eye discharge</option>
             </optgroup>
             <optgroup label="Pupils">
-              <option value="pupils-normal-eye">Pupils equal, round, reactive</option>
+              <option value="pupils-normal-eye">
+                Pupils equal, round, reactive
+              </option>
               <option value="pupils-dilated">Dilated pupils</option>
               <option value="pupils-constricted">Constricted pupils</option>
               <option value="pupils-unequal-eye">Unequal pupils</option>
             </optgroup>
             <optgroup label="Vision">
-              <option value="vision-grossly-normal">Grossly normal vision</option>
+              <option value="vision-grossly-normal">
+                Grossly normal vision
+              </option>
               <option value="vision-impaired">Visual impairment</option>
               <option value="visual-fields-normal">Normal visual fields</option>
-              <option value="visual-fields-deficit">Visual field deficit</option>
+              <option value="visual-fields-deficit">
+                Visual field deficit
+              </option>
             </optgroup>
           </select>
         </div>
 
         <!-- Genitourinary -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-genitourinary" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Genitourinary</label>
-          <input type="text" placeholder="Search GU findings..." class="pe-search" data-target="pe-genitourinary" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--all-text); border-radius: 4px; background: var(--header-bg); color: var(--all-text);">
-          <select id="pe-genitourinary" multiple style="width: 100%; padding: 8px; font-size: 14px; min-height: 100px;">
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-genitourinary"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Genitourinary</label
+          >
+          <input
+            type="text"
+            placeholder="Search GU findings..."
+            class="pe-search"
+            data-target="pe-genitourinary"
+            style="
+              width: 100%;
+              padding: 6px;
+              margin-bottom: 8px;
+              font-size: 13px;
+              border: 1px solid var(--all-text);
+              border-radius: 4px;
+              background: var(--header-bg);
+              color: var(--all-text);
+            "
+          />
+          <select
+            id="pe-genitourinary"
+            multiple
+            style="
+              width: 100%;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 100px;
+            "
+          >
             <optgroup label="General">
               <option value="gu-deferred">Examination deferred</option>
               <option value="external-normal">Normal external genitalia</option>
-              <option value="costovertebral-negative">No costovertebral angle tenderness</option>
-              <option value="costovertebral-positive">Costovertebral angle tenderness</option>
+              <option value="costovertebral-negative">
+                No costovertebral angle tenderness
+              </option>
+              <option value="costovertebral-positive">
+                Costovertebral angle tenderness
+              </option>
             </optgroup>
             <optgroup label="Male">
               <option value="testes-normal">Normal testes</option>
@@ -2125,7 +2591,9 @@
               <option value="hernia-present">Inguinal hernia present</option>
             </optgroup>
             <optgroup label="Female">
-              <option value="pelvic-deferred">Pelvic examination deferred</option>
+              <option value="pelvic-deferred">
+                Pelvic examination deferred
+              </option>
               <option value="pelvic-normal">Normal pelvic examination</option>
               <option value="cervical-discharge">Cervical discharge</option>
               <option value="adnexal-tenderness">Adnexal tenderness</option>
@@ -2134,9 +2602,28 @@
         </div>
 
         <!-- Additional Findings -->
-        <div class="form-subsection" style="margin-top: 25px;">
-          <label for="pe-additional" style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: block;">Additional Findings</label>
-          <textarea id="pe-additional" placeholder="Any additional physical examination findings not covered above..." style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px; min-height: 60px;"></textarea>
+        <div class="form-subsection" style="margin-top: 25px">
+          <label
+            for="pe-additional"
+            style="
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              display: block;
+            "
+            >Additional Findings</label
+          >
+          <textarea
+            id="pe-additional"
+            placeholder="Any additional physical examination findings not covered above..."
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 8px;
+              font-size: 14px;
+              min-height: 60px;
+            "
+          ></textarea>
         </div>
       </div>
     </div>
@@ -2490,90 +2977,93 @@ Sign in to use AI.
 
   // PE Toggle Function for bau.html
   function togglePESection() {
-    const peContent = document.getElementById('pe-content');
-    const peToggle = document.getElementById('pe-toggle');
-    const peSlider = document.querySelector('.pe-slider');
-    const peSliderDot = document.querySelector('.pe-slider-dot');
-    
+    const peContent = document.getElementById("pe-content");
+    const peToggle = document.getElementById("pe-toggle");
+    const peSlider = document.querySelector(".pe-slider");
+    const peSliderDot = document.querySelector(".pe-slider-dot");
+
     if (!peContent || !peToggle) return;
-    
-    const isHidden = peContent.style.display === 'none' || peContent.style.display === '';
-    
+
+    const isHidden =
+      peContent.style.display === "none" || peContent.style.display === "";
+
     if (isHidden) {
       // Show PE section
-      peContent.style.display = 'block';
+      peContent.style.display = "block";
       setTimeout(() => {
-        peContent.style.opacity = '1';
+        peContent.style.opacity = "1";
         // Initialize touch-friendly multi-select after PE section is shown
         initTouchMultiSelect();
       }, 10);
-      
+
       // Update switch to ON state
       peToggle.checked = true;
       if (peSlider) {
-        peSlider.style.backgroundColor = '#4CAF50';
+        peSlider.style.backgroundColor = "#4CAF50";
       }
       if (peSliderDot) {
-        peSliderDot.style.transform = 'translateX(26px)';
-        peSliderDot.style.backgroundColor = '#4CAF50';
+        peSliderDot.style.transform = "translateX(26px)";
+        peSliderDot.style.backgroundColor = "#4CAF50";
       }
     } else {
       // Hide PE section
-      peContent.style.opacity = '0';
+      peContent.style.opacity = "0";
       setTimeout(() => {
-        peContent.style.display = 'none';
+        peContent.style.display = "none";
       }, 500);
-      
+
       // Update switch to OFF state
       peToggle.checked = false;
       if (peSlider) {
-        peSlider.style.backgroundColor = '#ccc';
+        peSlider.style.backgroundColor = "#ccc";
       }
       if (peSliderDot) {
-        peSliderDot.style.transform = 'translateX(0px)';
-        peSliderDot.style.backgroundColor = 'white';
+        peSliderDot.style.transform = "translateX(0px)";
+        peSliderDot.style.backgroundColor = "white";
       }
     }
   }
 
   // Touch-friendly multi-select for iPad users
   function initTouchMultiSelect() {
-    const peSelects = document.querySelectorAll('#pe-content select[multiple]');
-    
-    peSelects.forEach(select => {
+    const peSelects = document.querySelectorAll("#pe-content select[multiple]");
+
+    peSelects.forEach((select) => {
       if (select.dataset.touchInitialized) return;
-      select.dataset.touchInitialized = 'true';
-      
+      select.dataset.touchInitialized = "true";
+
       // Add search functionality that works with touch interface
-      const searchInput = select.parentNode.querySelector('.pe-search');
+      const searchInput = select.parentNode.querySelector(".pe-search");
       if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
+        searchInput.addEventListener("input", (e) => {
           const searchTerm = e.target.value.toLowerCase();
-          
+
           // Update the touch interface buttons if they exist
           const wrapper = select.nextElementSibling;
-          if (wrapper && wrapper.className === 'touch-multiselect-wrapper') {
-            const buttons = wrapper.querySelectorAll('.touch-options-container button');
-            buttons.forEach(btn => {
+          if (wrapper && wrapper.className === "touch-multiselect-wrapper") {
+            const buttons = wrapper.querySelectorAll(
+              ".touch-options-container button"
+            );
+            buttons.forEach((btn) => {
               const text = btn.textContent.toLowerCase();
-              const shouldShow = text.includes(searchTerm) || searchTerm === '';
-              btn.style.display = shouldShow ? 'block' : 'none';
+              const shouldShow = text.includes(searchTerm) || searchTerm === "";
+              btn.style.display = shouldShow ? "block" : "none";
             });
           }
-          
+
           // Also update native select options for desktop
-          const options = select.querySelectorAll('option');
-          options.forEach(option => {
+          const options = select.querySelectorAll("option");
+          options.forEach((option) => {
             const text = option.textContent.toLowerCase();
-            const shouldShow = text.includes(searchTerm) || searchTerm === '';
-            option.style.display = shouldShow ? 'block' : 'none';
+            const shouldShow = text.includes(searchTerm) || searchTerm === "";
+            option.style.display = shouldShow ? "block" : "none";
           });
         });
       }
-      
+
       // Create custom multi-select interface
-      const wrapper = document.createElement('div');
-      wrapper.className = 'touch-multiselect-wrapper';
+      const wrapper = document.createElement("div");
+      wrapper.className = "touch-multiselect-wrapper";
       wrapper.style.cssText = `
         border: 1px solid var(--all-text);
         border-radius: 6px;
@@ -2584,9 +3074,9 @@ Sign in to use AI.
         padding: 8px;
         margin-top: 5px;
       `;
-      
-      const selectedDisplay = document.createElement('div');
-      selectedDisplay.className = 'selected-items-display';
+
+      const selectedDisplay = document.createElement("div");
+      selectedDisplay.className = "selected-items-display";
       selectedDisplay.style.cssText = `
         min-height: 20px;
         font-size: 12px;
@@ -2595,17 +3085,18 @@ Sign in to use AI.
         margin-bottom: 8px;
         font-style: italic;
       `;
-      selectedDisplay.textContent = 'Tap options below to select multiple items';
-      
-      const optionsContainer = document.createElement('div');
-      optionsContainer.className = 'touch-options-container';
-      
+      selectedDisplay.textContent =
+        "Tap options below to select multiple items";
+
+      const optionsContainer = document.createElement("div");
+      optionsContainer.className = "touch-options-container";
+
       // Convert select options to touch-friendly buttons
-      Array.from(select.options).forEach(option => {
+      Array.from(select.options).forEach((option) => {
         if (option.disabled) return;
-        
-        const optionBtn = document.createElement('button');
-        optionBtn.type = 'button';
+
+        const optionBtn = document.createElement("button");
+        optionBtn.type = "button";
         optionBtn.textContent = option.text;
         optionBtn.dataset.value = option.value;
         optionBtn.style.cssText = `
@@ -2621,83 +3112,92 @@ Sign in to use AI.
           cursor: pointer;
           transition: all 0.2s ease;
           font-size: 13px;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         `;
-        
-        optionBtn.addEventListener('click', () => {
+
+        optionBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           option.selected = !option.selected;
           updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
-          
+
           // Trigger change event for form data management
-          select.dispatchEvent(new Event('change', { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true }));
         });
-        
+
         optionsContainer.appendChild(optionBtn);
       });
-      
+
       wrapper.appendChild(selectedDisplay);
       wrapper.appendChild(optionsContainer);
-      
+
       // Hide original select and insert custom interface
-      select.style.display = 'none';
+      select.style.display = "none";
       select.parentNode.insertBefore(wrapper, select.nextSibling);
-      
+
       // Initial display update
       updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
     });
   }
-  
+
   function updateTouchSelectDisplay(select, selectedDisplay, optionsContainer) {
     const selectedOptions = Array.from(select.selectedOptions);
-    const buttons = optionsContainer.querySelectorAll('button');
-    
+    const buttons = optionsContainer.querySelectorAll("button");
+
     // Update button styles
-    buttons.forEach(btn => {
-      const isSelected = selectedOptions.some(opt => opt.value === btn.dataset.value);
+    buttons.forEach((btn) => {
+      const isSelected = selectedOptions.some(
+        (opt) => opt.value === btn.dataset.value
+      );
       if (isSelected) {
-        btn.style.background = 'var(--all-text)';
-        btn.style.color = 'var(--all-text)';
-        btn.style.border = '3px solid #87CEEB';
+        btn.style.background = "var(--all-text)";
+        btn.style.color = "var(--all-text)";
+        btn.style.border = "3px solid #87CEEB";
       } else {
-        btn.style.background = 'transparent';
-        btn.style.color = 'var(--all-text)';
-        btn.style.border = '1px solid transparent';
+        btn.style.background = "transparent";
+        btn.style.color = "var(--all-text)";
+        btn.style.border = "1px solid transparent";
       }
-      
+
       // Add hover effect
       btn.onmouseenter = () => {
         if (!isSelected) {
-          btn.style.background = 'rgba(128, 128, 128, 0.1)';
-          btn.style.borderColor = 'var(--all-text)';
-          btn.style.color = 'var(--all-text)';
+          btn.style.background = "rgba(128, 128, 128, 0.1)";
+          btn.style.borderColor = "var(--all-text)";
+          btn.style.color = "var(--all-text)";
         }
       };
       btn.onmouseleave = () => {
         if (!isSelected) {
-          btn.style.background = 'transparent';
-          btn.style.border = '1px solid transparent';
-          btn.style.color = 'var(--all-text)';
+          btn.style.background = "transparent";
+          btn.style.border = "1px solid transparent";
+          btn.style.color = "var(--all-text)";
         }
       };
     });
-    
+
     // Update selected items display
     if (selectedOptions.length === 0) {
-      selectedDisplay.textContent = 'Tap options below to select multiple items';
-      selectedDisplay.style.fontStyle = 'italic';
+      selectedDisplay.textContent =
+        "Tap options below to select multiple items";
+      selectedDisplay.style.fontStyle = "italic";
     } else {
-      selectedDisplay.textContent = `Selected: ${selectedOptions.map(opt => opt.text).join(', ')}`;
-      selectedDisplay.style.fontStyle = 'normal';
+      selectedDisplay.textContent = `Selected: ${selectedOptions
+        .map((opt) => opt.text)
+        .join(", ")}`;
+      selectedDisplay.style.fontStyle = "normal";
     }
   }
 
   // Initialize touch multi-select when page loads
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // Set initial PE section state (hidden by default)
-    const peContent = document.getElementById('pe-content');
+    const peContent = document.getElementById("pe-content");
     if (peContent) {
-      peContent.style.display = 'none';
-      peContent.style.opacity = '0';
-      peContent.style.transition = 'opacity 0.5s ease';
+      peContent.style.display = "none";
+      peContent.style.opacity = "0";
+      peContent.style.transition = "opacity 0.5s ease";
     }
   });
 </script>
