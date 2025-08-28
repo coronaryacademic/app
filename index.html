@@ -65,8 +65,43 @@
         peContent.style.display = 'block';
         setTimeout(() => {
           peContent.style.opacity = '1';
-          // Initialize PE checkbox UI after section is shown
-          try { initPECheckboxes(); } catch (e) { console.warn('initPECheckboxes failed', e); }
+          // Initialize PE checkbox UI after accordion setup
+          console.log('[PE] Setting up checkbox UI after accordion handlers');
+          
+          // Add manual accordion handlers directly
+          console.log('[PE] Setting up manual accordion handlers');
+          const headers = document.querySelectorAll('.pe-accordion-header');
+          console.log('[PE] Found headers for manual binding:', headers.length);
+          headers.forEach((header, i) => {
+            // Remove any existing listeners to avoid duplicates
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+            
+            newHeader.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('[PE] Manual click on header:', this.textContent.trim());
+              const content = this.nextElementSibling;
+              if (content && content.classList.contains('pe-accordion-content')) {
+                const isOpen = content.style.display === 'block';
+                content.style.display = isOpen ? 'none' : 'block';
+                const chev = this.querySelector('.chev');
+                if (chev) chev.textContent = isOpen ? '▸' : '▾';
+                console.log('[PE] Manual toggle:', isOpen ? 'CLOSED' : 'OPENED');
+              } else {
+                console.log('[PE] No valid content found for header');
+              }
+            });
+            console.log('[PE] Bound manual handler to header', i, ':', newHeader.textContent.trim());
+          });
+          
+          // Now initialize checkbox UI
+          try { 
+            initPECheckboxes(); 
+            console.log('[PE] Checkbox UI initialized successfully');
+          } catch (e) { 
+            console.warn('[PE] initPECheckboxes failed', e); 
+          }
         }, 10);
         
         // Update switch to ON state

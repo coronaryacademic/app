@@ -49,6 +49,11 @@
     overscroll-behavior: contain;
   }
 
+  /* Allow PE accordion content to show when toggled */
+  #history-form-container .pe-accordion-content[style*="display: block"] {
+    display: block !important;
+  }
+
   /* Force inline black text to use theme color inside BAU form */
   #history-form-container [style*="color: black"],
   #history-form-container [style*="color:black"],
@@ -143,7 +148,7 @@
   </div>
 
   <label style="font-size: 26px; margin-bottom: 32px; font-weight: 800"
-    >Patient information #
+    >Patient information
   </label>
   <!-- Patient Info in One Row -->
   <div
@@ -1810,855 +1815,1096 @@
       <div id="pe-wrapper">
         <!-- General Appearance -->
         <div class="form-subsection">
-          <label
-            for="pe-general"
-            style="
-              font-size: 16px;
-              font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >General Appearance</label
-          >
-          <input
-            type="text"
-            placeholder="Search general appearance..."
-            class="pe-search"
-            data-target="pe-general"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
               width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              text-align: left;
+              font-size: 16px;
+              font-weight: 700;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
-          />
-          <select
-            id="pe-general"
-            multiple
-            style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px"
           >
-            <option value="well-appearing">
-              Well-appearing, no acute distress
-            </option>
-            <option value="mild-distress">Mild distress</option>
-            <option value="moderate-distress">Moderate distress</option>
-            <option value="severe-distress">Severe distress</option>
-            <option value="toxic-appearing">Toxic appearing</option>
-            <option value="cachetic">Cachetic/Wasted</option>
-            <option value="obese">Obese</option>
-            <option value="anxious">Anxious/Agitated</option>
-            <option value="lethargic">Lethargic/Drowsy</option>
-            <option value="confused">Confused/Disoriented</option>
-          </select>
+            <span>General Appearance</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search general appearance..."
+              class="pe-search"
+              data-target="pe-general"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-general"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 80px;
+              "
+            >
+              <option value="well-appearing">
+                Well-appearing, no acute distress
+              </option>
+              <option value="mild-distress">Mild distress</option>
+              <option value="moderate-distress">Moderate distress</option>
+              <option value="severe-distress">Severe distress</option>
+              <option value="toxic-appearing">Toxic appearing</option>
+              <option value="cachetic">Cachetic/Wasted</option>
+              <option value="obese">Obese</option>
+              <option value="anxious">Anxious/Agitated</option>
+              <option value="lethargic">Lethargic/Drowsy</option>
+              <option value="confused">Confused/Disoriented</option>
+            </select>
+          </div>
         </div>
 
         <!-- Hands -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-hands"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Hands</label
-          >
-          <input
-            type="text"
-            placeholder="Search hand findings..."
-            class="pe-search"
-            data-target="pe-hands"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-hands"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="General">
-              <option value="hands-normal">Normal hands and fingers</option>
-              <option value="hands-warm">Warm hands</option>
-              <option value="hands-cold">Cold hands</option>
-              <option value="hands-clammy">Clammy hands</option>
-              <option value="hands-dry">Dry hands</option>
-            </optgroup>
-            <optgroup label="Nails">
-              <option value="nails-normal">Normal nail beds</option>
-              <option value="clubbing">Digital clubbing</option>
-              <option value="nail-cyanosis">Nail bed cyanosis</option>
-              <option value="nail-pallor">Nail bed pallor</option>
-              <option value="splinter-hemorrhages">Splinter hemorrhages</option>
-              <option value="koilonychia">Koilonychia (spoon nails)</option>
-            </optgroup>
-            <optgroup label="Joints/Movement">
-              <option value="finger-joints-normal">Normal finger joints</option>
-              <option value="finger-swelling">Finger joint swelling</option>
-              <option value="finger-deformity">Finger joint deformity</option>
-              <option value="limited-finger-rom">
-                Limited finger range of motion
-              </option>
-              <option value="trigger-finger">Trigger finger</option>
-              <option value="dupuytren">Dupuytren's contracture</option>
-            </optgroup>
-            <optgroup label="Palmar">
-              <option value="palmar-normal">Normal palmar surfaces</option>
-              <option value="palmar-erythema">Palmar erythema</option>
-              <option value="palmar-calluses">Palmar calluses</option>
-              <option value="thenar-wasting">Thenar muscle wasting</option>
-              <option value="hypothenar-wasting">
-                Hypothenar muscle wasting
-              </option>
-            </optgroup>
-          </select>
+            <span>Hands</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search hand findings..."
+              class="pe-search"
+              data-target="pe-hands"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-hands"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="General">
+                <option value="hands-normal">Normal hands and fingers</option>
+                <option value="hands-warm">Warm hands</option>
+                <option value="hands-cold">Cold hands</option>
+                <option value="hands-clammy">Clammy hands</option>
+                <option value="hands-dry">Dry hands</option>
+              </optgroup>
+              <optgroup label="Nails">
+                <option value="nails-normal">Normal nail beds</option>
+                <option value="clubbing">Digital clubbing</option>
+                <option value="nail-cyanosis">Nail bed cyanosis</option>
+                <option value="nail-pallor">Nail bed pallor</option>
+                <option value="splinter-hemorrhages">
+                  Splinter hemorrhages
+                </option>
+                <option value="koilonychia">Koilonychia (spoon nails)</option>
+              </optgroup>
+              <optgroup label="Joints/Movement">
+                <option value="finger-joints-normal">
+                  Normal finger joints
+                </option>
+                <option value="finger-swelling">Finger joint swelling</option>
+                <option value="finger-deformity">Finger joint deformity</option>
+                <option value="limited-finger-rom">
+                  Limited finger range of motion
+                </option>
+                <option value="trigger-finger">Trigger finger</option>
+                <option value="dupuytren">Dupuytren's contracture</option>
+              </optgroup>
+              <optgroup label="Palmar">
+                <option value="palmar-normal">Normal palmar surfaces</option>
+                <option value="palmar-erythema">Palmar erythema</option>
+                <option value="palmar-calluses">Palmar calluses</option>
+                <option value="thenar-wasting">Thenar muscle wasting</option>
+                <option value="hypothenar-wasting">
+                  Hypothenar muscle wasting
+                </option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Vital Signs -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-vitals"
-            style="
-              font-size: 16px;
-              font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Vital Signs</label
-          >
-          <input
-            type="text"
-            placeholder="Search vital signs..."
-            class="pe-search"
-            data-target="pe-vitals"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
               width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              text-align: left;
+              font-size: 16px;
+              font-weight: 700;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
-          />
-          <select
-            id="pe-vitals"
-            multiple
-            style="width: 100%; padding: 8px; font-size: 14px; min-height: 80px"
           >
-            <option value="stable">Stable vital signs</option>
-            <option value="hypertensive">Hypertensive</option>
-            <option value="hypotensive">Hypotensive</option>
-            <option value="tachycardic">Tachycardic</option>
-            <option value="bradycardic">Bradycardic</option>
-            <option value="tachypneic">Tachypneic</option>
-            <option value="bradypneic">Bradypneic</option>
-            <option value="febrile">Febrile</option>
-            <option value="hypothermic">Hypothermic</option>
-            <option value="hypoxic">Hypoxic (low O2 sat)</option>
-          </select>
+            <span>Vital Signs</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search vital signs..."
+              class="pe-search"
+              data-target="pe-vitals"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-vitals"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 80px;
+              "
+            >
+              <option value="stable">Stable vital signs</option>
+              <option value="hypertensive">Hypertensive</option>
+              <option value="hypotensive">Hypotensive</option>
+              <option value="tachycardic">Tachycardic</option>
+              <option value="bradycardic">Bradycardic</option>
+              <option value="tachypneic">Tachypneic</option>
+              <option value="bradypneic">Bradypneic</option>
+              <option value="febrile">Febrile</option>
+              <option value="hypothermic">Hypothermic</option>
+              <option value="hypoxic">Hypoxic (low O2 sat)</option>
+            </select>
+          </div>
         </div>
 
         <!-- Cardiovascular -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-cardiovascular"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Cardiovascular</label
-          >
-          <input
-            type="text"
-            placeholder="Search cardiovascular findings..."
-            class="pe-search"
-            data-target="pe-cardiovascular"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-cardiovascular"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="Heart Sounds">
-              <option value="rrr-normal">
-                Regular rate and rhythm, normal S1/S2
-              </option>
-              <option value="irregular">Irregular rhythm</option>
-              <option value="s3-gallop">S3 gallop</option>
-              <option value="s4-gallop">S4 gallop</option>
-              <option value="murmur-systolic">Systolic murmur</option>
-              <option value="murmur-diastolic">Diastolic murmur</option>
-              <option value="murmur-holosystolic">Holosystolic murmur</option>
-              <option value="rub">Pericardial friction rub</option>
-            </optgroup>
-            <optgroup label="Peripheral">
-              <option value="pulses-normal">Normal peripheral pulses</option>
-              <option value="pulses-diminished">
-                Diminished peripheral pulses
-              </option>
-              <option value="pulses-absent">Absent peripheral pulses</option>
-              <option value="edema-none">No peripheral edema</option>
-              <option value="edema-mild">Mild peripheral edema</option>
-              <option value="edema-moderate">Moderate peripheral edema</option>
-              <option value="edema-severe">Severe peripheral edema</option>
-              <option value="cyanosis">Cyanosis</option>
-            </optgroup>
-          </select>
+            <span>Cardiovascular</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search cardiovascular findings..."
+              class="pe-search"
+              data-target="pe-cardiovascular"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-cardiovascular"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="Heart Sounds">
+                <option value="rrr-normal">
+                  Regular rate and rhythm, normal S1/S2
+                </option>
+                <option value="irregular">Irregular rhythm</option>
+                <option value="s3-gallop">S3 gallop</option>
+                <option value="s4-gallop">S4 gallop</option>
+                <option value="murmur-systolic">Systolic murmur</option>
+                <option value="murmur-diastolic">Diastolic murmur</option>
+                <option value="murmur-holosystolic">Holosystolic murmur</option>
+                <option value="rub">Pericardial friction rub</option>
+              </optgroup>
+              <optgroup label="Peripheral">
+                <option value="pulses-normal">Normal peripheral pulses</option>
+                <option value="pulses-diminished">
+                  Diminished peripheral pulses
+                </option>
+                <option value="pulses-absent">Absent peripheral pulses</option>
+                <option value="edema-none">No peripheral edema</option>
+                <option value="edema-mild">Mild peripheral edema</option>
+                <option value="edema-moderate">
+                  Moderate peripheral edema
+                </option>
+                <option value="edema-severe">Severe peripheral edema</option>
+                <option value="cyanosis">Cyanosis</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Respiratory -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-respiratory"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Respiratory</label
-          >
-          <input
-            type="text"
-            placeholder="Search respiratory findings..."
-            class="pe-search"
-            data-target="pe-respiratory"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-respiratory"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="Inspection">
-              <option value="chest-normal">Normal chest expansion</option>
-              <option value="chest-asymmetric">
-                Asymmetric chest expansion
-              </option>
-              <option value="barrel-chest">Barrel chest</option>
-              <option value="retractions">Intercostal retractions</option>
-              <option value="accessory-muscles">
-                Use of accessory muscles
-              </option>
-            </optgroup>
-            <optgroup label="Auscultation">
-              <option value="clear-bilateral">
-                Clear to auscultation bilaterally
-              </option>
-              <option value="wheeze">Wheeze</option>
-              <option value="crackles">Crackles/Rales</option>
-              <option value="rhonchi">Rhonchi</option>
-              <option value="stridor">Stridor</option>
-              <option value="diminished-sounds">
-                Diminished breath sounds
-              </option>
-              <option value="absent-sounds">Absent breath sounds</option>
-              <option value="pleural-rub">Pleural friction rub</option>
-            </optgroup>
-          </select>
+            <span>Respiratory</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search respiratory findings..."
+              class="pe-search"
+              data-target="pe-respiratory"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-respiratory"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="Inspection">
+                <option value="chest-normal">Normal chest expansion</option>
+                <option value="chest-asymmetric">
+                  Asymmetric chest expansion
+                </option>
+                <option value="barrel-chest">Barrel chest</option>
+                <option value="retractions">Intercostal retractions</option>
+                <option value="accessory-muscles">
+                  Use of accessory muscles
+                </option>
+              </optgroup>
+              <optgroup label="Auscultation">
+                <option value="clear-bilateral">
+                  Clear to auscultation bilaterally
+                </option>
+                <option value="wheeze">Wheeze</option>
+                <option value="crackles">Crackles/Rales</option>
+                <option value="rhonchi">Rhonchi</option>
+                <option value="stridor">Stridor</option>
+                <option value="diminished-sounds">
+                  Diminished breath sounds
+                </option>
+                <option value="absent-sounds">Absent breath sounds</option>
+                <option value="pleural-rub">Pleural friction rub</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Abdominal -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-abdominal"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Abdominal</label
-          >
-          <input
-            type="text"
-            placeholder="Search abdominal findings..."
-            class="pe-search"
-            data-target="pe-abdominal"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-abdominal"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 120px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="Inspection">
-              <option value="soft-nontender">
-                Soft, non-tender, non-distended
-              </option>
-              <option value="distended">Distended</option>
-              <option value="scars">Surgical scars present</option>
-              <option value="striae">Striae present</option>
-            </optgroup>
-            <optgroup label="Palpation">
-              <option value="tender-generalized">Generalized tenderness</option>
-              <option value="tender-ruq">
-                Right upper quadrant tenderness
-              </option>
-              <option value="tender-luq">Left upper quadrant tenderness</option>
-              <option value="tender-rlq">
-                Right lower quadrant tenderness
-              </option>
-              <option value="tender-llq">Left lower quadrant tenderness</option>
-              <option value="tender-epigastric">Epigastric tenderness</option>
-              <option value="tender-suprapubic">Suprapubic tenderness</option>
-              <option value="guarding">Guarding</option>
-              <option value="rigidity">Rigidity</option>
-              <option value="rebound">Rebound tenderness</option>
-              <option value="mass-palpable">Palpable mass</option>
-              <option value="hepatomegaly">Hepatomegaly</option>
-              <option value="splenomegaly">Splenomegaly</option>
-            </optgroup>
-            <optgroup label="Auscultation">
-              <option value="bowel-sounds-normal">Normal bowel sounds</option>
-              <option value="bowel-sounds-hyperactive">
-                Hyperactive bowel sounds
-              </option>
-              <option value="bowel-sounds-hypoactive">
-                Hypoactive bowel sounds
-              </option>
-              <option value="bowel-sounds-absent">Absent bowel sounds</option>
-            </optgroup>
-          </select>
+            <span>Abdominal</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search abdominal findings..."
+              class="pe-search"
+              data-target="pe-abdominal"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-abdominal"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 120px;
+              "
+            >
+              <optgroup label="Inspection">
+                <option value="soft-nontender">
+                  Soft, non-tender, non-distended
+                </option>
+                <option value="distended">Distended</option>
+                <option value="scars">Surgical scars present</option>
+                <option value="striae">Striae present</option>
+              </optgroup>
+              <optgroup label="Palpation">
+                <option value="tender-generalized">
+                  Generalized tenderness
+                </option>
+                <option value="tender-ruq">
+                  Right upper quadrant tenderness
+                </option>
+                <option value="tender-luq">
+                  Left upper quadrant tenderness
+                </option>
+                <option value="tender-rlq">
+                  Right lower quadrant tenderness
+                </option>
+                <option value="tender-llq">
+                  Left lower quadrant tenderness
+                </option>
+                <option value="tender-epigastric">Epigastric tenderness</option>
+                <option value="tender-suprapubic">Suprapubic tenderness</option>
+                <option value="guarding">Guarding</option>
+                <option value="rigidity">Rigidity</option>
+                <option value="rebound">Rebound tenderness</option>
+                <option value="mass-palpable">Palpable mass</option>
+                <option value="hepatomegaly">Hepatomegaly</option>
+                <option value="splenomegaly">Splenomegaly</option>
+              </optgroup>
+              <optgroup label="Auscultation">
+                <option value="bowel-sounds-normal">Normal bowel sounds</option>
+                <option value="bowel-sounds-hyperactive">
+                  Hyperactive bowel sounds
+                </option>
+                <option value="bowel-sounds-hypoactive">
+                  Hypoactive bowel sounds
+                </option>
+                <option value="bowel-sounds-absent">Absent bowel sounds</option>
+              </optgroup>
+            </select>
+          </div>
+          <!-- cleanup of duplicated lines handled by accordion refactor above -->
         </div>
 
         <!-- Neurological -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-neurological"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Neurological</label
-          >
-          <input
-            type="text"
-            placeholder="Search neurological findings..."
-            class="pe-search"
-            data-target="pe-neurological"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-neurological"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 120px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="Mental Status">
-              <option value="alert-oriented">Alert and oriented x3</option>
-              <option value="confused">Confused</option>
-              <option value="lethargic">Lethargic</option>
-              <option value="obtunded">Obtunded</option>
-              <option value="comatose">Comatose</option>
-            </optgroup>
-            <optgroup label="Cranial Nerves">
-              <option value="cn-intact">Cranial nerves II-XII intact</option>
-              <option value="cn-deficit">Cranial nerve deficit present</option>
-              <option value="pupils-equal">
-                Pupils equal, round, reactive to light
-              </option>
-              <option value="pupils-unequal">
-                Anisocoria (unequal pupils)
-              </option>
-              <option value="pupils-fixed">Fixed pupils</option>
-            </optgroup>
-            <optgroup label="Motor/Sensory">
-              <option value="motor-normal">Normal motor strength 5/5</option>
-              <option value="motor-weakness">Motor weakness present</option>
-              <option value="sensory-intact">Sensation intact</option>
-              <option value="sensory-deficit">Sensory deficit present</option>
-              <option value="reflexes-normal">
-                Normal deep tendon reflexes
-              </option>
-              <option value="reflexes-hyperactive">Hyperactive reflexes</option>
-              <option value="reflexes-diminished">Diminished reflexes</option>
-              <option value="reflexes-absent">Absent reflexes</option>
-            </optgroup>
-            <optgroup label="Coordination">
-              <option value="coordination-normal">Normal coordination</option>
-              <option value="ataxia">Ataxic gait</option>
-              <option value="tremor">Tremor present</option>
-              <option value="dysmetria">Dysmetria</option>
-            </optgroup>
-          </select>
+            <span>Neurological</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search neurological findings..."
+              class="pe-search"
+              data-target="pe-neurological"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-neurological"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 120px;
+              "
+            >
+              <optgroup label="Mental Status">
+                <option value="alert-oriented">Alert and oriented x3</option>
+                <option value="confused">Confused</option>
+                <option value="lethargic">Lethargic</option>
+                <option value="obtunded">Obtunded</option>
+                <option value="comatose">Comatose</option>
+              </optgroup>
+              <optgroup label="Cranial Nerves">
+                <option value="cn-intact">Cranial nerves II-XII intact</option>
+                <option value="cn-deficit">
+                  Cranial nerve deficit present
+                </option>
+                <option value="pupils-equal">
+                  Pupils equal, round, reactive to light
+                </option>
+                <option value="pupils-unequal">
+                  Anisocoria (unequal pupils)
+                </option>
+                <option value="pupils-fixed">Fixed pupils</option>
+              </optgroup>
+              <optgroup label="Motor/Sensory">
+                <option value="motor-normal">Normal motor strength 5/5</option>
+                <option value="motor-weakness">Motor weakness present</option>
+                <option value="sensory-intact">Sensation intact</option>
+                <option value="sensory-deficit">Sensory deficit present</option>
+                <option value="reflexes-normal">
+                  Normal deep tendon reflexes
+                </option>
+                <option value="reflexes-hyperactive">
+                  Hyperactive reflexes
+                </option>
+                <option value="reflexes-diminished">Diminished reflexes</option>
+                <option value="reflexes-absent">Absent reflexes</option>
+              </optgroup>
+              <optgroup label="Coordination">
+                <option value="coordination-normal">Normal coordination</option>
+                <option value="ataxia">Ataxic gait</option>
+                <option value="tremor">Tremor present</option>
+                <option value="dysmetria">Dysmetria</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Musculoskeletal -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-musculoskeletal"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Musculoskeletal</label
-          >
-          <input
-            type="text"
-            placeholder="Search musculoskeletal findings..."
-            class="pe-search"
-            data-target="pe-musculoskeletal"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-musculoskeletal"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="General">
-              <option value="normal-rom">Normal range of motion</option>
-              <option value="limited-rom">Limited range of motion</option>
-              <option value="normal-strength">Normal muscle strength</option>
-              <option value="weakness">Muscle weakness</option>
-              <option value="atrophy">Muscle atrophy</option>
-            </optgroup>
-            <optgroup label="Joints">
-              <option value="joints-normal">
-                No joint swelling or deformity
-              </option>
-              <option value="joint-swelling">Joint swelling present</option>
-              <option value="joint-deformity">Joint deformity present</option>
-              <option value="joint-warmth">Joint warmth/erythema</option>
-              <option value="joint-effusion">Joint effusion</option>
-            </optgroup>
-            <optgroup label="Spine">
-              <option value="spine-normal">Normal spinal curvature</option>
-              <option value="kyphosis">Kyphosis</option>
-              <option value="lordosis">Lordosis</option>
-              <option value="scoliosis">Scoliosis</option>
-              <option value="spine-tenderness">Spinal tenderness</option>
-            </optgroup>
-          </select>
+            <span>Musculoskeletal</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search musculoskeletal findings..."
+              class="pe-search"
+              data-target="pe-musculoskeletal"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-musculoskeletal"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="General">
+                <option value="normal-rom">Normal range of motion</option>
+                <option value="limited-rom">Limited range of motion</option>
+                <option value="normal-strength">Normal muscle strength</option>
+                <option value="weakness">Muscle weakness</option>
+                <option value="atrophy">Muscle atrophy</option>
+              </optgroup>
+              <optgroup label="Joints">
+                <option value="joints-normal">
+                  No joint swelling or deformity
+                </option>
+                <option value="joint-swelling">Joint swelling present</option>
+                <option value="joint-deformity">Joint deformity present</option>
+                <option value="joint-warmth">Joint warmth/erythema</option>
+                <option value="joint-effusion">Joint effusion</option>
+              </optgroup>
+              <optgroup label="Spine">
+                <option value="spine-normal">Normal spinal curvature</option>
+                <option value="kyphosis">Kyphosis</option>
+                <option value="lordosis">Lordosis</option>
+                <option value="scoliosis">Scoliosis</option>
+                <option value="spine-tenderness">Spinal tenderness</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Dermatological -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-dermatological"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Dermatological</label
-          >
-          <input
-            type="text"
-            placeholder="Search skin findings..."
-            class="pe-search"
-            data-target="pe-dermatological"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-dermatological"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="General">
-              <option value="skin-normal">Normal skin color and texture</option>
-              <option value="pallor">Pallor</option>
-              <option value="cyanosis-skin">Cyanosis</option>
-              <option value="jaundice-skin">Jaundice</option>
-              <option value="erythema">Erythema</option>
-            </optgroup>
-            <optgroup label="Lesions">
-              <option value="no-lesions">No skin lesions</option>
-              <option value="rash-macular">Macular rash</option>
-              <option value="rash-papular">Papular rash</option>
-              <option value="rash-vesicular">Vesicular rash</option>
-              <option value="rash-pustular">Pustular rash</option>
-              <option value="petechiae">Petechiae</option>
-              <option value="purpura">Purpura</option>
-              <option value="ecchymoses">Ecchymoses/Bruising</option>
-              <option value="ulceration">Skin ulceration</option>
-            </optgroup>
-            <optgroup label="Other">
-              <option value="turgor-normal">Normal skin turgor</option>
-              <option value="turgor-poor">
-                Poor skin turgor (dehydration)
-              </option>
-              <option value="diaphoresis">Diaphoresis</option>
-              <option value="dry-skin">Dry skin</option>
-            </optgroup>
-          </select>
+            <span>Dermatological</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search skin findings..."
+              class="pe-search"
+              data-target="pe-dermatological"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-dermatological"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="General">
+                <option value="skin-normal">
+                  Normal skin color and texture
+                </option>
+                <option value="pallor">Pallor</option>
+                <option value="cyanosis-skin">Cyanosis</option>
+                <option value="jaundice-skin">Jaundice</option>
+                <option value="erythema">Erythema</option>
+              </optgroup>
+              <optgroup label="Lesions">
+                <option value="no-lesions">No skin lesions</option>
+                <option value="rash-macular">Macular rash</option>
+                <option value="rash-papular">Papular rash</option>
+                <option value="rash-vesicular">Vesicular rash</option>
+                <option value="rash-pustular">Pustular rash</option>
+                <option value="petechiae">Petechiae</option>
+                <option value="purpura">Purpura</option>
+                <option value="ecchymoses">Ecchymoses/Bruising</option>
+                <option value="ulceration">Skin ulceration</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="turgor-normal">Normal skin turgor</option>
+                <option value="turgor-poor">
+                  Poor skin turgor (dehydration)
+                </option>
+                <option value="diaphoresis">Diaphoresis</option>
+                <option value="dry-skin">Dry skin</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- ENT (Ear, Nose, Throat) -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-ent"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >ENT (Ear, Nose, Throat)</label
-          >
-          <input
-            type="text"
-            placeholder="Search ENT findings..."
-            class="pe-search"
-            data-target="pe-ent"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-ent"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 120px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="Ears">
-              <option value="ears-normal">Normal external ears</option>
-              <option value="ear-discharge">Ear discharge</option>
-              <option value="ear-erythema">Ear canal erythema</option>
-              <option value="tympanic-normal">Normal tympanic membranes</option>
-              <option value="tympanic-erythema">
-                Erythematous tympanic membranes
-              </option>
-              <option value="tympanic-bulging">
-                Bulging tympanic membranes
-              </option>
-              <option value="tympanic-perforation">
-                Tympanic membrane perforation
-              </option>
-              <option value="cerumen-impaction">Cerumen impaction</option>
-              <option value="tragal-tenderness">Tragal tenderness</option>
-              <option value="mastoid-tenderness">Mastoid tenderness</option>
-              <option value="tm-retraction">
-                Tympanic membrane retraction
-              </option>
-              <option value="middle-ear-effusion">Middle ear effusion</option>
-              <option value="hearing-grossly-intact">
-                Hearing grossly intact
-              </option>
-            </optgroup>
-            <optgroup label="Nose">
-              <option value="nose-normal">Normal nasal passages</option>
-              <option value="nasal-congestion">Nasal congestion</option>
-              <option value="nasal-discharge">Nasal discharge</option>
-              <option value="nasal-polyps">Nasal polyps</option>
-              <option value="septum-deviated">Deviated nasal septum</option>
-              <option value="epistaxis">Epistaxis</option>
-              <option value="turbinate-hypertrophy">
-                Turbinate hypertrophy
-              </option>
-              <option value="septal-hematoma">Septal hematoma</option>
-            </optgroup>
-            <optgroup label="Throat">
-              <option value="throat-normal">Normal oropharynx</option>
-              <option value="throat-erythema">Pharyngeal erythema</option>
-              <option value="throat-exudate">Pharyngeal exudate</option>
-              <option value="tonsils-enlarged">Enlarged tonsils</option>
-              <option value="tonsils-exudate">Tonsillar exudate</option>
-              <option value="lymph-nodes">Cervical lymphadenopathy</option>
-              <option value="uvula-deviation">Uvula deviation</option>
-              <option value="oral-thrush">Oral thrush</option>
-              <option value="aphthous-ulcers">Aphthous ulcers</option>
-            </optgroup>
-          </select>
+            <span>ENT (Ear, Nose, Throat)</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search ENT findings..."
+              class="pe-search"
+              data-target="pe-ent"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-ent"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 120px;
+              "
+            >
+              <optgroup label="Ears">
+                <option value="ears-normal">Normal external ears</option>
+                <option value="ear-discharge">Ear discharge</option>
+                <option value="ear-erythema">Ear canal erythema</option>
+                <option value="tympanic-normal">
+                  Normal tympanic membranes
+                </option>
+                <option value="tympanic-erythema">
+                  Erythematous tympanic membranes
+                </option>
+                <option value="tympanic-bulging">
+                  Bulging tympanic membranes
+                </option>
+                <option value="tympanic-perforation">
+                  Tympanic membrane perforation
+                </option>
+                <option value="cerumen-impaction">Cerumen impaction</option>
+                <option value="tragal-tenderness">Tragal tenderness</option>
+                <option value="mastoid-tenderness">Mastoid tenderness</option>
+                <option value="tm-retraction">
+                  Tympanic membrane retraction
+                </option>
+                <option value="middle-ear-effusion">Middle ear effusion</option>
+                <option value="hearing-grossly-intact">
+                  Hearing grossly intact
+                </option>
+              </optgroup>
+              <optgroup label="Nose">
+                <option value="nose-normal">Normal nasal passages</option>
+                <option value="nasal-congestion">Nasal congestion</option>
+                <option value="nasal-discharge">Nasal discharge</option>
+                <option value="nasal-polyps">Nasal polyps</option>
+                <option value="septum-deviated">Deviated nasal septum</option>
+                <option value="epistaxis">Epistaxis</option>
+                <option value="turbinate-hypertrophy">
+                  Turbinate hypertrophy
+                </option>
+                <option value="septal-hematoma">Septal hematoma</option>
+              </optgroup>
+              <optgroup label="Throat">
+                <option value="throat-normal">Normal oropharynx</option>
+                <option value="throat-erythema">Pharyngeal erythema</option>
+                <option value="throat-exudate">Pharyngeal exudate</option>
+                <option value="tonsils-enlarged">Enlarged tonsils</option>
+                <option value="tonsils-exudate">Tonsillar exudate</option>
+                <option value="lymph-nodes">Cervical lymphadenopathy</option>
+                <option value="uvula-deviation">Uvula deviation</option>
+                <option value="oral-thrush">Oral thrush</option>
+                <option value="aphthous-ulcers">Aphthous ulcers</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Ophthalmological -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-ophthalmological"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Ophthalmological</label
-          >
-          <input
-            type="text"
-            placeholder="Search eye findings..."
-            class="pe-search"
-            data-target="pe-ophthalmological"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-ophthalmological"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="External">
-              <option value="eyes-normal">Normal external eyes</option>
-              <option value="conjunctiva-normal">Normal conjunctiva</option>
-              <option value="conjunctiva-injection">
-                Conjunctival injection
-              </option>
-              <option value="sclera-icterus">Scleral icterus</option>
-              <option value="eyelid-swelling">Eyelid swelling</option>
-              <option value="eye-discharge">Eye discharge</option>
-              <option value="chemosis">Chemosis</option>
-              <option value="subconjunctival-hemorrhage">
-                Subconjunctival hemorrhage
-              </option>
-              <option value="blepharitis">Blepharitis</option>
-              <option value="hordeolum">Hordeolum (stye)</option>
-              <option value="chalazion">Chalazion</option>
-              <option value="corneal-abrasion">Corneal abrasion</option>
-              <option value="corneal-opacity">Corneal opacity</option>
-            </optgroup>
-            <optgroup label="Pupils">
-              <option value="pupils-normal-eye">
-                Pupils equal, round, reactive
-              </option>
-              <option value="pupils-dilated">Dilated pupils</option>
-              <option value="pupils-constricted">Constricted pupils</option>
-              <option value="pupils-unequal-eye">Unequal pupils</option>
-              <option value="rapd">
-                Relative afferent pupillary defect (RAPD)
-              </option>
-              <option value="anisocoria">Anisocoria</option>
-            </optgroup>
-            <optgroup label="EOM/Alignment">
-              <option value="eomi">EOMI (extraocular movements intact)</option>
-              <option value="eom-limitation">Limitation of EOM</option>
-              <option value="nystagmus">Nystagmus</option>
-              <option value="strabismus">Strabismus</option>
-            </optgroup>
-            <optgroup label="Vision">
-              <option value="vision-grossly-normal">
-                Grossly normal vision
-              </option>
-              <option value="vision-impaired">Visual impairment</option>
-              <option value="visual-fields-normal">Normal visual fields</option>
-              <option value="visual-fields-deficit">
-                Visual field deficit
-              </option>
-              <option value="decreased-visual-acuity">
-                Decreased visual acuity
-              </option>
-            </optgroup>
-            <optgroup label="Fundoscopy">
-              <option value="fundus-normal">Normal fundus</option>
-              <option value="papilledema">Papilledema</option>
-              <option value="av-nicking">AV nicking</option>
-              <option value="cotton-wool-spots">Cotton wool spots</option>
-              <option value="retinal-hemorrhages">Retinal hemorrhages</option>
-              <option value="diabetic-retinopathy">
-                Diabetic retinopathy changes
-              </option>
-            </optgroup>
-          </select>
+            <span>Ophthalmological</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search eye findings..."
+              class="pe-search"
+              data-target="pe-ophthalmological"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-ophthalmological"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="External">
+                <option value="eyes-normal">Normal external eyes</option>
+                <option value="conjunctiva-normal">Normal conjunctiva</option>
+                <option value="conjunctiva-injection">
+                  Conjunctival injection
+                </option>
+                <option value="sclera-icterus">Scleral icterus</option>
+                <option value="eyelid-swelling">Eyelid swelling</option>
+                <option value="eye-discharge">Eye discharge</option>
+                <option value="chemosis">Chemosis</option>
+                <option value="subconjunctival-hemorrhage">
+                  Subconjunctival hemorrhage
+                </option>
+                <option value="blepharitis">Blepharitis</option>
+                <option value="hordeolum">Hordeolum (stye)</option>
+                <option value="chalazion">Chalazion</option>
+                <option value="corneal-abrasion">Corneal abrasion</option>
+                <option value="corneal-opacity">Corneal opacity</option>
+              </optgroup>
+              <optgroup label="Pupils">
+                <option value="pupils-normal-eye">
+                  Pupils equal, round, reactive
+                </option>
+                <option value="pupils-dilated">Dilated pupils</option>
+                <option value="pupils-constricted">Constricted pupils</option>
+                <option value="pupils-unequal-eye">Unequal pupils</option>
+                <option value="rapd">
+                  Relative afferent pupillary defect (RAPD)
+                </option>
+                <option value="anisocoria">Anisocoria</option>
+              </optgroup>
+              <optgroup label="EOM/Alignment">
+                <option value="eomi">
+                  EOMI (extraocular movements intact)
+                </option>
+                <option value="eom-limitation">Limitation of EOM</option>
+                <option value="nystagmus">Nystagmus</option>
+                <option value="strabismus">Strabismus</option>
+              </optgroup>
+              <optgroup label="Vision">
+                <option value="vision-grossly-normal">
+                  Grossly normal vision
+                </option>
+                <option value="vision-impaired">Visual impairment</option>
+                <option value="visual-fields-normal">
+                  Normal visual fields
+                </option>
+                <option value="visual-fields-deficit">
+                  Visual field deficit
+                </option>
+                <option value="decreased-visual-acuity">
+                  Decreased visual acuity
+                </option>
+              </optgroup>
+              <optgroup label="Fundoscopy">
+                <option value="fundus-normal">Normal fundus</option>
+                <option value="papilledema">Papilledema</option>
+                <option value="av-nicking">AV nicking</option>
+                <option value="cotton-wool-spots">Cotton wool spots</option>
+                <option value="retinal-hemorrhages">Retinal hemorrhages</option>
+                <option value="diabetic-retinopathy">
+                  Diabetic retinopathy changes
+                </option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Genitourinary -->
         <div class="form-subsection" style="margin-top: 25px">
-          <label
-            for="pe-genitourinary"
+          <button
+            type="button"
+            class="pe-accordion-header"
             style="
+              width: 100%;
+              text-align: left;
               font-size: 16px;
               font-weight: 700;
-              margin-bottom: 12px;
-              display: block;
-            "
-            >Genitourinary</label
-          >
-          <input
-            type="text"
-            placeholder="Search GU findings..."
-            class="pe-search"
-            data-target="pe-genitourinary"
-            style="
-              width: 100%;
-              padding: 6px;
-              margin-bottom: 8px;
-              font-size: 13px;
+              padding: 10px 12px;
               border: 1px solid var(--all-text);
-              border-radius: 4px;
+              border-radius: 6px;
               background: var(--header-bg);
               color: var(--all-text);
-            "
-          />
-          <select
-            id="pe-genitourinary"
-            multiple
-            style="
-              width: 100%;
-              padding: 8px;
-              font-size: 14px;
-              min-height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
             "
           >
-            <optgroup label="General">
-              <option value="gu-deferred">Examination deferred</option>
-              <option value="external-normal">Normal external genitalia</option>
-              <option value="costovertebral-negative">
-                No costovertebral angle tenderness
-              </option>
-              <option value="costovertebral-positive">
-                Costovertebral angle tenderness
-              </option>
-            </optgroup>
-            <optgroup label="Male">
-              <option value="testes-normal">Normal testes</option>
-              <option value="testes-swelling">Testicular swelling</option>
-              <option value="hernia-absent">No inguinal hernia</option>
-              <option value="hernia-present">Inguinal hernia present</option>
-              <option value="epididymal-tenderness">
-                Epididymal tenderness
-              </option>
-              <option value="scrotal-swelling">Scrotal swelling</option>
-              <option value="penile-lesions">Penile lesions</option>
-              <option value="urethral-discharge">Urethral discharge</option>
-              <option value="prostate-enlarged">Prostate enlarged</option>
-              <option value="prostate-tender">Prostate tender</option>
-            </optgroup>
-            <optgroup label="Female">
-              <option value="pelvic-deferred">
-                Pelvic examination deferred
-              </option>
-              <option value="pelvic-normal">Normal pelvic examination</option>
-              <option value="cervical-discharge">Cervical discharge</option>
-              <option value="adnexal-tenderness">Adnexal tenderness</option>
-              <option value="cmt">Cervical motion tenderness</option>
-              <option value="uterine-enlargement">Uterine enlargement</option>
-              <option value="adnexal-mass">Adnexal mass</option>
-              <option value="vaginal-discharge">Vaginal discharge</option>
-            </optgroup>
-          </select>
+            <span>Genitourinary</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="display: none; padding-top: 10px"
+          >
+            <input
+              type="text"
+              placeholder="Search GU findings..."
+              class="pe-search"
+              data-target="pe-genitourinary"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-genitourinary"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="General">
+                <option value="gu-deferred">Examination deferred</option>
+                <option value="external-normal">
+                  Normal external genitalia
+                </option>
+                <option value="costovertebral-negative">
+                  No costovertebral angle tenderness
+                </option>
+                <option value="costovertebral-positive">
+                  Costovertebral angle tenderness
+                </option>
+              </optgroup>
+              <optgroup label="Male">
+                <option value="testes-normal">Normal testes</option>
+                <option value="testes-swelling">Testicular swelling</option>
+                <option value="hernia-absent">No inguinal hernia</option>
+                <option value="hernia-present">Inguinal hernia present</option>
+                <option value="epididymal-tenderness">
+                  Epididymal tenderness
+                </option>
+                <option value="scrotal-swelling">Scrotal swelling</option>
+                <option value="penile-lesions">Penile lesions</option>
+                <option value="urethral-discharge">Urethral discharge</option>
+                <option value="prostate-enlarged">Prostate enlarged</option>
+                <option value="prostate-tender">Prostate tender</option>
+              </optgroup>
+              <optgroup label="Female">
+                <option value="pelvic-deferred">
+                  Pelvic examination deferred
+                </option>
+                <option value="pelvic-normal">Normal pelvic examination</option>
+                <option value="cervical-discharge">Cervical discharge</option>
+                <option value="adnexal-tenderness">Adnexal tenderness</option>
+                <option value="cmt">Cervical motion tenderness</option>
+                <option value="uterine-enlargement">Uterine enlargement</option>
+                <option value="adnexal-mass">Adnexal mass</option>
+                <option value="vaginal-discharge">Vaginal discharge</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <!-- Additional Findings -->
@@ -3052,6 +3298,8 @@ Sign in to use AI.
         peContent.style.opacity = "1";
         // Initialize touch-friendly multi-select after PE section is shown
         initTouchMultiSelect();
+        console.log("[PE DEBUG] PE section shown, initializing accordions");
+        initPEAccordions();
       }, 10);
 
       // Update switch to ON state - CSS handles the styling
@@ -3066,6 +3314,135 @@ Sign in to use AI.
       // Update switch to OFF state - CSS handles the styling
       peToggle.checked = false;
     }
+  }
+
+  // Initialize PE accordions using delegated click handling
+  function initPEAccordions() {
+    console.log("[PE DEBUG] initPEAccordions called");
+    const peRoot = document.getElementById("pe-content");
+    if (!peRoot) {
+      console.error("[PE DEBUG] pe-content not found");
+      return;
+    }
+    console.log("[PE DEBUG] pe-content found:", peRoot);
+
+    // Attach delegated handler once
+    if (peRoot.dataset.accordionDelegated !== "1") {
+      console.log("[PE DEBUG] Setting up delegated click handler");
+      peRoot.dataset.accordionDelegated = "1";
+      peRoot.addEventListener("click", (e) => {
+        console.log("[PE DEBUG] Delegated click detected:", e.target);
+        const header = e.target.closest(".pe-accordion-header");
+        console.log("[PE DEBUG] Closest header found:", header);
+        if (!header || !peRoot.contains(header)) {
+          console.log("[PE DEBUG] No valid header found or not in peRoot");
+          return;
+        }
+        e.preventDefault();
+        console.log(
+          "[PE DEBUG] Calling toggleAccordion from delegated handler"
+        );
+        toggleAccordion(header);
+      });
+    } else {
+      console.log("[PE DEBUG] Delegated handler already set up");
+    }
+
+    // Also attach direct handlers to each header (idempotent) and add a11y
+    const headers = peRoot.querySelectorAll(".pe-accordion-header");
+    console.log("[PE DEBUG] Found headers:", headers.length);
+    headers.forEach((header, index) => {
+      console.log(
+        "[PE DEBUG] Processing header",
+        index,
+        ":",
+        header.textContent.trim()
+      );
+      if (header.dataset.accordionBound === "1") {
+        console.log("[PE DEBUG] Header", index, "already bound");
+        return;
+      }
+      header.dataset.accordionBound = "1";
+      header.setAttribute("aria-expanded", "false");
+      header.setAttribute("aria-controls", "");
+      header.setAttribute("role", "button");
+
+      header.addEventListener("click", (e) => {
+        console.log(
+          "[PE DEBUG] Direct click on header:",
+          header.textContent.trim()
+        );
+        e.preventDefault();
+        e.stopPropagation();
+        toggleAccordion(header);
+      });
+      header.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          console.log(
+            "[PE DEBUG] Keyboard activation on header:",
+            header.textContent.trim()
+          );
+          e.preventDefault();
+          toggleAccordion(header);
+        }
+      });
+      console.log("[PE DEBUG] Bound events to header", index);
+    });
+
+    function toggleAccordion(header) {
+      console.log(
+        "[PE DEBUG] toggleAccordion called for:",
+        header.textContent.trim()
+      );
+      const content = header.nextElementSibling;
+      console.log("[PE DEBUG] Next sibling:", content);
+      if (!content) {
+        console.error("[PE DEBUG] No next sibling found");
+        return;
+      }
+      if (!content.classList.contains("pe-accordion-content")) {
+        console.error(
+          "[PE DEBUG] Next sibling is not pe-accordion-content:",
+          content.className
+        );
+        return;
+      }
+      const chev = header.querySelector(".chev");
+      console.log("[PE DEBUG] Chevron element:", chev);
+      const currentDisplay = (content.style && content.style.display) || "";
+      const computed = window.getComputedStyle
+        ? getComputedStyle(content).display
+        : currentDisplay;
+      const isOpen = (currentDisplay || computed) === "block";
+      console.log(
+        "[PE DEBUG] Current display:",
+        currentDisplay,
+        "Computed:",
+        computed,
+        "IsOpen:",
+        isOpen
+      );
+
+      const newDisplay = isOpen ? "none" : "block";
+      content.style.display = newDisplay;
+      console.log("[PE DEBUG] Set display to:", newDisplay);
+      console.log("[PE DEBUG] Actual style after set:", content.style.display);
+
+      header.setAttribute("aria-expanded", String(!isOpen));
+      if (chev) {
+        const newChev = isOpen ? "▸" : "▾";
+        chev.textContent = newChev;
+        console.log("[PE DEBUG] Set chevron to:", newChev);
+      }
+      console.log(
+        "[PE DEBUG] Accordion toggle complete for:",
+        header.textContent.trim(),
+        "->",
+        !isOpen ? "OPEN" : "CLOSED"
+      );
+    }
+
+    console.log("[PE DEBUG] initPEAccordions setup complete");
   }
 
   // Touch-friendly multi-select for iPad users
@@ -3346,14 +3723,82 @@ Sign in to use AI.
     }
   }
 
+  // Immediately define global test functions
+  console.log("[PE DEBUG] Defining global test functions...");
+
+  window.testPEAccordions = function () {
+    console.log("=== PE ACCORDION TEST ===");
+    const peContent = document.getElementById("pe-content");
+    console.log("PE Content element:", peContent);
+    console.log(
+      "PE Content display:",
+      peContent ? peContent.style.display : "NOT FOUND"
+    );
+
+    const headers = document.querySelectorAll(".pe-accordion-header");
+    console.log("Found accordion headers:", headers.length);
+    headers.forEach((h, i) => console.log(`  ${i}: ${h.textContent.trim()}`));
+
+    const contents = document.querySelectorAll(".pe-accordion-content");
+    console.log("Found accordion contents:", contents.length);
+    contents.forEach((c, i) =>
+      console.log(`  ${i}: display=${c.style.display}`)
+    );
+
+    return { peContent, headers, contents };
+  };
+
+  window.toggleFirstAccordion = function () {
+    const header = document.querySelector(".pe-accordion-header");
+    if (header) {
+      console.log(
+        "Manually clicking first accordion header:",
+        header.textContent.trim()
+      );
+      header.click();
+      return true;
+    } else {
+      console.log("No accordion headers found");
+      return false;
+    }
+  };
+
+  window.showPESection = function () {
+    const toggle = document.getElementById("pe-toggle");
+    if (toggle && !toggle.checked) {
+      console.log("Manually toggling PE section ON");
+      toggle.click();
+      return true;
+    } else {
+      console.log("PE toggle not found or already ON");
+      return false;
+    }
+  };
+
+  console.log(
+    "[PE DEBUG] Global functions defined:",
+    typeof window.testPEAccordions,
+    typeof window.showPESection,
+    typeof window.toggleFirstAccordion
+  );
+
   // Initialize touch multi-select when page loads
   document.addEventListener("DOMContentLoaded", function () {
+    console.log("[PE DEBUG] DOMContentLoaded fired");
     // Set initial PE section state (hidden by default)
     const peContent = document.getElementById("pe-content");
     if (peContent) {
       peContent.style.display = "none";
       peContent.style.opacity = "0";
       peContent.style.transition = "opacity 0.5s ease";
+      console.log("[PE DEBUG] PE content hidden by default");
+    } else {
+      console.error("[PE DEBUG] pe-content not found on DOMContentLoaded");
     }
+    // Don't initialize accordions here since PE is hidden - they'll be initialized when PE is shown
+    console.log("[PE DEBUG] Skipping accordion init on load - PE is hidden");
+    console.log(
+      "[PE DEBUG] Global test functions available: testPEAccordions(), showPESection(), toggleFirstAccordion()"
+    );
   });
 </script>
