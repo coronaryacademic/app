@@ -44,6 +44,11 @@
     background: rgb(86, 212, 254) !important;
   }
 
+  /* Prevent scroll chaining/jumps inside PE section on iOS */
+  #pe-content {
+    overscroll-behavior: contain;
+  }
+
   /* Force inline black text to use theme color inside BAU form */
   #history-form-container [style*="color: black"],
   #history-form-container [style*="color:black"],
@@ -3101,52 +3106,83 @@ Sign in to use AI.
           transition: all 0.2s ease;
           font-size: 13px;
           -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;
+          touch-action: none;
         `;
 
         optionBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           
-          // Store current scroll position
+          const prevRestore = (history && history.scrollRestoration) || "";
+          try { if (history && "scrollRestoration" in history) history.scrollRestoration = "manual"; } catch {}
+
+          // Store current scroll position and blur any focused element
           const scrollY = window.scrollY || window.pageYOffset;
+          if (document.activeElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+          }
           
           option.selected = !option.selected;
           updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
 
           // Trigger change event for form data management
-          select.dispatchEvent(new Event("change", { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
           
-          // Restore scroll position after a brief delay
-          setTimeout(() => {
+          // Restore scroll position using double RAF to defeat iOS jumps
+          requestAnimationFrame(() => {
             window.scrollTo(0, scrollY);
-          }, 0);
+            requestAnimationFrame(() => {
+              window.scrollTo(0, scrollY);
+              try { if (history && "scrollRestoration" in history) history.scrollRestoration = prevRestore || "auto"; } catch {}
+            });
+          });
           
           return false;
-        });
+        }, { passive: false });
 
         // Add touchstart and touchend events to prevent scrolling
         optionBtn.addEventListener("touchstart", (e) => {
           e.preventDefault();
           e.stopPropagation();
-        });
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false });
 
         optionBtn.addEventListener("touchend", (e) => {
           e.preventDefault();
           e.stopPropagation();
+          e.stopImmediatePropagation();
           
-          // Store current scroll position
+          const prevRestore = (history && history.scrollRestoration) || "";
+          try { if (history && "scrollRestoration" in history) history.scrollRestoration = "manual"; } catch {}
+
+          // Store current scroll position and blur any focused element
           const scrollY = window.scrollY || window.pageYOffset;
+          if (document.activeElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+          }
           
           option.selected = !option.selected;
           updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
-          select.dispatchEvent(new Event("change", { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
           
-          // Restore scroll position after a brief delay
-          setTimeout(() => {
+          // Restore scroll position using double RAF
+          requestAnimationFrame(() => {
             window.scrollTo(0, scrollY);
-          }, 0);
+            requestAnimationFrame(() => {
+              window.scrollTo(0, scrollY);
+              try { if (history && "scrollRestoration" in history) history.scrollRestoration = prevRestore || "auto"; } catch {}
+            });
+          });
           
+          return false;
+        }, { passive: false });
+
+        // Guard against mouse-based scroll on some devices
+        optionBtn.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
           return false;
         });
 
