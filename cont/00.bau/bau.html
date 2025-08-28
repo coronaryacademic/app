@@ -3073,7 +3073,18 @@ Sign in to use AI.
         overflow-y: auto;
         padding: 8px;
         margin-top: 5px;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
       `;
+      
+      // Prevent wrapper from causing page scroll
+      wrapper.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+      });
+      
+      wrapper.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+      });
 
       const selectedDisplay = document.createElement("div");
       selectedDisplay.className = "selected-items-display";
@@ -3124,6 +3135,22 @@ Sign in to use AI.
 
           // Trigger change event for form data management
           select.dispatchEvent(new Event("change", { bubbles: true }));
+          return false;
+        });
+        
+        // Add touchstart and touchend events to prevent scrolling
+        optionBtn.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        
+        optionBtn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          option.selected = !option.selected;
+          updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          return false;
         });
 
         optionsContainer.appendChild(optionBtn);
