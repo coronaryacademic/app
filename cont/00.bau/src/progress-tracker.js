@@ -129,8 +129,17 @@ export function initProgressTracker() {
       updateTimeout = setTimeout(updateProgressTracker, 100);
     };
 
-    document.addEventListener("input", debouncedUpdate);
-    document.addEventListener("change", debouncedUpdate);
+    // Filter out PE multi-select changes to prevent scroll jumps on mobile
+    const filteredUpdate = (e) => {
+      // Skip if event comes from PE touch multi-select
+      if (e.target && e.target.closest && e.target.closest('#pe-content')) {
+        return;
+      }
+      debouncedUpdate();
+    };
+
+    document.addEventListener("input", filteredUpdate);
+    document.addEventListener("change", filteredUpdate);
 
     function enhanceProgressTrackerStyling() {
       const tracker = document.getElementById("progress-tracker");
