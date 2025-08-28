@@ -3107,11 +3107,21 @@ Sign in to use AI.
         optionBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
+          
+          // Store current scroll position
+          const scrollY = window.scrollY || window.pageYOffset;
+          
           option.selected = !option.selected;
           updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
 
           // Trigger change event for form data management
           select.dispatchEvent(new Event("change", { bubbles: true }));
+          
+          // Restore scroll position after a brief delay
+          setTimeout(() => {
+            window.scrollTo(0, scrollY);
+          }, 0);
+          
           return false;
         });
 
@@ -3124,9 +3134,19 @@ Sign in to use AI.
         optionBtn.addEventListener("touchend", (e) => {
           e.preventDefault();
           e.stopPropagation();
+          
+          // Store current scroll position
+          const scrollY = window.scrollY || window.pageYOffset;
+          
           option.selected = !option.selected;
           updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
           select.dispatchEvent(new Event("change", { bubbles: true }));
+          
+          // Restore scroll position after a brief delay
+          setTimeout(() => {
+            window.scrollTo(0, scrollY);
+          }, 0);
+          
           return false;
         });
 
