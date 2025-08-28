@@ -143,7 +143,7 @@
   </div>
 
   <label style="font-size: 26px; margin-bottom: 32px; font-weight: 800"
-    >Patient information
+    >Patient information #
   </label>
   <!-- Patient Info in One Row -->
   <div
@@ -2449,9 +2449,13 @@
               <option value="cerumen-impaction">Cerumen impaction</option>
               <option value="tragal-tenderness">Tragal tenderness</option>
               <option value="mastoid-tenderness">Mastoid tenderness</option>
-              <option value="tm-retraction">Tympanic membrane retraction</option>
+              <option value="tm-retraction">
+                Tympanic membrane retraction
+              </option>
               <option value="middle-ear-effusion">Middle ear effusion</option>
-              <option value="hearing-grossly-intact">Hearing grossly intact</option>
+              <option value="hearing-grossly-intact">
+                Hearing grossly intact
+              </option>
             </optgroup>
             <optgroup label="Nose">
               <option value="nose-normal">Normal nasal passages</option>
@@ -2460,7 +2464,9 @@
               <option value="nasal-polyps">Nasal polyps</option>
               <option value="septum-deviated">Deviated nasal septum</option>
               <option value="epistaxis">Epistaxis</option>
-              <option value="turbinate-hypertrophy">Turbinate hypertrophy</option>
+              <option value="turbinate-hypertrophy">
+                Turbinate hypertrophy
+              </option>
               <option value="septal-hematoma">Septal hematoma</option>
             </optgroup>
             <optgroup label="Throat">
@@ -2525,7 +2531,9 @@
               <option value="eyelid-swelling">Eyelid swelling</option>
               <option value="eye-discharge">Eye discharge</option>
               <option value="chemosis">Chemosis</option>
-              <option value="subconjunctival-hemorrhage">Subconjunctival hemorrhage</option>
+              <option value="subconjunctival-hemorrhage">
+                Subconjunctival hemorrhage
+              </option>
               <option value="blepharitis">Blepharitis</option>
               <option value="hordeolum">Hordeolum (stye)</option>
               <option value="chalazion">Chalazion</option>
@@ -2539,7 +2547,9 @@
               <option value="pupils-dilated">Dilated pupils</option>
               <option value="pupils-constricted">Constricted pupils</option>
               <option value="pupils-unequal-eye">Unequal pupils</option>
-              <option value="rapd">Relative afferent pupillary defect (RAPD)</option>
+              <option value="rapd">
+                Relative afferent pupillary defect (RAPD)
+              </option>
               <option value="anisocoria">Anisocoria</option>
             </optgroup>
             <optgroup label="EOM/Alignment">
@@ -2557,7 +2567,9 @@
               <option value="visual-fields-deficit">
                 Visual field deficit
               </option>
-              <option value="decreased-visual-acuity">Decreased visual acuity</option>
+              <option value="decreased-visual-acuity">
+                Decreased visual acuity
+              </option>
             </optgroup>
             <optgroup label="Fundoscopy">
               <option value="fundus-normal">Normal fundus</option>
@@ -2565,7 +2577,9 @@
               <option value="av-nicking">AV nicking</option>
               <option value="cotton-wool-spots">Cotton wool spots</option>
               <option value="retinal-hemorrhages">Retinal hemorrhages</option>
-              <option value="diabetic-retinopathy">Diabetic retinopathy changes</option>
+              <option value="diabetic-retinopathy">
+                Diabetic retinopathy changes
+              </option>
             </optgroup>
           </select>
         </div>
@@ -2623,7 +2637,9 @@
               <option value="testes-swelling">Testicular swelling</option>
               <option value="hernia-absent">No inguinal hernia</option>
               <option value="hernia-present">Inguinal hernia present</option>
-              <option value="epididymal-tenderness">Epididymal tenderness</option>
+              <option value="epididymal-tenderness">
+                Epididymal tenderness
+              </option>
               <option value="scrotal-swelling">Scrotal swelling</option>
               <option value="penile-lesions">Penile lesions</option>
               <option value="urethral-discharge">Urethral discharge</option>
@@ -3155,74 +3171,108 @@ Sign in to use AI.
           touch-action: none;
         `;
 
-        optionBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          const prevRestore = (history && history.scrollRestoration) || "";
-          try { if (history && "scrollRestoration" in history) history.scrollRestoration = "manual"; } catch {}
+        optionBtn.addEventListener(
+          "click",
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-          // Store current scroll position and blur any focused element
-          const scrollY = window.scrollY || window.pageYOffset;
-          if (document.activeElement && typeof document.activeElement.blur === "function") {
-            document.activeElement.blur();
-          }
-          
-          option.selected = !option.selected;
-          updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
+            const prevRestore = (history && history.scrollRestoration) || "";
+            try {
+              if (history && "scrollRestoration" in history)
+                history.scrollRestoration = "manual";
+            } catch {}
 
-          // Trigger change event for form data management
-          select.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-          
-          // Restore scroll position using double RAF to defeat iOS jumps
-          requestAnimationFrame(() => {
-            window.scrollTo(0, scrollY);
+            // Store current scroll position and blur any focused element
+            const scrollY = window.scrollY || window.pageYOffset;
+            if (
+              document.activeElement &&
+              typeof document.activeElement.blur === "function"
+            ) {
+              document.activeElement.blur();
+            }
+
+            option.selected = !option.selected;
+            updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
+
+            // Trigger change event for form data management
+            select.dispatchEvent(
+              new Event("change", { bubbles: true, cancelable: true })
+            );
+
+            // Restore scroll position using double RAF to defeat iOS jumps
             requestAnimationFrame(() => {
               window.scrollTo(0, scrollY);
-              try { if (history && "scrollRestoration" in history) history.scrollRestoration = prevRestore || "auto"; } catch {}
+              requestAnimationFrame(() => {
+                window.scrollTo(0, scrollY);
+                try {
+                  if (history && "scrollRestoration" in history)
+                    history.scrollRestoration = prevRestore || "auto";
+                } catch {}
+              });
             });
-          });
-          
-          return false;
-        }, { passive: false });
+
+            return false;
+          },
+          { passive: false }
+        );
 
         // Add touchstart and touchend events to prevent scrolling
-        optionBtn.addEventListener("touchstart", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          return false;
-        }, { passive: false });
+        optionBtn.addEventListener(
+          "touchstart",
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+          },
+          { passive: false }
+        );
 
-        optionBtn.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          
-          const prevRestore = (history && history.scrollRestoration) || "";
-          try { if (history && "scrollRestoration" in history) history.scrollRestoration = "manual"; } catch {}
+        optionBtn.addEventListener(
+          "touchend",
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-          // Store current scroll position and blur any focused element
-          const scrollY = window.scrollY || window.pageYOffset;
-          if (document.activeElement && typeof document.activeElement.blur === "function") {
-            document.activeElement.blur();
-          }
-          
-          option.selected = !option.selected;
-          updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
-          select.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-          
-          // Restore scroll position using double RAF
-          requestAnimationFrame(() => {
-            window.scrollTo(0, scrollY);
+            const prevRestore = (history && history.scrollRestoration) || "";
+            try {
+              if (history && "scrollRestoration" in history)
+                history.scrollRestoration = "manual";
+            } catch {}
+
+            // Store current scroll position and blur any focused element
+            const scrollY = window.scrollY || window.pageYOffset;
+            if (
+              document.activeElement &&
+              typeof document.activeElement.blur === "function"
+            ) {
+              document.activeElement.blur();
+            }
+
+            option.selected = !option.selected;
+            updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
+            select.dispatchEvent(
+              new Event("change", { bubbles: true, cancelable: true })
+            );
+
+            // Restore scroll position using double RAF
             requestAnimationFrame(() => {
               window.scrollTo(0, scrollY);
-              try { if (history && "scrollRestoration" in history) history.scrollRestoration = prevRestore || "auto"; } catch {}
+              requestAnimationFrame(() => {
+                window.scrollTo(0, scrollY);
+                try {
+                  if (history && "scrollRestoration" in history)
+                    history.scrollRestoration = prevRestore || "auto";
+                } catch {}
+              });
             });
-          });
-          
-          return false;
-        }, { passive: false });
+
+            return false;
+          },
+          { passive: false }
+        );
 
         // Guard against mouse-based scroll on some devices
         optionBtn.addEventListener("mousedown", (e) => {

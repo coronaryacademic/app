@@ -6357,13 +6357,19 @@ Clinical history:\n${
             "change",
             (e) => {
               const t = e.target;
-              if (t && t.tagName === "SELECT") {
-                // Give iOS time to close the picker UI, then restore position and blur
-                setTimeout(() => {
-                  window.scrollTo(0, lastY);
-                  if (typeof t.blur === "function") t.blur();
-                }, 0);
-              }
+              if (!t || t.tagName !== "SELECT") return;
+              // Ignore synthetic (programmatic) events to avoid unintended jumps
+              if (e.isTrusted === false) return;
+              // Ignore hidden selects (e.g., PE originals hidden behind checkboxes)
+              if (t.offsetParent === null || getComputedStyle(t).display === "none") return;
+              // Give iOS time to close the picker UI, then restore position and blur
+              setTimeout(() => {
+                const y = (typeof lastY === "number" && lastY >= 0)
+                  ? lastY
+                  : (window.scrollY || window.pageYOffset || 0);
+                window.scrollTo(0, y);
+                if (typeof t.blur === "function") t.blur();
+              }, 0);
             },
             true
           );
