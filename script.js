@@ -340,6 +340,35 @@ function setHeaderTitleByPage(page) {
 // expose globally for index module to call
 window.setHeaderTitleByPage = setHeaderTitleByPage;
 
+// ---- Execute inline <script> tags from dynamically injected HTML ----
+// When we fetch and inject HTML (e.g., BAU), any inline scripts do not auto-execute.
+// This helper finds <script> tags inside a container and re-inserts them so they run.
+function executeInlineScripts(container) {
+  try {
+    if (!container) return;
+    const scripts = Array.from(container.querySelectorAll("script"));
+    if (!scripts.length) return;
+    scripts.forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      // Copy attributes (type, module, etc.)
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      if (oldScript.src) {
+        // External script: recreate to execute
+        newScript.src = oldScript.src;
+      } else {
+        // Inline script: transfer its code
+        newScript.textContent = oldScript.textContent || "";
+      }
+      // Replace in DOM to trigger execution
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  } catch (e) {
+    console.warn("[SCRIPT] executeInlineScripts error:", e);
+  }
+}
+
 // ---- Global App Version Sync ----
 function updateAppVersionUI(version) {
   const ver =
@@ -568,6 +597,8 @@ function loadContent(page) {
     })
     .then((html) => {
       mainContent.innerHTML = html;
+      // Ensure any inline scripts in the injected HTML execute (e.g., BAU symptom linking definitions)
+      executeInlineScripts(mainContent);
       sessionStorage.setItem("currentPage", page);
       updateNavActiveState(page);
       // Update header title to reflect loaded page
@@ -604,6 +635,23 @@ function loadContent(page) {
               }
             } else {
               console.warn(`🧩 No initializer function found: ${initFnName}()`);
+            }
+
+            // BAU-specific: symptom linking lives in inline scripts inside bau.html.
+            // After injection and script load, explicitly initialize if available.
+            if (page === "bau") {
+              setTimeout(() => {
+                if (typeof window.initSymptomLinking === "function") {
+                  try {
+                    console.log("[SCRIPT] Initializing symptom linking via initSymptomLinking()...");
+                    window.initSymptomLinking();
+                  } catch (e) {
+                    console.warn("[SCRIPT] initSymptomLinking error:", e);
+                  }
+                } else {
+                  console.log("[SCRIPT] initSymptomLinking() not found after BAU load");
+                }
+              }, 150);
             }
 
             // If dashboard page, ensure BAU sidebar exists
