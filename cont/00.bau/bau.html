@@ -3709,6 +3709,15 @@ Sign in to use AI.
       list.style.gap = "6px 12px";
       list.style.marginTop = "6px";
 
+      // Not found message per section
+      const noRes = document.createElement("div");
+      noRes.textContent = "Not found";
+      noRes.style.display = "none";
+      noRes.style.gridColumn = "1/-1";
+      noRes.style.opacity = "0.8";
+      noRes.style.fontStyle = "italic";
+      noRes.style.padding = "6px 0";
+
       const addCb = (opt) => {
         const id = `${sel.id || "pe"}-${opt.value}`;
         const label = document.createElement("label");
@@ -3757,6 +3766,9 @@ Sign in to use AI.
         sel.querySelectorAll("option").forEach(addCb);
       }
 
+      // Append the Not found message at the end of the list grid
+      list.appendChild(noRes);
+
       sel.insertAdjacentElement("afterend", list);
       sel.style.display = "none";
       sel.dataset.cbBuilt = "1";
@@ -3767,11 +3779,19 @@ Sign in to use AI.
           search.dataset.bound = "1";
           search.addEventListener("input", () => {
             const q = search.value.trim().toLowerCase();
+            let matches = 0;
             list.querySelectorAll("label").forEach((lab) => {
               const txt = (lab.textContent || "").toLowerCase();
-              lab.style.display = !q || txt.includes(q) ? "flex" : "none";
+              const show = !q || txt.includes(q);
+              lab.style.display = show ? "flex" : "none";
+              if (show) matches++;
             });
+            noRes.style.display = matches === 0 ? "block" : "none";
           });
+
+          // Trigger once to set correct initial state if there's a preset value
+          const evt = new Event("input", { bubbles: false });
+          search.dispatchEvent(evt);
         }
       }
     });
