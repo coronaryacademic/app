@@ -401,6 +401,7 @@
         <option value="wheeze">Wheeze</option>
         <option value="hemoptysis">Coughing Blood</option>
         <option value="chest-tightness">Chest Tightness</option>
+        <option value="chest-pain-respiratory">Chest Pain (non-cardiac)</option>
       </optgroup>
       <optgroup label="Gastrointestinal">
         <option value="abdominal-pain">Abdominal Pain</option>
@@ -427,6 +428,7 @@
         <option value="back-pain">Back Pain</option>
         <option value="neck-pain">Neck Pain</option>
         <option value="muscle-pain">Muscle Pain</option>
+        <option value="chest-pain-msk">Chest Pain (musculoskeletal)</option>
         <option value="stiffness">Stiffness</option>
         <option value="swelling">Joint Swelling</option>
       </optgroup>
@@ -681,6 +683,8 @@
             <option value="leg-swelling">Leg swelling</option>
             <option value="syncope">Syncope/Fainting</option>
             <option value="chest-tightness">Chest tightness</option>
+            <option value="nausea-cvs">Nausea</option>
+            <option value="vomiting-cvs">Vomiting</option>
           </optgroup>
           <optgroup label="Respiratory">
             <option value="shortness-breath">Shortness of breath</option>
@@ -1839,7 +1843,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -1909,7 +1913,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -1974,6 +1978,8 @@
                 <option value="hypothenar-wasting">
                   Hypothenar muscle wasting
                 </option>
+                <option value="osler-nodes">Osler nodes</option>
+                <option value="janeway-lesions">Janeway lesions</option>
               </optgroup>
             </select>
           </div>
@@ -2005,7 +2011,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2073,7 +2079,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2112,6 +2118,7 @@
                 <option value="murmur-diastolic">Diastolic murmur</option>
                 <option value="murmur-holosystolic">Holosystolic murmur</option>
                 <option value="rub">Pericardial friction rub</option>
+                <option value="thrills">Thrills palpable</option>
               </optgroup>
               <optgroup label="Peripheral">
                 <option value="pulses-normal">Normal peripheral pulses</option>
@@ -2157,7 +2164,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2194,6 +2201,18 @@
                 <option value="retractions">Intercostal retractions</option>
                 <option value="accessory-muscles">
                   Use of accessory muscles
+                </option>
+                <option value="tracheal-deviation">Tracheal deviation</option>
+                <option value="tracheal-tug">Tracheal tug</option>
+              </optgroup>
+              <optgroup label="Percussion">
+                <option value="percussion-resonant">Resonant percussion</option>
+                <option value="percussion-dull">Dull percussion</option>
+                <option value="percussion-hyperresonant">
+                  Hyperresonant percussion
+                </option>
+                <option value="percussion-stony-dull">
+                  Stony dull percussion
                 </option>
               </optgroup>
               <optgroup label="Auscultation">
@@ -2240,7 +2259,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2301,6 +2320,14 @@
                 <option value="hepatomegaly">Hepatomegaly</option>
                 <option value="splenomegaly">Splenomegaly</option>
               </optgroup>
+              <optgroup label="Percussion">
+                <option value="percussion-tympanic">Tympanic percussion</option>
+                <option value="percussion-dull-abd">Dull percussion</option>
+                <option value="shifting-dullness">
+                  Shifting dullness (ascites)
+                </option>
+                <option value="fluid-thrill">Fluid thrill</option>
+              </optgroup>
               <optgroup label="Auscultation">
                 <option value="bowel-sounds-normal">Normal bowel sounds</option>
                 <option value="bowel-sounds-hyperactive">
@@ -2342,7 +2369,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2360,6 +2387,80 @@
                 color: var(--all-text);
               "
             />
+            <!-- Glasgow Coma Scale -->
+            <div
+              style="
+                margin-bottom: 15px;
+                padding: 10px;
+                border: 1px solid var(--all-text);
+                border-radius: 6px;
+                background: var(--header-bg);
+              "
+            >
+              <label
+                style="font-weight: 600; margin-bottom: 8px; display: block"
+                >Glasgow Coma Scale (GCS) - Total: /15</label
+              >
+              <div
+                style="
+                  display: flex;
+                  gap: 15px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <div style="flex: 1; min-width: 120px">
+                  <label style="font-size: 13px; font-weight: 500"
+                    >Eye Opening (/4)</label
+                  >
+                  <select
+                    id="gcs-eye"
+                    style="width: 100%; padding: 4px; font-size: 12px"
+                  >
+                    <option value="4">4 - Spontaneous</option>
+                    <option value="3">3 - To voice</option>
+                    <option value="2">2 - To pain</option>
+                    <option value="1">1 - None</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 120px">
+                  <label style="font-size: 13px; font-weight: 500"
+                    >Verbal Response (/5)</label
+                  >
+                  <select
+                    id="gcs-verbal"
+                    style="width: 100%; padding: 4px; font-size: 12px"
+                  >
+                    <option value="5">5 - Oriented</option>
+                    <option value="4">4 - Confused</option>
+                    <option value="3">3 - Inappropriate words</option>
+                    <option value="2">2 - Inappropriate sounds</option>
+                    <option value="1">1 - None</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 120px">
+                  <label style="font-size: 13px; font-weight: 500"
+                    >Motor Response (/6)</label
+                  >
+                  <select
+                    id="gcs-motor"
+                    style="width: 100%; padding: 4px; font-size: 12px"
+                  >
+                    <option value="6">6 - Obeys commands</option>
+                    <option value="5">5 - Moves to localized pain</option>
+                    <option value="4">4 - Flextion withdrawal to pain</option>
+                    <option value="3">
+                      3 - Abnormal flextion (decorticate)
+                    </option>
+                    <option value="2">
+                      2 - Abnormal extention (decerebrate)
+                    </option>
+                    <option value="1">1 - None</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <select
               id="pe-neurological"
               multiple
@@ -2440,7 +2541,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2489,7 +2590,17 @@
                 <option value="kyphosis">Kyphosis</option>
                 <option value="lordosis">Lordosis</option>
                 <option value="scoliosis">Scoliosis</option>
+                <option value="kyphoscoliosis">Kyphoscoliosis</option>
                 <option value="spine-tenderness">Spinal tenderness</option>
+              </optgroup>
+              <optgroup label="Joint Deformities">
+                <option value="varus-deformity">Varus deformity</option>
+                <option value="valgus-deformity">Valgus deformity</option>
+                <option value="patella-alta">Patella alta</option>
+              </optgroup>
+              <optgroup label="Specific Joints">
+                <option value="cmc-joint">CMC joint abnormality</option>
+                <option value="mp-joint">MP joint abnormality</option>
               </optgroup>
             </select>
           </div>
@@ -2521,7 +2632,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2567,6 +2678,7 @@
                 <option value="petechiae">Petechiae</option>
                 <option value="purpura">Purpura</option>
                 <option value="ecchymoses">Ecchymoses/Bruising</option>
+                <option value="spider-nevi">Spider nevi</option>
                 <option value="ulceration">Skin ulceration</option>
               </optgroup>
               <optgroup label="Other">
@@ -2602,12 +2714,12 @@
               cursor: pointer;
             "
           >
-            <span>ENT (Ear, Nose, Throat)</span>
+            <span>ENTO (Ear, Nose, Throat, Oral)</span>
             <span class="chev" style="opacity: 0.8">▸</span>
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2674,7 +2786,7 @@
                 </option>
                 <option value="septal-hematoma">Septal hematoma</option>
               </optgroup>
-              <optgroup label="Throat">
+              <optgroup label="Throat/Oral">
                 <option value="throat-normal">Normal oropharynx</option>
                 <option value="throat-erythema">Pharyngeal erythema</option>
                 <option value="throat-exudate">Pharyngeal exudate</option>
@@ -2683,7 +2795,12 @@
                 <option value="lymph-nodes">Cervical lymphadenopathy</option>
                 <option value="uvula-deviation">Uvula deviation</option>
                 <option value="oral-thrush">Oral thrush</option>
+                <option value="oral-candida">Oral candida</option>
                 <option value="aphthous-ulcers">Aphthous ulcers</option>
+                <option value="koplik-spots">Koplik spots (measles)</option>
+                <option value="forchheimer-spots">
+                  Forchheimer spots (rubella)
+                </option>
               </optgroup>
             </select>
           </div>
@@ -2715,7 +2832,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
@@ -2761,6 +2878,57 @@
                 <option value="chalazion">Chalazion</option>
                 <option value="corneal-abrasion">Corneal abrasion</option>
                 <option value="corneal-opacity">Corneal opacity</option>
+              </optgroup>
+              <optgroup label="Inspection">
+                <option value="chest-normal">Normal chest appearance</option>
+                <option value="barrel-chest">Barrel chest</option>
+                <option value="pectus-excavatum">Pectus excavatum</option>
+                <option value="pectus-carinatum">Pectus carinatum</option>
+                <option value="kyphoscoliosis">Kyphoscoliosis</option>
+                <option value="use-accessory">Use of accessory muscles</option>
+                <option value="intercostal-retraction">
+                  Intercostal retractions
+                </option>
+                <option value="cyanosis-resp">Central cyanosis</option>
+              </optgroup>
+              <optgroup label="Palpation">
+                <option value="expansion-equal">Equal chest expansion</option>
+                <option value="expansion-reduced">Reduced expansion</option>
+                <option value="tactile-fremitus-normal">
+                  Normal tactile fremitus
+                </option>
+                <option value="tactile-fremitus-increased">
+                  Increased tactile fremitus
+                </option>
+                <option value="tactile-fremitus-decreased">
+                  Decreased tactile fremitus
+                </option>
+              </optgroup>
+              <optgroup label="Percussion">
+                <option value="percussion-resonant">Resonant percussion</option>
+                <option value="percussion-dull">Dull percussion</option>
+                <option value="percussion-hyperresonant">
+                  Hyperresonant percussion
+                </option>
+                <option value="percussion-stony-dull">
+                  Stony dull percussion
+                </option>
+              </optgroup>
+              <optgroup label="Auscultation">
+                <option value="breath-sounds-normal">
+                  Normal breath sounds
+                </option>
+                <option value="breath-sounds-diminished">
+                  Diminished breath sounds
+                </option>
+                <option value="breath-sounds-absent">
+                  Absent breath sounds
+                </option>
+                <option value="wheeze-resp">Wheeze</option>
+                <option value="crackles">Crackles/Rales</option>
+                <option value="rhonchi">Rhonchi</option>
+                <option value="pleural-rub">Pleural friction rub</option>
+                <option value="stridor">Stridor</option>
               </optgroup>
               <optgroup label="Pupils">
                 <option value="pupils-normal-eye">
@@ -2837,7 +3005,7 @@
           </button>
           <div
             class="pe-accordion-content"
-            style="display: none; padding-top: 10px"
+            style="display: none; padding: 10px 12px; border: 1px dashed var(--all-text); border-top: none; border-radius: 0 0 6px 6px;"
           >
             <input
               type="text"
