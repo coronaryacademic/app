@@ -116,10 +116,7 @@ export function initFormDataManagement() {
         }
       });
 
-      // Update progress tracker after loading
-      if (window.updateProgressTracker) {
-        setTimeout(window.updateProgressTracker, 200);
-      }
+      // Progress tracker removed
     }
 
     // Clear form data
@@ -170,10 +167,7 @@ export function initFormDataManagement() {
         console.warn("Could not clear saved form data:", e);
       }
 
-      // Update progress tracker
-      if (window.updateProgressTracker) {
-        setTimeout(window.updateProgressTracker, 100);
-      }
+      // Progress tracker removed
     }
 
     // Auto-save on form changes (debounced)

@@ -111,9 +111,6 @@ export function enhanceSocratesSelectsInFlow() {
         updateButtonText();
         select.dispatchEvent(new Event("change", { bubbles: true }));
         select.dispatchEvent(new Event("input", { bubbles: true }));
-        if (window.updateProgressTracker) {
-          setTimeout(window.updateProgressTracker, 50);
-        }
       });
 
       const span = document.createElement("span");
@@ -179,9 +176,6 @@ export function enhanceSocratesSelectsInFlow() {
         updateButtonText();
         select.dispatchEvent(new Event("change", { bubbles: true }));
         select.dispatchEvent(new Event("input", { bubbles: true }));
-        if (window.updateProgressTracker) {
-          setTimeout(window.updateProgressTracker, 50);
-        }
       });
 
       const doneBtn = document.createElement("button");
@@ -405,12 +399,6 @@ export function enhanceSocratesSelectsInFlow() {
         select.dispatchEvent(new Event("change", { bubbles: true }));
         select.dispatchEvent(new Event("input", { bubbles: true }));
 
-        // Update progress tracker with delay to ensure DOM is updated
-        if (window.updateProgressTracker) {
-          setTimeout(() => {
-            window.updateProgressTracker();
-          }, 100);
-        }
       });
 
       const span = document.createElement("span");
@@ -526,9 +514,6 @@ export function enhanceSocratesSelectsInFlow() {
         updateButtonText();
         select.dispatchEvent(new Event("change", { bubbles: true }));
         select.dispatchEvent(new Event("input", { bubbles: true }));
-        if (window.updateProgressTracker) {
-          setTimeout(window.updateProgressTracker, 50);
-        }
       });
 
       const doneBtn = document.createElement("button");
