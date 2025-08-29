@@ -120,6 +120,8 @@ body {
     padding: 20px; /* Consistent padding on mobile */
     justify-content: flex-start; /* Start from top on mobile for better UX */
     padding-top: 60px; /* Add top padding for mobile */
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
   }
 
   .text,
