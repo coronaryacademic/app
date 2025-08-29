@@ -244,7 +244,7 @@ export function generateHTMLReport(formData, aiContent) {
                 <strong style="color: #495057;">Generated for educational purposes</strong> • This report is generated for medical education and training purposes only. Always consult with qualified healthcare professionals for actual patient care.
             </div>
             <div style="color: #868e96; margin-bottom: 10px;">
-                Developed and coded by <strong>Momen</strong> .
+                Developed and coded by <strong>Momen</strong>.
             </div>
             <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
                 Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
@@ -599,15 +599,25 @@ function checkIfReportEmpty(formData) {
   let hasPE = false;
   if (peToggle?.checked) {
     const peSections = [
-      "pe-general", "pe-hands", "pe-vitals", "pe-cardiovascular", 
-      "pe-respiratory", "pe-abdominal", "pe-neurological", "pe-musculoskeletal",
-      "pe-dermatological", "pe-ent", "pe-ophthalmological", "pe-genitourinary", "pe-additional"
+      "pe-general",
+      "pe-hands",
+      "pe-vitals",
+      "pe-cardiovascular",
+      "pe-respiratory",
+      "pe-abdominal",
+      "pe-neurological",
+      "pe-musculoskeletal",
+      "pe-dermatological",
+      "pe-ent",
+      "pe-ophthalmological",
+      "pe-genitourinary",
+      "pe-additional",
     ];
-    
-    hasPE = peSections.some(sectionId => {
+
+    hasPE = peSections.some((sectionId) => {
       const element = document.getElementById(sectionId);
       if (!element) return false;
-      
+
       if (element.multiple) {
         return element.selectedOptions && element.selectedOptions.length > 0;
       } else {
@@ -638,7 +648,7 @@ function checkIfReportEmpty(formData) {
             No clinical data has been entered in the form yet.
           </p>
           <p style="color: #868e96; font-size: 14px;">
-            Fill out the sections of the form and generate the report again to see your clinical assessment. Choose AI for further explanation and summarization.
+            Fill out the sections of the form and generate the report again to see your history report. Choose AI for further assessment and summarization.
           </p>
         </div>
       </section>
