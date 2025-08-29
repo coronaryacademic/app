@@ -1,10 +1,5 @@
 // === AI Demo Functionality ===
 import { firebaseAI } from "./firebase-ai.js";
-import {
-  generateHTMLReport,
-  openHTMLReportInNewTab,
-  downloadHTMLReport,
-} from "./html-report-generator.js";
 
 export function initAIDemo() {
   try {
@@ -113,11 +108,21 @@ export function initAIDemo() {
         if (type === "checkbox") {
           // Special handling for ROS checkboxes collected under _rosData
           if (el.classList && el.classList.contains("ros")) {
-            const system = el.getAttribute("data-system");
-            const value = el.value;
+            const systemRaw = el.getAttribute("data-system");
+            const system = systemRaw ? String(systemRaw).trim() : "";
+            // Resolve value similar to restore logic
+            const value =
+              el.value ||
+              el.getAttribute("data-value") ||
+              el.getAttribute("aria-label") ||
+              el.id ||
+              el.name ||
+              "";
             if (system && el.checked) {
               if (!rosData[system]) rosData[system] = [];
-              rosData[system].push(value);
+              if (!rosData[system].includes(String(value))) {
+                rosData[system].push(String(value));
+              }
             }
             return;
           }
@@ -128,6 +133,27 @@ export function initAIDemo() {
         // Textual inputs/textarea
         snapshot[key] = el.value || "";
       });
+
+      // Second pass: be defensive and collect any ROS by data-system even if class="ros" is missing
+      try {
+        const rosBoxes = root.querySelectorAll('input[type="checkbox"][data-system]');
+        rosBoxes.forEach((el) => {
+          const system = (el.getAttribute("data-system") || "").trim();
+          if (!system || !el.checked) return;
+          const value =
+            el.value ||
+            el.getAttribute("data-value") ||
+            el.getAttribute("aria-label") ||
+            el.id ||
+            el.name ||
+            "";
+          if (!value) return;
+          if (!rosData[system]) rosData[system] = [];
+          if (!rosData[system].includes(String(value))) {
+            rosData[system].push(String(value));
+          }
+        });
+      } catch {}
 
       // Handle selects (single by text; multiple as array of texts)
       const selects = root.querySelectorAll("select");
@@ -147,6 +173,24 @@ export function initAIDemo() {
       });
 
       if (Object.keys(rosData).length) snapshot._rosData = rosData;
+      try {
+        const allRos = root.querySelectorAll('input[type="checkbox"][data-system]');
+        const checkedRos = root.querySelectorAll('input[type="checkbox"][data-system]:checked');
+        console.debug("[SNAPSHOT] Built form snapshot", {
+          hasROS: !!snapshot._rosData,
+          rosSystems: snapshot._rosData ? Object.keys(snapshot._rosData) : [],
+          rosCounts: snapshot._rosData
+            ? Object.fromEntries(
+                Object.entries(snapshot._rosData).map(([k, v]) => [
+                  k,
+                  Array.isArray(v) ? v.length : 0,
+                ])
+              )
+            : {},
+          rosTotalInputs: allRos.length,
+          rosCheckedInputs: checkedRos.length,
+        });
+      } catch {}
       return snapshot;
     }
 
@@ -176,6 +220,12 @@ export function initAIDemo() {
 
         const meta = parseReportMetadataFromHTML(htmlReport);
         const snapshot = buildFormSnapshot();
+        try {
+          console.debug("[HISTORY:SAVE] Snapshot ROS before save", {
+            hasROS: !!snapshot._rosData,
+            rosData: snapshot._rosData || null,
+          });
+        } catch {}
 
         // Skip duplicate save if snapshot hasn't changed since a history was loaded
         const currentHash = JSON.stringify(snapshot);
@@ -254,13 +304,17 @@ export function initAIDemo() {
         }
 
         // Generate HTML report (with or without AI content)
-        const htmlReport = generateHTMLReport(formData, aiContent);
-        openHTMLReportInNewTab(htmlReport);
+        const html = (window.generateHTMLReport || (() => ""))(
+          formData,
+          aiOutput.value
+        );
+        if (!html) return;
+        (window.openHTMLReportInNewTab || (() => {}))(html);
 
         // Save to Firestore history (best-effort)
         const saveResult = await saveReportToHistory({
           formData,
-          htmlReport,
+          htmlReport: html,
           aiModelValue: selectedModel,
           aiContent,
         });

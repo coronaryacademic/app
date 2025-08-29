@@ -1,5 +1,5 @@
 // === HTML Report Generator ===
-export function initHTMLReportGenerator() {
+function initHTMLReportGenerator() {
   try {
     console.log("[HTML Report] Initializing HTML report generator");
 
@@ -11,7 +11,65 @@ export function initHTMLReportGenerator() {
   }
 }
 
-export function generateHTMLReport(formData, aiContent) {
+function generateGCSSection(formData) {
+  // Only include GCS if PE is enabled (PE toggle checked)
+  const peToggle = document.getElementById("pe-toggle");
+  if (!peToggle || !peToggle.checked) {
+    try { console.debug("[REPORT:GCS] Skipped: PE toggle is off"); } catch {}
+    return "";
+  }
+
+  // Read GCS selects if present
+  const eyeEl = document.getElementById("gcs-eye");
+  const verbalEl = document.getElementById("gcs-verbal");
+  const motorEl = document.getElementById("gcs-motor");
+
+  if (!eyeEl && !verbalEl && !motorEl) return "";
+
+  const getSelectedText = (sel) => {
+    if (!sel) return "";
+    const opt = sel.options[sel.selectedIndex];
+    return opt ? (opt.text || "").trim() : "";
+  };
+  const getSelectedValue = (sel) => {
+    if (!sel) return 0;
+    const v = parseInt(sel.value, 10);
+    return Number.isFinite(v) ? v : 0;
+  };
+
+  const eyeText = getSelectedText(eyeEl);
+  const verbalText = getSelectedText(verbalEl);
+  const motorText = getSelectedText(motorEl);
+
+  const eye = getSelectedValue(eyeEl);
+  const verbal = getSelectedValue(verbalEl);
+  const motor = getSelectedValue(motorEl);
+  const total = eye + verbal + motor;
+
+  // If nothing selected text-wise, skip
+  if (!eyeText && !verbalText && !motorText) {
+    try { console.debug("[REPORT:GCS] Skipped: No selections"); } catch {}
+    return "";
+  }
+
+  try {
+    console.debug("[REPORT:GCS] Render", { eyeText, verbalText, motorText, total });
+  } catch {}
+
+  return `
+    <section class="section">
+      <h2>Glasgow Coma Scale (GCS)</h2>
+      <div class="grid">
+        ${eyeText ? `<span class="label">Eye (/4):</span><span>${eyeText}</span>` : ""}
+        ${verbalText ? `<span class="label">Verbal (/5):</span><span>${verbalText}</span>` : ""}
+        ${motorText ? `<span class="label">Motor (/6):</span><span>${motorText}</span>` : ""}
+        <span class="label">Total:</span><span><strong>${total}</strong> / 15</span>
+      </div>
+    </section>
+  `;
+}
+
+function generateHTMLReport(formData, aiContent) {
   const reportDate = new Date().toLocaleString();
   const patientName = formData.patientName || "Unknown Patient";
 
@@ -220,6 +278,8 @@ export function generateHTMLReport(formData, aiContent) {
         ${generateROSSection(formData)}
         
         ${generatePESection(formData)}
+
+        ${generateGCSSection(formData)}
         
         ${
           aiContent
@@ -261,6 +321,9 @@ function generateROSSection(formData) {
   // Collect ROS data from actual ROS checkboxes (independent of PE toggle)
   const rosData = [];
   const rosCheckboxes = document.querySelectorAll("input.ros:checked");
+  try {
+    console.debug("[REPORT:ROS] Checked ROS count:", rosCheckboxes.length);
+  } catch {}
 
   // Group by system
   const systemGroups = {};
@@ -274,11 +337,35 @@ function generateROSSection(formData) {
     systemGroups[system].push(value);
   });
 
+  // Fallback: if no checkboxes are checked (e.g., immediately after loading a history),
+  // try to render from baseline snapshot's _rosData
+  if (rosCheckboxes.length === 0) {
+    try {
+      const snap = (typeof window !== "undefined") ? window.__bauBaselineSnapshot : null;
+      const rosSnap = snap && snap._rosData ? snap._rosData : null;
+      if (rosSnap && typeof rosSnap === "object") {
+        console.debug("[REPORT:ROS] Using fallback _rosData from baseline snapshot", {
+          systems: Object.keys(rosSnap),
+        });
+        Object.keys(rosSnap).forEach((system) => {
+          const arr = Array.isArray(rosSnap[system]) ? rosSnap[system] : [];
+          if (arr.length) {
+            systemGroups[system] = (systemGroups[system] || []).concat(arr);
+          }
+        });
+      }
+    } catch (_) {}
+  }
+
   // Convert to array format
   Object.keys(systemGroups).forEach((system) => {
     const findings = systemGroups[system].join(", ");
     rosData.push({ system, findings });
   });
+
+  try {
+    console.debug("[REPORT:ROS] Systems rendered:", rosData.map(r => ({ system: r.system, count: (r.findings ? r.findings.split(',').length : 0) })));
+  } catch {}
 
   if (rosData.length === 0) return "";
 
@@ -589,7 +676,10 @@ function checkIfReportEmpty(formData) {
   const hasSocialHistory =
     document.getElementById("sh-smoking")?.value ||
     document.getElementById("sh-alcohol")?.value ||
-    document.getElementById("sh-drugs")?.value;
+    document.getElementById("sh-drugs")?.value ||
+    document.getElementById("sh-occupation")?.value ||
+    document.getElementById("sh-living")?.value ||
+    document.getElementById("sh-travel")?.value;
 
   const hasPMH =
     document.getElementById("past-medical")?.selectedOptions?.length > 0;
@@ -606,41 +696,45 @@ function checkIfReportEmpty(formData) {
     ?.value?.trim();
   const hasICE = document.getElementById("ice")?.value?.trim();
 
-  const hasROS = document.querySelectorAll("input.ros:checked").length > 0;
-
-  // Use the same logic as generatePESection to check for actual PE data
   const peToggle = document.getElementById("pe-toggle");
-  let hasPE = false;
-  if (peToggle?.checked) {
-    const peSections = [
-      "pe-general",
-      "pe-hands",
-      "pe-vitals",
-      "pe-cardiovascular",
-      "pe-respiratory",
-      "pe-abdominal",
-      "pe-neurological",
-      "pe-musculoskeletal",
-      "pe-dermatological",
-      "pe-ent",
-      "pe-ophthalmological",
-      "pe-genitourinary",
-      "pe-additional",
-    ];
+  const hasPEEnabled = !!(peToggle && peToggle.checked);
+  const hasROSSelections = (document.querySelectorAll("input.ros:checked").length || 0) > 0;
+  const hasGCSSelections = [
+    document.getElementById("gcs-eye")?.value,
+    document.getElementById("gcs-verbal")?.value,
+    document.getElementById("gcs-motor")?.value,
+  ].some((v) => v && String(v).trim() !== "");
 
-    hasPE = peSections.some((sectionId) => {
-      const element = document.getElementById(sectionId);
-      if (!element) return false;
-
-      if (element.multiple) {
-        return element.selectedOptions && element.selectedOptions.length > 0;
-      } else {
-        return element.value && element.value.trim();
-      }
-    });
-  }
+  // Also consider baseline snapshot ROS (in case DOM checkboxes aren't restored yet)
+  let hasBaselineROS = false;
+  try {
+    const snap = (typeof window !== "undefined") ? window.__bauBaselineSnapshot : null;
+    const ros = snap && snap._rosData ? snap._rosData : null;
+    if (ros && typeof ros === "object") {
+      hasBaselineROS = Object.values(ros).some(
+        (arr) => Array.isArray(arr) && arr.length > 0
+      );
+    }
+  } catch {}
 
   // If no sections have data, show empty report message
+  try {
+    console.debug("[REPORT:EMPTY-CHECK]", {
+      hasPatientDetails: !!hasPatientDetails,
+      hasChiefComplaint: !!hasChiefComplaint,
+      hasSocrates: !!hasSocrates,
+      hasSocialHistory: !!hasSocialHistory,
+      hasPMH: !!hasPMH,
+      hasPSH: !!hasPSH,
+      hasDrugHistory: !!hasDrugHistory,
+      hasFamilyHistory: !!hasFamilyHistory,
+      hasICE: !!hasICE,
+      hasPEEnabled,
+      hasROSSelections,
+      hasBaselineROS,
+      hasGCSSelections,
+    });
+  } catch {}
   if (
     !hasPatientDetails &&
     !hasChiefComplaint &&
@@ -651,12 +745,12 @@ function checkIfReportEmpty(formData) {
     !hasDrugHistory &&
     !hasFamilyHistory &&
     !hasICE &&
-    !hasROS &&
-    !hasPE
+    // Consider ROS regardless of PE; GCS only when PE is enabled
+    !(hasROSSelections || hasBaselineROS || (hasPEEnabled && hasGCSSelections))
   ) {
     return `
-      <section class="section" style="text-align: center; padding: 60px 20px;">
-        <div style="background-color: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 40px;">
+      <section class="section" style="text-align: center; padding: 30px;">
+        <div style="background: #f8f9fa; border: 1px dashed #dee2e6; padding: 20px; border-radius: 10px;">
           <h2 style="color: #6c757d; margin-bottom: 20px;">Empty Report</h2>
           <p style="color: #6c757d; font-size: 16px; margin-bottom: 15px;">
             No clinical data has been entered in the form yet.
@@ -710,7 +804,7 @@ function incrementReportCount() {
   return reportCount;
 }
 
-export function downloadHTMLReport(htmlContent, patientName) {
+function downloadHTMLReport(htmlContent, patientName) {
   try {
     const fileName = `Clinical_Report_${patientName.replace(
       /[^a-zA-Z0-9]/g,
@@ -737,7 +831,7 @@ export function downloadHTMLReport(htmlContent, patientName) {
   }
 }
 
-export function openHTMLReportInNewTab(htmlContent) {
+function openHTMLReportInNewTab(htmlContent) {
   try {
     const newWindow = window.open("", "_blank");
     if (newWindow) {
@@ -754,3 +848,13 @@ export function openHTMLReportInNewTab(htmlContent) {
     return false;
   }
 }
+
+// Expose globals for classic scripts
+try {
+  if (typeof window !== "undefined") {
+    window.initHTMLReportGenerator = window.initHTMLReportGenerator || initHTMLReportGenerator;
+    window.generateHTMLReport = window.generateHTMLReport || generateHTMLReport;
+    window.openHTMLReportInNewTab = window.openHTMLReportInNewTab || openHTMLReportInNewTab;
+    window.downloadHTMLReport = window.downloadHTMLReport || downloadHTMLReport;
+  }
+} catch (_) {}

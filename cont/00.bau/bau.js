@@ -2600,6 +2600,10 @@ async function renderHistorySidebar() {
                     // Apply form snapshot
                     const snap = data.data || {};
                     applySnapshotToForm(snap);
+                    try {
+                      const cnt = document.querySelectorAll("input.ros:checked").length;
+                      console.debug("[HISTORY:LOAD] ROS checked after applySnapshotToForm:", cnt);
+                    } catch {}
 
                     // Initialize AI demo handlers to ensure Generate works
                     try {
@@ -2612,6 +2616,11 @@ async function renderHistorySidebar() {
                     try {
                       window.__bauBaselineSnapshot = snap;
                       window.__bauBaselineHash = JSON.stringify(snap);
+                      const rosSnap = snap && snap._rosData ? snap._rosData : null;
+                      console.debug("[HISTORY:LOAD] Baseline snapshot set", {
+                        hasROS: !!rosSnap,
+                        rosSystems: rosSnap ? Object.keys(rosSnap) : [],
+                      });
                     } catch {}
                     const patientName = data.patientName || "Unknown";
                     const loadHistoryMessage = document.getElementById(
@@ -2647,6 +2656,10 @@ async function renderHistorySidebar() {
                       const snap = data.data || {};
                       applySnapshotToForm(snap);
                       try {
+                        const cnt = document.querySelectorAll("input.ros:checked").length;
+                        console.debug("[HISTORY:LOAD:FALLBACK] ROS checked after applySnapshotToForm:", cnt);
+                      } catch {}
+                      try {
                         if (typeof window.initAIDemo === "function") {
                           window.initAIDemo();
                         }
@@ -2654,6 +2667,11 @@ async function renderHistorySidebar() {
                       try {
                         window.__bauBaselineSnapshot = snap;
                         window.__bauBaselineHash = JSON.stringify(snap);
+                        const rosSnap = snap && snap._rosData ? snap._rosData : null;
+                        console.debug("[HISTORY:LOAD:FALLBACK] Baseline snapshot set", {
+                          hasROS: !!rosSnap,
+                          rosSystems: rosSnap ? Object.keys(rosSnap) : [],
+                        });
                       } catch {}
                     } catch {}
                   });
@@ -2662,6 +2680,10 @@ async function renderHistorySidebar() {
               const snap = data.data || {};
               applySnapshotToForm(snap);
               try {
+                const cnt = document.querySelectorAll("input.ros:checked").length;
+                console.debug("[HISTORY:LOAD:NO-SIDEBAR] ROS checked after applySnapshotToForm:", cnt);
+              } catch {}
+              try {
                 if (typeof window.initAIDemo === "function") {
                   window.initAIDemo();
                 }
@@ -2669,6 +2691,11 @@ async function renderHistorySidebar() {
               try {
                 window.__bauBaselineSnapshot = snap;
                 window.__bauBaselineHash = JSON.stringify(snap);
+                const rosSnap = snap && snap._rosData ? snap._rosData : null;
+                console.debug("[HISTORY:LOAD:NO-SIDEBAR] Baseline snapshot set", {
+                  hasROS: !!rosSnap,
+                  rosSystems: rosSnap ? Object.keys(rosSnap) : [],
+                });
               } catch {}
             }
             close();
@@ -3284,44 +3311,70 @@ function applySnapshotToForm(snapshot) {
     sel.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
-  // Handle ROS checkboxes specially
+  // Handle ROS checkboxes specially (with bounded retry for late DOM readiness)
   if (snapshot._rosData) {
-    const rosCheckboxes = root.querySelectorAll("input.ros");
     const norm = (s) => String(s ?? "").trim().toLowerCase();
     const rosData = snapshot._rosData || {};
-    // Build a lowercase lookup for system keys to be robust to case differences
-    const rosBySysLower = {};
-    Object.keys(rosData).forEach((k) => {
-      rosBySysLower[norm(k)] = rosData[k];
-    });
 
-    rosCheckboxes.forEach((checkbox) => {
-      const systemRaw = checkbox.getAttribute("data-system") || "";
-      const sysKey = String(systemRaw).trim();
-      const valueRaw =
-        checkbox.value ||
-        checkbox.getAttribute("data-value") ||
-        checkbox.getAttribute("aria-label") ||
-        checkbox.id ||
-        checkbox.name ||
-        "";
+    const applyROS = () => {
+      const rosCheckboxes = root.querySelectorAll("input.ros");
+      // Build a lowercase lookup for system keys to be robust to case differences
+      const rosBySysLower = {};
+      Object.keys(rosData).forEach((k) => {
+        rosBySysLower[norm(k)] = rosData[k];
+      });
 
-      const arr =
-        (rosData && rosData[sysKey]) ||
-        rosBySysLower[norm(sysKey)] ||
-        [];
+      rosCheckboxes.forEach((checkbox) => {
+        const systemRaw = checkbox.getAttribute("data-system") || "";
+        const sysKey = String(systemRaw).trim();
+        const valueRaw =
+          checkbox.value ||
+          checkbox.getAttribute("data-value") ||
+          checkbox.getAttribute("aria-label") ||
+          checkbox.id ||
+          checkbox.name ||
+          "";
 
-      let isChecked =
-        Array.isArray(arr) && arr.some((v) => norm(v) === norm(valueRaw));
-      // Fallback for older snapshots that may have stored individual checkbox flags
-      if (!isChecked) {
-        if (checkbox.id && snapshot[checkbox.id] === true) isChecked = true;
-        else if (checkbox.name && snapshot[checkbox.name] === true)
-          isChecked = true;
+        const arr =
+          (rosData && rosData[sysKey]) ||
+          rosBySysLower[norm(sysKey)] ||
+          [];
+
+        let isChecked =
+          Array.isArray(arr) && arr.some((v) => norm(v) === norm(valueRaw));
+        // Fallback for older snapshots that may have stored individual checkbox flags
+        if (!isChecked) {
+          if (checkbox.id && snapshot[checkbox.id] === true) isChecked = true;
+          else if (checkbox.name && snapshot[checkbox.name] === true)
+            isChecked = true;
+        }
+        checkbox.checked = !!isChecked;
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    };
+
+    // Apply immediately
+    applyROS();
+
+    // If snapshot has ROS selections but none applied, retry a few times
+    try {
+      const totalSelections = Object.values(rosData).reduce((sum, v) => {
+        return sum + (Array.isArray(v) ? v.length : 0);
+      }, 0);
+      const checkedNow = root.querySelectorAll("input.ros:checked").length;
+      if (totalSelections > 0 && checkedNow === 0) {
+        window.__rosApplyRetries = (window.__rosApplyRetries || 0);
+        if (window.__rosApplyRetries < 5) {
+          window.__rosApplyRetries++;
+          setTimeout(() => {
+            applyROS();
+          }, 100);
+        }
+      } else {
+        // Reset counter on success
+        try { window.__rosApplyRetries = 0; } catch {}
       }
-      checkbox.checked = !!isChecked;
-      checkbox.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+    } catch {}
   }
 
   Object.entries(snapshot).forEach(([key, val]) => {
