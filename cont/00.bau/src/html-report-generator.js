@@ -594,14 +594,27 @@ function checkIfReportEmpty(formData) {
 
   const hasROS = document.querySelectorAll("input.ros:checked").length > 0;
 
+  // Use the same logic as generatePESection to check for actual PE data
   const peToggle = document.getElementById("pe-toggle");
-  const hasPE =
-    peToggle?.checked &&
-    document
-      .querySelectorAll("#pe-content select")
-      .some(
-        (select) => select.selectedOptions?.length > 0 || select.value?.trim()
-      );
+  let hasPE = false;
+  if (peToggle?.checked) {
+    const peSections = [
+      "pe-general", "pe-hands", "pe-vitals", "pe-cardiovascular", 
+      "pe-respiratory", "pe-abdominal", "pe-neurological", "pe-musculoskeletal",
+      "pe-dermatological", "pe-ent", "pe-ophthalmological", "pe-genitourinary", "pe-additional"
+    ];
+    
+    hasPE = peSections.some(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (!element) return false;
+      
+      if (element.multiple) {
+        return element.selectedOptions && element.selectedOptions.length > 0;
+      } else {
+        return element.value && element.value.trim();
+      }
+    });
+  }
 
   // If no sections have data, show empty report message
   if (
