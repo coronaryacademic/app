@@ -68,19 +68,9 @@ export function initAIDemo() {
 
       const selectedModel = aiModel.value;
       console.log("[AI-DEMO] Selected model:", selectedModel);
-      if (!selectedModel) {
-        alert("Please select an AI model first.");
-        return;
-      }
-
-      // Collect form data for AI processing
+      
+      // Collect form data for processing
       const formData = collectFormData();
-      if (!formData.chiefComplaint) {
-        alert(
-          "Please enter a chief complaint before generating AI suggestions."
-        );
-        return;
-      }
 
       // Show loading state
       aiButton.disabled = true;
@@ -88,15 +78,25 @@ export function initAIDemo() {
       aiOutput.innerHTML = "<p>Processing your request...</p>";
 
       try {
-        // Generate HTML report without AI content for testing
-        const htmlReport = generateHTMLReport(formData, null);
+        let aiContent = null;
+        
+        // Only generate AI content if model is selected
+        if (selectedModel) {
+          // AI generation would go here when re-enabled
+          // For now, skip AI processing
+          console.log("[AI-DEMO] AI model selected but AI processing disabled for testing");
+        }
+        
+        // Generate HTML report (with or without AI content)
+        const htmlReport = generateHTMLReport(formData, aiContent);
         openHTMLReportInNewTab(htmlReport);
 
-        // Show success message without AI processing
+        // Show success message
+        const aiStatus = selectedModel ? "(AI assessment disabled for testing)" : "(No AI model selected)";
         aiOutput.innerHTML = `
           <div class="ai-suggestions">
             <h3>Report Generated Successfully</h3>
-            <p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab (AI assessment disabled for testing).</p>
+            <p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab ${aiStatus}.</p>
           </div>
         `;
         aiOutput.style.display = "block";
