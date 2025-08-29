@@ -851,6 +851,8 @@
       import {
         getFirestore,
         collection,
+        addDoc,
+        serverTimestamp,
         query,
         orderBy,
         limit,
@@ -928,6 +930,7 @@
       window.db = db;
       window.getDocs = getDocs;
       window.collection = collection;
+      window.addDoc = addDoc;
       window.query = query;
       window.orderBy = orderBy;
       window.limit = limit;
@@ -937,6 +940,7 @@
       window.updateDoc = updateDoc;
       window.onSnapshot = onSnapshot;
       window.deleteDoc = deleteDoc;
+      window.serverTimestamp = serverTimestamp;
 
       window.firebaseApp = app;
       window.auth = auth;

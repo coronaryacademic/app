@@ -400,382 +400,380 @@ function clearFormExceptStudentInfo() {
   } catch {}
 })();
 
-    // Ensure native <select> closed text uses correct color
-    (function initNativeSelectColorControl() {
+// Ensure native <select> closed text uses correct color
+(function initNativeSelectColorControl() {
+  try {
+    const apply = (sel) => {
+      const opt = sel.options[sel.selectedIndex];
+      const isPlaceholder = !!(opt && opt.disabled);
+      sel.style.color = isPlaceholder ? "var(--all-text)" : "black";
+    };
+    const visibleSelects = Array.from(
+      document.querySelectorAll("select")
+    ).filter((s) => s.offsetParent !== null); // skip hidden selects used by custom UI
+    visibleSelects.forEach((sel) => {
+      apply(sel);
+      sel.addEventListener("change", () => apply(sel));
+    });
+  } catch {}
+})();
+
+/**
+ * Enhance SOCRATES single-selects into in-flow dropdowns (radio-like)
+ * Fields: site, onset, character, radiation, associated, timing, exacerbating, relieving, severity
+ */
+function enhanceSocratesSelectsInFlow() {
+  const ids = [
+    "chief-complaint",
+    "site",
+    "onset",
+    "character",
+    "radiation",
+    "associated",
+    "timing",
+    "exacerbating",
+    "relieving",
+    "severity",
+    // Also enhance Patient Info + Social History with same custom UI
+    "sh-smoking",
+    "sh-alcohol",
+    "sh-drugs",
+    "sh-occupation",
+    "sh-living",
+    "sh-travel",
+  ];
+
+  ids.forEach((id) => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    // Respect native opt-out: remove previous wrapper if any, then skip
+    if (select.dataset && select.dataset.native === "1") {
       try {
-        const apply = (sel) => {
-          const opt = sel.options[sel.selectedIndex];
-          const isPlaceholder = !!(opt && opt.disabled);
-          sel.style.color = isPlaceholder ? "var(--all-text)" : "black";
-        };
-        const visibleSelects = Array.from(
-          document.querySelectorAll("select")
-        ).filter((s) => s.offsetParent !== null); // skip hidden selects used by custom UI
-        visibleSelects.forEach((sel) => {
-          apply(sel);
-          sel.addEventListener("change", () => apply(sel));
-        });
-      } catch {}
-    })();
-
-    /**
-     * Enhance SOCRATES single-selects into in-flow dropdowns (radio-like)
-     * Fields: site, onset, character, radiation, associated, timing, exacerbating, relieving, severity
-     */
-    function enhanceSocratesSelectsInFlow() {
-      const ids = [
-        "chief-complaint",
-        "site",
-        "onset",
-        "character",
-        "radiation",
-        "associated",
-        "timing",
-        "exacerbating",
-        "relieving",
-        "severity",
-        // Also enhance Patient Info + Social History with same custom UI
-        "sh-smoking",
-        "sh-alcohol",
-        "sh-drugs",
-        "sh-occupation",
-        "sh-living",
-        "sh-travel",
-      ];
-
-      ids.forEach((id) => {
-        const select = document.getElementById(id);
-        if (!select) return;
-        // Respect native opt-out: remove previous wrapper if any, then skip
-        if (select.dataset && select.dataset.native === "1") {
-          try {
-            const prev = select.previousElementSibling;
-            if (
-              prev &&
-              prev.classList &&
-              prev.classList.contains("dropdown-single-wrapper")
-            ) {
-              prev.remove();
-            }
-            select.style.display = "";
-            if (select.dataset.enhanced === "1") delete select.dataset.enhanced;
-          } catch (e) {}
-          return;
-        }
-        if (select.dataset.enhanced === "1") return;
-        // Single-select (radio dropdown) for Social History
+        const prev = select.previousElementSibling;
         if (
-          id === "smoking" ||
-          id === "alcohol" ||
-          id === "occupation" ||
-          id === "living" ||
-          id === "travel"
+          prev &&
+          prev.classList &&
+          prev.classList.contains("dropdown-single-wrapper")
         ) {
-          select.multiple = false;
-          select.removeAttribute("data-dropdown-checkbox");
-          enhanceOneSingleInFlow(select);
-        } else {
-          select.multiple = true;
-          select.setAttribute("data-dropdown-checkbox", "");
-          enhanceOneInFlow(select);
+          prev.remove();
         }
-      });
+        select.style.display = "";
+        if (select.dataset.enhanced === "1") delete select.dataset.enhanced;
+      } catch (e) {}
+      return;
     }
+    if (select.dataset.enhanced === "1") return;
+    // Single-select (radio dropdown) for Social History
+    if (
+      id === "smoking" ||
+      id === "alcohol" ||
+      id === "occupation" ||
+      id === "living" ||
+      id === "travel"
+    ) {
+      select.multiple = false;
+      select.removeAttribute("data-dropdown-checkbox");
+      enhanceOneSingleInFlow(select);
+    } else {
+      select.multiple = true;
+      select.setAttribute("data-dropdown-checkbox", "");
+      enhanceOneInFlow(select);
+    }
+  });
+}
 
-    function enhanceOneSingleInFlow(select) {
-      select.dataset.enhanced = "1";
+function enhanceOneSingleInFlow(select) {
+  select.dataset.enhanced = "1";
 
-      const wrapper = document.createElement("div");
-      wrapper.className = "dropdown-single-wrapper";
-      wrapper.style.width = "100%";
-      wrapper.style.marginTop = "6px";
+  const wrapper = document.createElement("div");
+  wrapper.className = "dropdown-single-wrapper";
+  wrapper.style.width = "100%";
+  wrapper.style.marginTop = "6px";
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "dropdown-single-button";
-      Object.assign(btn.style, {
-        width: "100%",
-        textAlign: "left",
-        padding: "10px",
-        fontSize: "14px",
-        border: "1px solid var(--all-text)",
-        borderRadius: "6px",
-        background: "#fff",
-        cursor: "pointer",
-        color: "black",
-      });
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "dropdown-single-button";
+  Object.assign(btn.style, {
+    width: "100%",
+    textAlign: "left",
+    padding: "10px",
+    fontSize: "14px",
+    border: "1px solid var(--all-text)",
+    borderRadius: "6px",
+    background: "#fff",
+    cursor: "pointer",
+    color: "black",
+  });
 
-      const panel = document.createElement("div");
-      panel.className = "dropdown-single-panel";
-      Object.assign(panel.style, {
-        display: "none",
-        marginTop: "6px",
-        border: "1px solid #e0e0e0",
-        borderRadius: "8px",
-        background: "#fafafa",
-        padding: "8px",
-        maxHeight: "450px",
-        overflowY: "auto",
-        color: "black",
-      });
+  const panel = document.createElement("div");
+  panel.className = "dropdown-single-panel";
+  Object.assign(panel.style, {
+    display: "none",
+    marginTop: "6px",
+    border: "1px solid #e0e0e0",
+    borderRadius: "8px",
+    background: "#fafafa",
+    padding: "8px",
+    maxHeight: "450px",
+    overflowY: "auto",
+    color: "black",
+  });
 
-      // --- Typeahead search UI ---
-      const search = document.createElement("input");
-      search.type = "search";
-      search.placeholder = "Type to filter...";
-      Object.assign(search.style, {
-        width: "100%",
-        boxSizing: "border-box",
-        padding: "12px 12px",
-        marginBottom: "8px",
-        border: "1px solid #ddd",
-        borderRadius: "6px",
-        background: "#fff",
-        color: "var(--all-text)",
-        fontSize: "16px",
-      });
+  // --- Typeahead search UI ---
+  const search = document.createElement("input");
+  search.type = "search";
+  search.placeholder = "Type to filter...";
+  Object.assign(search.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "12px 12px",
+    marginBottom: "8px",
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+    background: "#fff",
+    color: "var(--all-text)",
+    fontSize: "16px",
+  });
 
-      // Set placeholder color
-      search.style.setProperty("--placeholder-color", "var(--all-text)");
-      const placeholderStyle = document.createElement("style");
-      placeholderStyle.textContent = `
+  // Set placeholder color
+  search.style.setProperty("--placeholder-color", "var(--all-text)");
+  const placeholderStyle = document.createElement("style");
+  placeholderStyle.textContent = `
         #${select.id}-search::placeholder {
           color: var(--all-text);
           opacity: 0.7;
         }
       `;
-      search.id = `${select.id}-search`;
-      if (!document.head.querySelector(`style[data-for="${select.id}"]`)) {
-        placeholderStyle.setAttribute("data-for", select.id);
-        document.head.appendChild(placeholderStyle);
-      }
+  search.id = `${select.id}-search`;
+  if (!document.head.querySelector(`style[data-for="${select.id}"]`)) {
+    placeholderStyle.setAttribute("data-for", select.id);
+    document.head.appendChild(placeholderStyle);
+  }
 
-      const rowsContainer = document.createElement("div");
+  const rowsContainer = document.createElement("div");
 
-      function createOptionRow(text, value, selected) {
-        const row = document.createElement("label");
-        row.style.display = "flex";
-        row.style.alignItems = "center";
-        row.style.gap = "12px";
-        row.style.padding = "12px 8px";
-        row.setAttribute("data-row", "1");
-        row.setAttribute("data-text", text.toLowerCase());
-        row.setAttribute("role", "option");
-        row.setAttribute("aria-selected", selected ? "true" : "false");
+  function createOptionRow(text, value, selected) {
+    const row = document.createElement("label");
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.gap = "12px";
+    row.style.padding = "12px 8px";
+    row.setAttribute("data-row", "1");
+    row.setAttribute("data-text", text.toLowerCase());
+    row.setAttribute("role", "option");
+    row.setAttribute("aria-selected", selected ? "true" : "false");
 
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = `${select.id}-radio`;
-        radio.value = value;
-        radio.checked = !!selected;
-        radio.addEventListener("change", () => {
-          select.value = value;
-          updateButtonText();
-        });
-
-        const span = document.createElement("span");
-        span.textContent = text;
-        span.style.color = "black";
-
-        // Also make row clickable
-        row.addEventListener("click", (e) => {
-          if (e.target !== radio) {
-            radio.checked = true;
-            select.value = value;
-            updateButtonText();
-          }
-        });
-
-        row.appendChild(radio);
-        row.appendChild(span);
-        return row;
-      }
-
-      function buildPanel() {
-        panel.innerHTML = "";
-        panel.appendChild(search);
-        rowsContainer.innerHTML = "";
-
-        // Check if this is a SOCRATES field that should use row layout
-        const socratesFields = [
-          "onset",
-          "character",
-          "radiation",
-          "timing",
-          "exacerbating",
-          "relieving",
-          "severity",
-        ];
-        const isSOCRATESField = socratesFields.includes(select.id);
-
-        const children = Array.from(select.children);
-        children.forEach((child) => {
-          if (child.tagName === "OPTGROUP") {
-            const groupLabel = document.createElement("div");
-            groupLabel.textContent = child.label;
-            groupLabel.setAttribute("data-group", "1");
-            groupLabel.setAttribute("data-text", child.label.toLowerCase());
-            Object.assign(groupLabel.style, {
-              fontWeight: "600",
-              marginTop: "12px",
-              marginBottom: "8px",
-              color: "var(--all-text)",
-            });
-            rowsContainer.appendChild(groupLabel);
-
-            if (isSOCRATESField) {
-              // Create flex container for row layout
-              const optionsContainer = document.createElement("div");
-              Object.assign(optionsContainer.style, {
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "10px",
-                marginBottom: "16px",
-              });
-
-              Array.from(child.children).forEach((opt) => {
-                const optionRow = createOptionRow(
-                  opt.text,
-                  opt.value,
-                  opt.selected
-                );
-                // Modify styling for inline display
-                Object.assign(optionRow.style, {
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "6px 12px",
-                  border: "none",
-                  borderRadius: "20px",
-                  background: opt.selected ? "#e3f2fd" : "transparent",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  whiteSpace: "nowrap",
-                  flexShrink: "0",
-                });
-                optionsContainer.appendChild(optionRow);
-              });
-
-              rowsContainer.appendChild(optionsContainer);
-            } else {
-              Array.from(child.children).forEach((opt) => {
-                rowsContainer.appendChild(
-                  createOptionRow(opt.text, opt.value, opt.selected)
-                );
-              });
-            }
-          } else if (child.tagName === "OPTION") {
-            rowsContainer.appendChild(
-              createOptionRow(child.text, child.value, child.selected)
-            );
-          }
-        });
-
-        panel.appendChild(rowsContainer);
-      }
-
-      function updateButtonText() {
-        const labelEl = select
-          .closest(".form-subsection, .form-section")
-          ?.querySelector(`label[for="${select.id}"]`);
-        const base = labelEl
-          ? `${labelEl.innerText.trim()} — select...`
-          : "Select option";
-        const text = select.options[select.selectedIndex]?.text?.trim();
-        const finalText = text || base;
-        btn.textContent = finalText;
-        btn.title = finalText;
-      }
-
-      let outsideHandler = null;
-      let keyHandler = null;
-      function showPanel() {
-        panel.style.display = "block";
-        btn.setAttribute("aria-expanded", "true");
-        // Allow page scroll while dropdown is open
-        // focus search on open (iPad keyboard)
-        setTimeout(() => search.focus(), 0);
-        // outside click
-        outsideHandler = (e) => {
-          if (!wrapper.contains(e.target)) hidePanel();
-        };
-        document.addEventListener("click", outsideHandler, true);
-        // Esc close
-        keyHandler = (e) => {
-          if (e.key === "Escape") hidePanel();
-        };
-        document.addEventListener("keydown", keyHandler, true);
-      }
-      function hidePanel() {
-        panel.style.display = "none";
-        btn.setAttribute("aria-expanded", "false");
-        // No body scroll lock to revert
-        document.removeEventListener("click", outsideHandler, true);
-        document.removeEventListener("keydown", keyHandler, true);
-        outsideHandler = null;
-        keyHandler = null;
-        btn.focus();
-      }
-
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (panel.style.display === "none") showPanel();
-        else hidePanel();
-      });
-
-      // Mount
-      select.style.display = "none";
-      select.parentNode.insertBefore(wrapper, select);
-      wrapper.appendChild(btn);
-      wrapper.appendChild(panel);
-
-      // If no option is explicitly marked selected in markup, start with no selection
-      try {
-        const hasDefaultSelected = Array.from(select.options).some(
-          (o) => o.defaultSelected
-        );
-        if (!hasDefaultSelected) {
-          // Avoid implicit browser selection of the first option
-          select.selectedIndex = -1;
-        }
-      } catch {}
-
-      buildPanel();
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = `${select.id}-radio`;
+    radio.value = value;
+    radio.checked = !!selected;
+    radio.addEventListener("change", () => {
+      select.value = value;
       updateButtonText();
+    });
 
-      // Debounced search filter behavior
-      const debounce = (fn, ms) => {
-        let t;
-        return (...args) => {
-          clearTimeout(t);
-          t = setTimeout(() => fn(...args), ms);
-        };
-      };
-      search.addEventListener(
-        "input",
-        debounce(() => {
-          const q = search.value.trim().toLowerCase();
-          const rows = rowsContainer.querySelectorAll(
-            "[data-row], [data-group]"
-          );
-          rows.forEach((el) => {
-            const txt = (
-              el.getAttribute("data-text") ||
-              el.textContent ||
-              ""
-            ).toLowerCase();
-            el.style.display = !q || txt.includes(q) ? "" : "none";
-          });
-        }, 150)
-      );
+    const span = document.createElement("span");
+    span.textContent = text;
+    span.style.color = "black";
 
-      // Watch for dynamic option changes
-      const mo = new MutationObserver(() => {
-        buildPanel();
+    // Also make row clickable
+    row.addEventListener("click", (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        select.value = value;
         updateButtonText();
-      });
-      mo.observe(select, { subtree: true, childList: true, attributes: true });
+      }
+    });
+
+    row.appendChild(radio);
+    row.appendChild(span);
+    return row;
+  }
+
+  function buildPanel() {
+    panel.innerHTML = "";
+    panel.appendChild(search);
+    rowsContainer.innerHTML = "";
+
+    // Check if this is a SOCRATES field that should use row layout
+    const socratesFields = [
+      "onset",
+      "character",
+      "radiation",
+      "timing",
+      "exacerbating",
+      "relieving",
+      "severity",
+    ];
+    const isSOCRATESField = socratesFields.includes(select.id);
+
+    const children = Array.from(select.children);
+    children.forEach((child) => {
+      if (child.tagName === "OPTGROUP") {
+        const groupLabel = document.createElement("div");
+        groupLabel.textContent = child.label;
+        groupLabel.setAttribute("data-group", "1");
+        groupLabel.setAttribute("data-text", child.label.toLowerCase());
+        Object.assign(groupLabel.style, {
+          fontWeight: "600",
+          marginTop: "12px",
+          marginBottom: "8px",
+          color: "var(--all-text)",
+        });
+        rowsContainer.appendChild(groupLabel);
+
+        if (isSOCRATESField) {
+          // Create flex container for row layout
+          const optionsContainer = document.createElement("div");
+          Object.assign(optionsContainer.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            marginBottom: "16px",
+          });
+
+          Array.from(child.children).forEach((opt) => {
+            const optionRow = createOptionRow(
+              opt.text,
+              opt.value,
+              opt.selected
+            );
+            // Modify styling for inline display
+            Object.assign(optionRow.style, {
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              border: "none",
+              borderRadius: "20px",
+              background: opt.selected ? "#e3f2fd" : "transparent",
+              cursor: "pointer",
+              fontSize: "14px",
+              whiteSpace: "nowrap",
+              flexShrink: "0",
+            });
+            optionsContainer.appendChild(optionRow);
+          });
+
+          rowsContainer.appendChild(optionsContainer);
+        } else {
+          Array.from(child.children).forEach((opt) => {
+            rowsContainer.appendChild(
+              createOptionRow(opt.text, opt.value, opt.selected)
+            );
+          });
+        }
+      } else if (child.tagName === "OPTION") {
+        rowsContainer.appendChild(
+          createOptionRow(child.text, child.value, child.selected)
+        );
+      }
+    });
+
+    panel.appendChild(rowsContainer);
+  }
+
+  function updateButtonText() {
+    const labelEl = select
+      .closest(".form-subsection, .form-section")
+      ?.querySelector(`label[for="${select.id}"]`);
+    const base = labelEl
+      ? `${labelEl.innerText.trim()} — select...`
+      : "Select option";
+    const text = select.options[select.selectedIndex]?.text?.trim();
+    const finalText = text || base;
+    btn.textContent = finalText;
+    btn.title = finalText;
+  }
+
+  let outsideHandler = null;
+  let keyHandler = null;
+  function showPanel() {
+    panel.style.display = "block";
+    btn.setAttribute("aria-expanded", "true");
+    // Allow page scroll while dropdown is open
+    // focus search on open (iPad keyboard)
+    setTimeout(() => search.focus(), 0);
+    // outside click
+    outsideHandler = (e) => {
+      if (!wrapper.contains(e.target)) hidePanel();
+    };
+    document.addEventListener("click", outsideHandler, true);
+    // Esc close
+    keyHandler = (e) => {
+      if (e.key === "Escape") hidePanel();
+    };
+    document.addEventListener("keydown", keyHandler, true);
+  }
+  function hidePanel() {
+    panel.style.display = "none";
+    btn.setAttribute("aria-expanded", "false");
+    // No body scroll lock to revert
+    document.removeEventListener("click", outsideHandler, true);
+    document.removeEventListener("keydown", keyHandler, true);
+    outsideHandler = null;
+    keyHandler = null;
+    btn.focus();
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (panel.style.display === "none") showPanel();
+    else hidePanel();
+  });
+
+  // Mount
+  select.style.display = "none";
+  select.parentNode.insertBefore(wrapper, select);
+  wrapper.appendChild(btn);
+  wrapper.appendChild(panel);
+
+  // If no option is explicitly marked selected in markup, start with no selection
+  try {
+    const hasDefaultSelected = Array.from(select.options).some(
+      (o) => o.defaultSelected
+    );
+    if (!hasDefaultSelected) {
+      // Avoid implicit browser selection of the first option
+      select.selectedIndex = -1;
     }
+  } catch {}
+
+  buildPanel();
+  updateButtonText();
+
+  // Debounced search filter behavior
+  const debounce = (fn, ms) => {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
+  };
+  search.addEventListener(
+    "input",
+    debounce(() => {
+      const q = search.value.trim().toLowerCase();
+      const rows = rowsContainer.querySelectorAll("[data-row], [data-group]");
+      rows.forEach((el) => {
+        const txt = (
+          el.getAttribute("data-text") ||
+          el.textContent ||
+          ""
+        ).toLowerCase();
+        el.style.display = !q || txt.includes(q) ? "" : "none";
+      });
+    }, 150)
+  );
+
+  // Watch for dynamic option changes
+  const mo = new MutationObserver(() => {
+    buildPanel();
+    updateButtonText();
+  });
+  mo.observe(select, { subtree: true, childList: true, attributes: true });
+}
 
 // ===== Global enhancer: CC/SOCRATES as multi-select, Social History as single-select =====
 function enhanceSocratesSelectsInFlow() {
@@ -2318,7 +2316,11 @@ async function renderHistorySidebar() {
         // derive timestamps
         const toMillis = (ts) =>
           ts && typeof ts.toMillis === "function" ? ts.toMillis() : null;
-        let createdMs = toMillis(d.createdAtTs);
+        // Prefer client numeric timestamp when present, then server Timestamp, then parse string
+        let createdMs =
+          typeof d.createdMs === "number"
+            ? d.createdMs
+            : toMillis(d.createdAtTs);
         if (!createdMs && d.createdAt) {
           const dt = new Date(d.createdAt);
           createdMs = isNaN(dt.getTime()) ? null : dt.getTime();
@@ -2373,19 +2375,44 @@ async function renderHistorySidebar() {
 
       const db = window.db;
       const { collection, query, orderBy, limit, getDocs } = window;
-      const col = collection(db, "users", user.uid, "histories");
 
       // Prune expired/old docs before loading
       await pruneOldHistories();
 
-      // Prefer server timestamp ordering if available; fallback to string
+      // Prefer client numeric timestamp for immediate local visibility; fall back as needed
       let q;
       try {
-        q = query(col, orderBy("createdAtTs", "desc"), limit(20));
+        q = query(
+          collection(db, "users", user.uid, "histories"),
+          orderBy("createdMs", "desc"),
+          limit(20)
+        );
       } catch {
-        q = query(col, orderBy("createdAt", "desc"), limit(20));
+        try {
+          q = query(
+            collection(db, "users", user.uid, "histories"),
+            orderBy("createdAtTs", "desc"),
+            limit(20)
+          );
+        } catch {
+          q = query(
+            collection(db, "users", user.uid, "histories"),
+            orderBy("createdAt", "desc"),
+            limit(20)
+          );
+        }
       }
-      const snap = await getDocs(q);
+      let snap = await getDocs(q);
+
+      // Fallback: if empty, try without order (some docs may be missing the ordered field)
+      if (snap.empty) {
+        try {
+          const colRef = collection(db, "users", user.uid, "histories");
+          snap = await getDocs(query(colRef));
+        } catch (e) {
+          console.warn("[BAU] Fallback loadHistories query failed:", e);
+        }
+      }
 
       list.innerHTML = "";
 
@@ -2509,8 +2536,22 @@ async function renderHistorySidebar() {
         return;
       }
 
+      // If we ran the fallback, snap may be unordered. Sort client-side for consistency
+      const docsArr = [];
       snap.forEach((doc) => {
-        const data = doc.data();
+        const d = doc.data() || {};
+        const toMillis = (ts) =>
+          ts && typeof ts.toMillis === "function" ? ts.toMillis() : null;
+        const created =
+          typeof d.createdMs === "number"
+            ? d.createdMs
+            : toMillis(d.createdAtTs) ||
+              (d.createdAt ? new Date(d.createdAt).getTime() || 0 : 0);
+        docsArr.push({ id: doc.id, data: d, created });
+      });
+      docsArr.sort((a, b) => (b.created || 0) - (a.created || 0));
+
+      docsArr.forEach(({ data }) => {
         const item = document.createElement("div");
         item.classList.add("bau-history-item");
         Object.assign(item.style, {
@@ -2548,22 +2589,39 @@ async function renderHistorySidebar() {
                       setTimeout(tick, interval);
                     })();
                   });
-
-                waitFor(() => document.getElementById("history-form-container"))
-                  .then(
-                    () =>
-                      new Promise((r) =>
-                        requestAnimationFrame(() => requestAnimationFrame(r))
-                      )
-                  )
+                waitFor(
+                  () =>
+                    document.getElementById("history-form-container") &&
+                    document.getElementById("ai-generate"),
+                  4000,
+                  50
+                )
                   .then(() => {
-                    applySnapshotToForm(data.data || {});
+                    // Apply form snapshot
+                    const snap = data.data || {};
+                    applySnapshotToForm(snap);
+
+                    // Initialize AI demo handlers to ensure Generate works
+                    try {
+                      if (typeof window.initAIDemo === "function") {
+                        window.initAIDemo();
+                      }
+                    } catch {}
+
+                    // Set baseline to avoid duplicate saves if user immediately regenerates
+                    try {
+                      window.__bauBaselineSnapshot = snap;
+                      window.__bauBaselineHash = JSON.stringify(snap);
+                    } catch {}
                     const patientName = data.patientName || "Unknown";
                     const loadHistoryMessage = document.getElementById(
                       "load-history-message"
                     );
                     if (loadHistoryMessage) {
-                      loadHistoryMessage.textContent = `${patientName} History loaded successfully.`;
+                      try {
+                        loadHistoryMessage.textContent = `History loaded for ${patientName}`;
+                      } catch {}
+                      // Show with smooth animation (matches script.js behavior)
                       loadHistoryMessage.style.display = "block";
                       loadHistoryMessage.style.marginBottom = "10px";
                       setTimeout(() => {
@@ -2571,6 +2629,7 @@ async function renderHistorySidebar() {
                         loadHistoryMessage.style.transform =
                           "translateY(0) scale(1)";
                       }, 10);
+                      // Hide after a short delay
                       setTimeout(() => {
                         loadHistoryMessage.style.opacity = "0";
                         loadHistoryMessage.style.transform =
@@ -2585,12 +2644,32 @@ async function renderHistorySidebar() {
                   .catch(() => {
                     // Fallback: attempt apply anyway
                     try {
-                      applySnapshotToForm(data.data || {});
+                      const snap = data.data || {};
+                      applySnapshotToForm(snap);
+                      try {
+                        if (typeof window.initAIDemo === "function") {
+                          window.initAIDemo();
+                        }
+                      } catch {}
+                      try {
+                        window.__bauBaselineSnapshot = snap;
+                        window.__bauBaselineHash = JSON.stringify(snap);
+                      } catch {}
                     } catch {}
                   });
               });
             } else {
-              applySnapshotToForm(data.data || {});
+              const snap = data.data || {};
+              applySnapshotToForm(snap);
+              try {
+                if (typeof window.initAIDemo === "function") {
+                  window.initAIDemo();
+                }
+              } catch {}
+              try {
+                window.__bauBaselineSnapshot = snap;
+                window.__bauBaselineHash = JSON.stringify(snap);
+              } catch {}
             }
             close();
           } catch (e) {
@@ -2598,14 +2677,22 @@ async function renderHistorySidebar() {
             inlineMessage("Failed to load history.");
           }
         };
-
-        const meta = document.createElement("div");
-        const dt = parseDateSafe(data.createdAt);
+        // Build human-readable date/time label for this history item
+        const dt =
+          parseDateSafe(data.createdAt) ||
+          (data.createdAtTs && toMillis(data.createdAtTs)
+            ? new Date(toMillis(data.createdAtTs))
+            : typeof data.createdMs === "number"
+            ? new Date(data.createdMs)
+            : null);
         const when = dt
-          ? `${dt.toLocaleDateString()}\n${dt.toLocaleTimeString([], {
+          ? dt.toLocaleString(undefined, {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
               hour: "2-digit",
               minute: "2-digit",
-            })}`
+            })
           : data.createdAt || "";
         // Remaining time
         const createdMs =
@@ -2615,6 +2702,9 @@ async function renderHistorySidebar() {
           (createdMs ? createdMs + SEVEN_DAYS_MS : 0);
         const rem = Math.max(0, expMs - Date.now());
         const remainingText = fmtRemaining(rem);
+        // Meta container for name and date
+        const meta = document.createElement("div");
+        meta.style.minWidth = "0"; // allow text truncation
         // Two-line meta: Name, then date/time below
         const nameLine = document.createElement("div");
         nameLine.textContent = `${data.patientName || "Unknown"}`;
@@ -3197,12 +3287,39 @@ function applySnapshotToForm(snapshot) {
   // Handle ROS checkboxes specially
   if (snapshot._rosData) {
     const rosCheckboxes = root.querySelectorAll("input.ros");
+    const norm = (s) => String(s ?? "").trim().toLowerCase();
+    const rosData = snapshot._rosData || {};
+    // Build a lowercase lookup for system keys to be robust to case differences
+    const rosBySysLower = {};
+    Object.keys(rosData).forEach((k) => {
+      rosBySysLower[norm(k)] = rosData[k];
+    });
+
     rosCheckboxes.forEach((checkbox) => {
-      const system = checkbox.getAttribute("data-system");
-      const value = checkbox.value;
-      const isChecked =
-        snapshot._rosData[system] && snapshot._rosData[system].includes(value);
-      checkbox.checked = isChecked;
+      const systemRaw = checkbox.getAttribute("data-system") || "";
+      const sysKey = String(systemRaw).trim();
+      const valueRaw =
+        checkbox.value ||
+        checkbox.getAttribute("data-value") ||
+        checkbox.getAttribute("aria-label") ||
+        checkbox.id ||
+        checkbox.name ||
+        "";
+
+      const arr =
+        (rosData && rosData[sysKey]) ||
+        rosBySysLower[norm(sysKey)] ||
+        [];
+
+      let isChecked =
+        Array.isArray(arr) && arr.some((v) => norm(v) === norm(valueRaw));
+      // Fallback for older snapshots that may have stored individual checkbox flags
+      if (!isChecked) {
+        if (checkbox.id && snapshot[checkbox.id] === true) isChecked = true;
+        else if (checkbox.name && snapshot[checkbox.name] === true)
+          isChecked = true;
+      }
+      checkbox.checked = !!isChecked;
       checkbox.dispatchEvent(new Event("change", { bubbles: true }));
     });
   }
@@ -4903,12 +5020,17 @@ window.initBau = function initBau() {
             // Ignore synthetic (programmatic) events to avoid unintended jumps
             if (e.isTrusted === false) return;
             // Ignore hidden selects (e.g., PE originals hidden behind checkboxes)
-            if (t.offsetParent === null || getComputedStyle(t).display === "none") return;
+            if (
+              t.offsetParent === null ||
+              getComputedStyle(t).display === "none"
+            )
+              return;
             // Give iOS time to close the picker UI, then restore position and blur
             setTimeout(() => {
-              const y = (typeof lastY === "number" && lastY >= 0)
-                ? lastY
-                : (window.scrollY || window.pageYOffset || 0);
+              const y =
+                typeof lastY === "number" && lastY >= 0
+                  ? lastY
+                  : window.scrollY || window.pageYOffset || 0;
               window.scrollTo(0, y);
               if (typeof t.blur === "function") t.blur();
             }, 0);
@@ -4917,7 +5039,6 @@ window.initBau = function initBau() {
         );
       } catch {}
     })();
-
   } catch (e) {
     console.warn("[BAU] initBau error:", e);
   }

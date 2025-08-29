@@ -545,13 +545,27 @@ function generatePatientDetailsSection(formData) {
 
 function generateChiefComplaintSection(formData) {
   const ccElement = document.getElementById("chief-complaint");
-  if (!ccElement || !ccElement.value || ccElement.value.trim() === "")
-    return "";
+  if (!ccElement) return "";
+
+  let ccText = "";
+  // Support multi-select chief complaint (custom UI keeps original select synced)
+  if (ccElement.tagName === "SELECT" && ccElement.multiple) {
+    const selected = Array.from(ccElement.selectedOptions || [])
+      .map((opt) => (opt.text || "").trim())
+      .filter(Boolean);
+    ccText = selected.join(", ");
+  } else {
+    // Fallback for input/select single
+    const selected = ccElement.options ? ccElement.options[ccElement.selectedIndex] : null;
+    ccText = selected && !selected.disabled ? (selected.text || "").trim() : (ccElement.value || "").trim();
+  }
+
+  if (!ccText) return "";
 
   return `
     <section class="section">
       <h2>Chief Complaint</h2>
-      <p><strong>Primary Concern:</strong> ${ccElement.value}</p>
+      <p><strong>Primary Concern:</strong> ${ccText}</p>
     </section>
   `;
 }

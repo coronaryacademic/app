@@ -16,14 +16,14 @@ export function initAIDemo() {
     console.log("[AI-DEMO] Elements found:", {
       aiButton: !!aiButton,
       aiOutput: !!aiOutput,
-      aiModel: !!aiModel
+      aiModel: !!aiModel,
     });
 
     if (!aiButton || !aiOutput || !aiModel) {
       console.warn("[BAU] AI demo elements not found - missing elements:", {
         aiButton: !aiButton,
         aiOutput: !aiOutput,
-        aiModel: !aiModel
+        aiModel: !aiModel,
       });
       return;
     }
@@ -61,6 +61,170 @@ export function initAIDemo() {
       }
     }
 
+    // Helper: parse metadata (reportId, reportCount, build) from generated HTML
+    function parseReportMetadataFromHTML(html) {
+      try {
+        const idMatch = html.match(/ID:\s*([A-Z0-9-]+)/i);
+        const countMatch = html.match(/Report\s*#(\d+)/i);
+        const buildMatch = html.match(/Build\s*([0-9.]+)/i);
+        return {
+          reportId: idMatch ? idMatch[1] : null,
+          reportCount: countMatch ? Number(countMatch[1]) : null,
+          buildVersion: buildMatch ? buildMatch[1] : null,
+        };
+      } catch {
+        return { reportId: null, reportCount: null, buildVersion: null };
+      }
+    }
+
+    // Helper: build a short summary from form data
+    function buildHistorySummary(data) {
+      const parts = [];
+      if (data.chiefComplaint) parts.push(`CC: ${data.chiefComplaint}`);
+      const socrates = [data.site, data.onset, data.character]
+        .filter(Boolean)
+        .join(" · ");
+      if (socrates) parts.push(`SOCRATES: ${socrates}`);
+      if (data.severity) parts.push(`Severity: ${data.severity}`);
+      return parts.join(" | ") || "Clinical history entry";
+    }
+
+    // Helper: build a DOM-based snapshot compatible with bau.js applySnapshotToForm()
+    function buildFormSnapshot() {
+      const root =
+        document.getElementById("history-form-container") || document.body;
+
+      const snapshot = {};
+      const rosData = {};
+
+      // Handle inputs and textareas
+      const inputs = root.querySelectorAll("input, textarea");
+      inputs.forEach((el) => {
+        const tag = (el.tagName || "").toLowerCase();
+        const type = (el.type || "").toLowerCase();
+        const key = el.id || el.name;
+        if (!key) return;
+
+        if (type === "radio") {
+          if (el.checked) snapshot[el.name] = el.value;
+          return;
+        }
+
+        if (type === "checkbox") {
+          // Special handling for ROS checkboxes collected under _rosData
+          if (el.classList && el.classList.contains("ros")) {
+            const system = el.getAttribute("data-system");
+            const value = el.value;
+            if (system && el.checked) {
+              if (!rosData[system]) rosData[system] = [];
+              rosData[system].push(value);
+            }
+            return;
+          }
+          snapshot[key] = !!el.checked;
+          return;
+        }
+
+        // Textual inputs/textarea
+        snapshot[key] = el.value || "";
+      });
+
+      // Handle selects (single by text; multiple as array of texts)
+      const selects = root.querySelectorAll("select");
+      selects.forEach((sel) => {
+        const key = sel.id || sel.name;
+        if (!key) return;
+        if (sel.multiple) {
+          const arr = Array.from(sel.selectedOptions)
+            .map((opt) => (opt.text || "").trim())
+            .filter(Boolean);
+          snapshot[key] = arr;
+        } else {
+          const opt = sel.options[sel.selectedIndex];
+          const text = opt && !opt.disabled ? (opt.text || "").trim() : "";
+          snapshot[key] = text;
+        }
+      });
+
+      if (Object.keys(rosData).length) snapshot._rosData = rosData;
+      return snapshot;
+    }
+
+    // Helper: save report metadata to Firestore histories
+    async function saveReportToHistory({
+      formData,
+      htmlReport,
+      aiModelValue,
+      aiContent,
+    }) {
+      try {
+        const auth = window.auth;
+        const db = window.db;
+        const { addDoc, collection, serverTimestamp } = window;
+        const user = auth?.currentUser || null;
+
+        if (!user) {
+          console.warn("[AI-DEMO] Not signed in; skipping history save");
+          return { saved: false, reason: "unauthenticated" };
+        }
+        if (!db || !addDoc || !collection || !serverTimestamp) {
+          console.warn(
+            "[AI-DEMO] Firestore SDK not available on window; skipping history save"
+          );
+          return { saved: false, reason: "no-firestore" };
+        }
+
+        const meta = parseReportMetadataFromHTML(htmlReport);
+        const snapshot = buildFormSnapshot();
+
+        // Skip duplicate save if snapshot hasn't changed since a history was loaded
+        const currentHash = JSON.stringify(snapshot);
+        if (
+          window.__bauBaselineHash &&
+          window.__bauBaselineHash === currentHash
+        ) {
+          console.log(
+            "[AI-DEMO] No form changes since history load; skipping history save"
+          );
+          return { saved: false, reason: "no-change" };
+        }
+        const docData = {
+          // Identity
+          uid: user.uid,
+          patientName: formData.patientName || "Unknown Patient",
+          // Content summary
+          summary: buildHistorySummary(formData),
+          chiefComplaint: formData.chiefComplaint || "",
+          // Full form snapshot for restoration
+          data: snapshot,
+          // Report metadata
+          reportId: meta.reportId,
+          reportCount: meta.reportCount,
+          buildVersion: meta.buildVersion,
+          // AI context
+          aiModel: aiModelValue || null,
+          hasAI: !!aiModelValue && !!aiContent,
+          // Timestamps
+          createdAt: serverTimestamp(),
+          createdAtTs: serverTimestamp(),
+          createdMs: Date.now(),
+        };
+
+        const colRef = collection(db, "users", user.uid, "histories");
+        await addDoc(colRef, docData);
+        console.log("[AI-DEMO] History saved", docData);
+        // Update baseline after successful save
+        try {
+          window.__bauBaselineHash = currentHash;
+          window.__bauBaselineSnapshot = snapshot;
+        } catch {}
+        return { saved: true };
+      } catch (err) {
+        console.warn("[AI-DEMO] Failed to save history:", err);
+        return { saved: false, reason: "error", error: err };
+      }
+    }
+
     // AI generation handler
     aiButton.addEventListener("click", async (e) => {
       console.log("[AI-DEMO] Button clicked!");
@@ -68,7 +232,7 @@ export function initAIDemo() {
 
       const selectedModel = aiModel.value;
       console.log("[AI-DEMO] Selected model:", selectedModel);
-      
+
       // Collect form data for processing
       const formData = collectFormData();
 
@@ -79,24 +243,53 @@ export function initAIDemo() {
 
       try {
         let aiContent = null;
-        
+
         // Only generate AI content if model is selected
         if (selectedModel) {
           // AI generation would go here when re-enabled
           // For now, skip AI processing
-          console.log("[AI-DEMO] AI model selected but AI processing disabled for testing");
+          console.log(
+            "[AI-DEMO] AI model selected but AI processing disabled for testing"
+          );
         }
-        
+
         // Generate HTML report (with or without AI content)
         const htmlReport = generateHTMLReport(formData, aiContent);
         openHTMLReportInNewTab(htmlReport);
 
+        // Save to Firestore history (best-effort)
+        const saveResult = await saveReportToHistory({
+          formData,
+          htmlReport,
+          aiModelValue: selectedModel,
+          aiContent,
+        });
+
+        // Refresh sidebar if available
+        if (
+          saveResult.saved &&
+          typeof window.renderHistorySidebar === "function"
+        ) {
+          try {
+            await window.renderHistorySidebar();
+          } catch (e) {
+            console.warn("[AI-DEMO] Sidebar refresh failed:", e);
+          }
+        }
+
         // Show success message
-        const aiStatus = selectedModel ? "(AI assessment disabled for testing)" : "(No AI model selected)";
+        const aiStatus = selectedModel
+          ? "(AI assessment disabled for testing)"
+          : "(No AI model selected)";
         aiOutput.innerHTML = `
           <div class="ai-suggestions">
             <h3>Report Generated Successfully</h3>
             <p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab ${aiStatus}.</p>
+            <p style="margin-top:8px; color: var(--all-text); opacity: 0.85; font-size: 13px;">${
+              window.auth?.currentUser
+                ? "Saved to your history."
+                : "Sign in to save to history."
+            }</p>
           </div>
         `;
         aiOutput.style.display = "block";
@@ -243,3 +436,9 @@ export function initAIDemo() {
     console.warn("[BAU] AI demo init error:", e);
   }
 }
+
+// Expose initializer globally so BAU can re-init after dynamic loads
+try {
+  // Assign without overwriting if already set
+  if (!window.initAIDemo) window.initAIDemo = initAIDemo;
+} catch {}
