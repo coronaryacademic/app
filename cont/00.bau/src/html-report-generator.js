@@ -17,7 +17,7 @@ export function generateHTMLReport(formData, aiContent) {
 
   // Generate report metadata
   const reportId = generateReportId();
-  const buildVersion = "v1.0";
+  const buildVersion = "1.0";
   const reportCount = incrementReportCount();
 
   // Build the HTML report using ECG report styling
@@ -244,7 +244,7 @@ export function generateHTMLReport(formData, aiContent) {
                 <strong style="color: #495057;">Generated for educational purposes</strong> • This report is generated for medical education and training purposes only. Always consult with qualified healthcare professionals for actual patient care.
             </div>
             <div style="color: #868e96; margin-bottom: 10px;">
-                Developed and coded by <strong>Momen</strong>.
+                Developed and coded by <strong>Momen</strong>
             </div>
             <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
                 Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
