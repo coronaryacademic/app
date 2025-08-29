@@ -643,13 +643,17 @@ function loadContent(page) {
               setTimeout(() => {
                 if (typeof window.initSymptomLinking === "function") {
                   try {
-                    console.log("[SCRIPT] Initializing symptom linking via initSymptomLinking()...");
+                    console.log(
+                      "[SCRIPT] Initializing symptom linking via initSymptomLinking()..."
+                    );
                     window.initSymptomLinking();
                   } catch (e) {
                     console.warn("[SCRIPT] initSymptomLinking error:", e);
                   }
                 } else {
-                  console.log("[SCRIPT] initSymptomLinking() not found after BAU load");
+                  console.log(
+                    "[SCRIPT] initSymptomLinking() not found after BAU load"
+                  );
                 }
               }, 150);
             }

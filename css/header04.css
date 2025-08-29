@@ -40,9 +40,7 @@ nav {
   touch-action: manipulation;
 }
 
-.nav-button:hover {
-  opacity: 0.8;
-}
+/* .nav-button:hover removed */
 
 .nav-button:active {
   opacity: 1;

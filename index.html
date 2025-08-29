@@ -49,128 +49,155 @@
     />
 
     <script>
-    // PE Toggle Function - Global availability for dynamically loaded content
-    function togglePESection() {
-      const peContent = document.getElementById('pe-content');
-      const peToggle = document.getElementById('pe-toggle');
-      const peSlider = document.querySelector('.pe-slider');
-      const peSliderDot = document.querySelector('.pe-slider-dot');
-      
-      if (!peContent || !peToggle) return;
-      
-      const isHidden = peContent.style.display === 'none' || peContent.style.display === '';
-      
-      if (isHidden) {
-        // Show PE section
-        peContent.style.display = 'block';
-        setTimeout(() => {
-          peContent.style.opacity = '1';
-          // Initialize PE checkbox UI after accordion setup
-          console.log('[PE] Setting up checkbox UI after accordion handlers');
-          
-          // Add manual accordion handlers directly
-          console.log('[PE] Setting up manual accordion handlers');
-          const headers = document.querySelectorAll('.pe-accordion-header');
-          console.log('[PE] Found headers for manual binding:', headers.length);
-          headers.forEach((header, i) => {
-            // Remove any existing listeners to avoid duplicates
-            const newHeader = header.cloneNode(true);
-            header.parentNode.replaceChild(newHeader, header);
-            
-            newHeader.addEventListener('click', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('[PE] Manual click on header:', this.textContent.trim());
-              const content = this.nextElementSibling;
-              if (content && content.classList.contains('pe-accordion-content')) {
-                const isOpen = content.style.display === 'block';
-                content.style.display = isOpen ? 'none' : 'block';
-                const chev = this.querySelector('.chev');
-                if (chev) chev.textContent = isOpen ? '▸' : '▾';
-                console.log('[PE] Manual toggle:', isOpen ? 'CLOSED' : 'OPENED');
-              } else {
-                console.log('[PE] No valid content found for header');
-              }
+      // PE Toggle Function - Global availability for dynamically loaded content
+      function togglePESection() {
+        const peContent = document.getElementById("pe-content");
+        const peToggle = document.getElementById("pe-toggle");
+        const peSlider = document.querySelector(".pe-slider");
+        const peSliderDot = document.querySelector(".pe-slider-dot");
+
+        if (!peContent || !peToggle) return;
+
+        const isHidden =
+          peContent.style.display === "none" || peContent.style.display === "";
+
+        if (isHidden) {
+          // Show PE section
+          peContent.style.display = "block";
+          setTimeout(() => {
+            peContent.style.opacity = "1";
+            // Initialize PE checkbox UI after accordion setup
+            console.log("[PE] Setting up checkbox UI after accordion handlers");
+
+            // Add manual accordion handlers directly
+            console.log("[PE] Setting up manual accordion handlers");
+            const headers = document.querySelectorAll(".pe-accordion-header");
+            console.log(
+              "[PE] Found headers for manual binding:",
+              headers.length
+            );
+            headers.forEach((header, i) => {
+              // Remove any existing listeners to avoid duplicates
+              const newHeader = header.cloneNode(true);
+              header.parentNode.replaceChild(newHeader, header);
+
+              newHeader.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(
+                  "[PE] Manual click on header:",
+                  this.textContent.trim()
+                );
+                const content = this.nextElementSibling;
+                if (
+                  content &&
+                  content.classList.contains("pe-accordion-content")
+                ) {
+                  const isOpen = content.style.display === "block";
+                  content.style.display = isOpen ? "none" : "block";
+                  const chev = this.querySelector(".chev");
+                  if (chev) chev.textContent = isOpen ? "▸" : "▾";
+                  console.log(
+                    "[PE] Manual toggle:",
+                    isOpen ? "CLOSED" : "OPENED"
+                  );
+                } else {
+                  console.log("[PE] No valid content found for header");
+                }
+              });
+              console.log(
+                "[PE] Bound manual handler to header",
+                i,
+                ":",
+                newHeader.textContent.trim()
+              );
             });
-            console.log('[PE] Bound manual handler to header', i, ':', newHeader.textContent.trim());
-          });
-          
-          // Now initialize checkbox UI
-          try { 
-            initPECheckboxes(); 
-            console.log('[PE] Checkbox UI initialized successfully');
-          } catch (e) { 
-            console.warn('[PE] initPECheckboxes failed', e); 
+
+            // Now initialize checkbox UI
+            try {
+              initPECheckboxes();
+              console.log("[PE] Checkbox UI initialized successfully");
+            } catch (e) {
+              console.warn("[PE] initPECheckboxes failed", e);
+            }
+          }, 10);
+
+          // Update switch to ON state
+          peToggle.checked = true;
+          if (peSlider) {
+            peSlider.style.backgroundColor = "#4CAF50";
           }
-        }, 10);
-        
-        // Update switch to ON state
-        peToggle.checked = true;
-        if (peSlider) {
-          peSlider.style.backgroundColor = '#4CAF50';
-        }
-        if (peSliderDot) {
-          peSliderDot.style.transform = 'translateX(26px)';
-          peSliderDot.style.backgroundColor = '#4CAF50';
-        }
-      } else {
-        // Hide PE section
-        peContent.style.opacity = '0';
-        setTimeout(() => {
-          peContent.style.display = 'none';
-        }, 500);
-        
-        // Update switch to OFF state
-        peToggle.checked = false;
-        if (peSlider) {
-          peSlider.style.backgroundColor = '#ccc';
-        }
-        if (peSliderDot) {
-          peSliderDot.style.transform = 'translateX(0px)';
-          peSliderDot.style.backgroundColor = 'white';
+          if (peSliderDot) {
+            peSliderDot.style.transform = "translateX(26px)";
+            peSliderDot.style.backgroundColor = "#4CAF50";
+          }
+        } else {
+          // Hide PE section
+          peContent.style.opacity = "0";
+          setTimeout(() => {
+            peContent.style.display = "none";
+          }, 500);
+
+          // Update switch to OFF state
+          peToggle.checked = false;
+          if (peSlider) {
+            peSlider.style.backgroundColor = "#ccc";
+          }
+          if (peSliderDot) {
+            peSliderDot.style.transform = "translateX(0px)";
+            peSliderDot.style.backgroundColor = "white";
+          }
         }
       }
-    }
 
-    // Touch-friendly multi-select for iPad users
-    function initTouchMultiSelect() {
-      const peSelects = document.querySelectorAll('#pe-content select[multiple]');
-      
-      peSelects.forEach(select => {
-        if (select.dataset.touchInitialized) return;
-        select.dataset.touchInitialized = 'true';
-        
-        // Add search functionality that works with touch interface
-        const searchInput = select.parentNode.querySelector('.pe-search');
-        if (searchInput) {
-          searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            // Update the touch interface buttons if they exist
-            const wrapper = select.nextElementSibling;
-            if (wrapper && wrapper.className === 'touch-multiselect-wrapper') {
-              const buttons = wrapper.querySelectorAll('.touch-options-container button');
-              buttons.forEach(btn => {
-                const text = btn.textContent.toLowerCase();
-                const shouldShow = text.includes(searchTerm) || searchTerm === '';
-                btn.style.display = shouldShow ? 'block' : 'none';
+      // Touch-friendly multi-select for iPad users
+      function initTouchMultiSelect() {
+        const peSelects = document.querySelectorAll(
+          "#pe-content select[multiple]"
+        );
+
+        peSelects.forEach((select) => {
+          if (select.dataset.touchInitialized) return;
+          select.dataset.touchInitialized = "true";
+
+          // Add search functionality that works with touch interface
+          const searchInput = select.parentNode.querySelector(".pe-search");
+          if (searchInput) {
+            searchInput.addEventListener("input", (e) => {
+              const searchTerm = e.target.value.toLowerCase();
+
+              // Update the touch interface buttons if they exist
+              const wrapper = select.nextElementSibling;
+              if (
+                wrapper &&
+                wrapper.className === "touch-multiselect-wrapper"
+              ) {
+                const buttons = wrapper.querySelectorAll(
+                  ".touch-options-container button"
+                );
+                buttons.forEach((btn) => {
+                  const text = btn.textContent.toLowerCase();
+                  const shouldShow =
+                    text.includes(searchTerm) || searchTerm === "";
+                  btn.style.display = shouldShow ? "block" : "none";
+                });
+              }
+
+              // Also update native select options for desktop
+              const options = select.querySelectorAll("option");
+              options.forEach((option) => {
+                const text = option.textContent.toLowerCase();
+                const shouldShow =
+                  text.includes(searchTerm) || searchTerm === "";
+                option.style.display = shouldShow ? "block" : "none";
               });
-            }
-            
-            // Also update native select options for desktop
-            const options = select.querySelectorAll('option');
-            options.forEach(option => {
-              const text = option.textContent.toLowerCase();
-              const shouldShow = text.includes(searchTerm) || searchTerm === '';
-              option.style.display = shouldShow ? 'block' : 'none';
             });
-          });
-        }
-        
-        // Create custom multi-select interface
-        const wrapper = document.createElement('div');
-        wrapper.className = 'touch-multiselect-wrapper';
-        wrapper.style.cssText = `
+          }
+
+          // Create custom multi-select interface
+          const wrapper = document.createElement("div");
+          wrapper.className = "touch-multiselect-wrapper";
+          wrapper.style.cssText = `
           border: 1px solid var(--all-text);
           border-radius: 6px;
           background: var(--header-bg);
@@ -180,10 +207,10 @@
           padding: 8px;
           margin-top: 5px;
         `;
-        
-        const selectedDisplay = document.createElement('div');
-        selectedDisplay.className = 'selected-items-display';
-        selectedDisplay.style.cssText = `
+
+          const selectedDisplay = document.createElement("div");
+          selectedDisplay.className = "selected-items-display";
+          selectedDisplay.style.cssText = `
           min-height: 20px;
           font-size: 12px;
           color: var(--all-text);
@@ -191,20 +218,21 @@
           margin-bottom: 8px;
           font-style: italic;
         `;
-        selectedDisplay.textContent = 'Tap options below to select multiple items';
-        
-        const optionsContainer = document.createElement('div');
-        optionsContainer.className = 'touch-options-container';
-        
-        // Convert select options to touch-friendly buttons
-        Array.from(select.options).forEach(option => {
-          if (option.disabled) return;
-          
-          const optionBtn = document.createElement('button');
-          optionBtn.type = 'button';
-          optionBtn.textContent = option.text;
-          optionBtn.dataset.value = option.value;
-          optionBtn.style.cssText = `
+          selectedDisplay.textContent =
+            "Tap options below to select multiple items";
+
+          const optionsContainer = document.createElement("div");
+          optionsContainer.className = "touch-options-container";
+
+          // Convert select options to touch-friendly buttons
+          Array.from(select.options).forEach((option) => {
+            if (option.disabled) return;
+
+            const optionBtn = document.createElement("button");
+            optionBtn.type = "button";
+            optionBtn.textContent = option.text;
+            optionBtn.dataset.value = option.value;
+            optionBtn.style.cssText = `
             display: block;
             width: 100%;
             text-align: left;
@@ -218,209 +246,233 @@
             transition: all 0.2s ease;
             font-size: 13px;
           `;
-          
-          optionBtn.addEventListener('click', () => {
-            option.selected = !option.selected;
-            updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
-            
-            // Trigger change event for form data management
-            select.dispatchEvent(new Event('change', { bubbles: true }));
+
+            optionBtn.addEventListener("click", () => {
+              option.selected = !option.selected;
+              updateTouchSelectDisplay(
+                select,
+                selectedDisplay,
+                optionsContainer
+              );
+
+              // Trigger change event for form data management
+              select.dispatchEvent(new Event("change", { bubbles: true }));
+            });
+
+            optionsContainer.appendChild(optionBtn);
           });
-          
-          optionsContainer.appendChild(optionBtn);
+
+          wrapper.appendChild(selectedDisplay);
+          wrapper.appendChild(optionsContainer);
+
+          // Hide original select and insert custom interface
+          select.style.display = "none";
+          select.parentNode.insertBefore(wrapper, select.nextSibling);
+
+          // Initial display update
+          updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
         });
-        
-        wrapper.appendChild(selectedDisplay);
-        wrapper.appendChild(optionsContainer);
-        
-        // Hide original select and insert custom interface
-        select.style.display = 'none';
-        select.parentNode.insertBefore(wrapper, select.nextSibling);
-        
-        // Initial display update
-        updateTouchSelectDisplay(select, selectedDisplay, optionsContainer);
-      });
-    }
-    
-    function updateTouchSelectDisplay(select, selectedDisplay, optionsContainer) {
-      const selectedOptions = Array.from(select.selectedOptions);
-      const buttons = optionsContainer.querySelectorAll('button');
-      
-      // Update button styles
-      buttons.forEach(btn => {
-        const isSelected = selectedOptions.some(opt => opt.value === btn.dataset.value);
-        if (isSelected) {
-          btn.style.background = 'var(--all-text)';
-          btn.style.color = 'var(--all-text)';
-          btn.style.border = '3px solid #87CEEB';
-        } else {
-          btn.style.background = 'transparent';
-          btn.style.color = 'var(--all-text)';
-          btn.style.border = '1px solid transparent';
-        }
-        
-        // Add hover effect
-        btn.onmouseenter = () => {
-          if (!isSelected) {
-            btn.style.background = 'rgba(128, 128, 128, 0.1)';
-            btn.style.borderColor = 'var(--all-text)';
-            btn.style.color = 'var(--all-text)';
-          }
-        };
-        btn.onmouseleave = () => {
-          if (!isSelected) {
-            btn.style.background = 'transparent';
-            btn.style.border = '1px solid transparent';
-            btn.style.color = 'var(--all-text)';
-          }
-        };
-      });
-      
-      // Update selected items display
-      if (selectedOptions.length === 0) {
-        selectedDisplay.textContent = 'Tap options below to select multiple items';
-        selectedDisplay.style.fontStyle = 'italic';
-      } else {
-        selectedDisplay.textContent = `Selected: ${selectedOptions.map(opt => opt.text).join(', ')}`;
-        selectedDisplay.style.fontStyle = 'normal';
       }
-    }
-    
-    // Convert PE <select multiple> to checkbox groups, keeping original selects hidden and in sync
-    function initPECheckboxes() {
-      const peRoot = document.getElementById('pe-content');
-      if (!peRoot) return;
 
-      const peSelects = peRoot.querySelectorAll("select[multiple][id^='pe-']");
-      peSelects.forEach((sel) => {
-        // Don't re-run if already checkboxified
-        if (sel.dataset.checkboxified === '1') return;
+      function updateTouchSelectDisplay(
+        select,
+        selectedDisplay,
+        optionsContainer
+      ) {
+        const selectedOptions = Array.from(select.selectedOptions);
+        const buttons = optionsContainer.querySelectorAll("button");
 
-        // If a touch wrapper was created earlier, remove it to avoid double UI
-        const maybeWrapper = sel.nextElementSibling;
-        if (maybeWrapper && maybeWrapper.classList.contains('touch-multiselect-wrapper')) {
-          maybeWrapper.remove();
-          sel.style.display = '';
-        }
+        // Update button styles
+        buttons.forEach((btn) => {
+          const isSelected = selectedOptions.some(
+            (opt) => opt.value === btn.dataset.value
+          );
+          if (isSelected) {
+            btn.style.background = "var(--all-text)";
+            btn.style.color = "var(--all-text)";
+            btn.style.border = "3px solid #87CEEB";
+          } else {
+            btn.style.background = "transparent";
+            btn.style.color = "var(--all-text)";
+            btn.style.border = "1px solid transparent";
+          }
 
-        // Section wrapper per select
-        const section = document.createElement('div');
-        section.className = 'pe-section';
-        section.style.display = 'block';
-        section.style.marginTop = '6px';
-
-        // Grid for options inside a group
-        const makeGrid = () => {
-          const grid = document.createElement('div');
-          grid.className = 'pe-checkbox-group';
-          grid.style.display = 'grid';
-          grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(230px, 1fr))';
-          grid.style.gap = '8px 12px';
-          grid.style.marginTop = '6px';
-          return grid;
-        };
-
-        const makeCheckbox = (opt) => {
-          const id = `${sel.id}__${opt.value}`;
-          const label = document.createElement('label');
-          label.style.display = 'flex';
-          label.style.alignItems = 'center';
-          label.style.gap = '8px';
-          label.style.padding = '6px 8px';
-          label.style.border = '1px solid var(--all-text)';
-          label.style.borderRadius = '6px';
-          label.style.background = 'transparent';
-          label.style.color = 'var(--all-text)';
-
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.name = sel.id + '[]';
-          cb.value = opt.value;
-          cb.id = id;
-          cb.checked = !!opt.selected;
-          cb.style.accentColor = 'rgb(86, 212, 254)';
-          cb.addEventListener('change', () => {
-            opt.selected = cb.checked;
-            sel.dispatchEvent(new Event('change', { bubbles: true }));
-          });
-
-          const text = document.createElement('span');
-          text.textContent = opt.textContent.trim();
-          text.style.fontSize = '13px';
-
-          label.appendChild(cb);
-          label.appendChild(text);
-          return label;
-        };
-
-        const children = Array.from(sel.children);
-        if (children.some((n) => n.tagName === 'OPTGROUP')) {
-          children.forEach((node) => {
-            if (node.tagName === 'OPTGROUP') {
-              // Container per optgroup
-              const og = document.createElement('div');
-              og.className = 'pe-optgroup';
-              og.style.marginTop = '10px';
-
-              const legend = document.createElement('div');
-              legend.textContent = node.getAttribute('label') || '';
-              legend.style.fontWeight = '700';
-              legend.style.fontSize = '13px';
-              legend.style.opacity = '0.9';
-              legend.style.marginTop = '4px';
-              section.appendChild(legend);
-
-              const grid = makeGrid();
-              Array.from(node.children).forEach((opt) => {
-                if (opt.tagName === 'OPTION' && !opt.disabled) {
-                  grid.appendChild(makeCheckbox(opt));
-                }
-              });
-              og.appendChild(grid);
-              section.appendChild(og);
+          // Add hover effect
+          btn.onmouseenter = () => {
+            if (!isSelected) {
+              btn.style.background = "rgba(128, 128, 128, 0.1)";
+              btn.style.borderColor = "var(--all-text)";
+              btn.style.color = "var(--all-text)";
             }
-          });
-          // Handle any top-level options outside optgroups
-          const topLevel = children.filter((n) => n.tagName === 'OPTION' && !n.disabled);
-          if (topLevel.length) {
-            const legend = document.createElement('div');
-            legend.textContent = 'General';
-            legend.style.fontWeight = '700';
-            legend.style.fontSize = '13px';
-            legend.style.opacity = '0.9';
-            legend.style.marginTop = '10px';
-            section.appendChild(legend);
+          };
+          btn.onmouseleave = () => {
+            if (!isSelected) {
+              btn.style.background = "transparent";
+              btn.style.border = "1px solid transparent";
+              btn.style.color = "var(--all-text)";
+            }
+          };
+        });
+
+        // Update selected items display
+        if (selectedOptions.length === 0) {
+          selectedDisplay.textContent =
+            "Tap options below to select multiple items";
+          selectedDisplay.style.fontStyle = "italic";
+        } else {
+          selectedDisplay.textContent = `Selected: ${selectedOptions
+            .map((opt) => opt.text)
+            .join(", ")}`;
+          selectedDisplay.style.fontStyle = "normal";
+        }
+      }
+
+      // Convert PE <select multiple> to checkbox groups, keeping original selects hidden and in sync
+      function initPECheckboxes() {
+        const peRoot = document.getElementById("pe-content");
+        if (!peRoot) return;
+
+        const peSelects = peRoot.querySelectorAll(
+          "select[multiple][id^='pe-']"
+        );
+        peSelects.forEach((sel) => {
+          // Don't re-run if already checkboxified
+          if (sel.dataset.checkboxified === "1") return;
+
+          // If a touch wrapper was created earlier, remove it to avoid double UI
+          const maybeWrapper = sel.nextElementSibling;
+          if (
+            maybeWrapper &&
+            maybeWrapper.classList.contains("touch-multiselect-wrapper")
+          ) {
+            maybeWrapper.remove();
+            sel.style.display = "";
+          }
+
+          // Section wrapper per select
+          const section = document.createElement("div");
+          section.className = "pe-section";
+          section.style.display = "block";
+          section.style.marginTop = "6px";
+
+          // Grid for options inside a group
+          const makeGrid = () => {
+            const grid = document.createElement("div");
+            grid.className = "pe-checkbox-group";
+            grid.style.display = "grid";
+            grid.style.gridTemplateColumns =
+              "repeat(auto-fill, minmax(230px, 1fr))";
+            grid.style.gap = "8px 12px";
+            grid.style.marginTop = "6px";
+            return grid;
+          };
+
+          const makeCheckbox = (opt) => {
+            const id = `${sel.id}__${opt.value}`;
+            const label = document.createElement("label");
+            label.style.display = "flex";
+            label.style.alignItems = "center";
+            label.style.gap = "8px";
+            label.style.padding = "6px 8px";
+            label.style.border = "1px solid var(--all-text)";
+            label.style.borderRadius = "6px";
+            label.style.background = "transparent";
+            label.style.color = "var(--all-text)";
+
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.name = sel.id + "[]";
+            cb.value = opt.value;
+            cb.id = id;
+            cb.checked = !!opt.selected;
+            cb.style.accentColor = "rgb(86, 212, 254)";
+            cb.addEventListener("change", () => {
+              opt.selected = cb.checked;
+              sel.dispatchEvent(new Event("change", { bubbles: true }));
+            });
+
+            const text = document.createElement("span");
+            text.textContent = opt.textContent.trim();
+            text.style.fontSize = "13px";
+
+            label.appendChild(cb);
+            label.appendChild(text);
+            return label;
+          };
+
+          const children = Array.from(sel.children);
+          if (children.some((n) => n.tagName === "OPTGROUP")) {
+            children.forEach((node) => {
+              if (node.tagName === "OPTGROUP") {
+                // Container per optgroup
+                const og = document.createElement("div");
+                og.className = "pe-optgroup";
+                og.style.marginTop = "10px";
+
+                const legend = document.createElement("div");
+                legend.textContent = node.getAttribute("label") || "";
+                legend.style.fontWeight = "700";
+                legend.style.fontSize = "13px";
+                legend.style.opacity = "0.9";
+                legend.style.marginTop = "4px";
+                section.appendChild(legend);
+
+                const grid = makeGrid();
+                Array.from(node.children).forEach((opt) => {
+                  if (opt.tagName === "OPTION" && !opt.disabled) {
+                    grid.appendChild(makeCheckbox(opt));
+                  }
+                });
+                og.appendChild(grid);
+                section.appendChild(og);
+              }
+            });
+            // Handle any top-level options outside optgroups
+            const topLevel = children.filter(
+              (n) => n.tagName === "OPTION" && !n.disabled
+            );
+            if (topLevel.length) {
+              const legend = document.createElement("div");
+              legend.textContent = "General";
+              legend.style.fontWeight = "700";
+              legend.style.fontSize = "13px";
+              legend.style.opacity = "0.9";
+              legend.style.marginTop = "10px";
+              section.appendChild(legend);
+              const grid = makeGrid();
+              topLevel.forEach((opt) => grid.appendChild(makeCheckbox(opt)));
+              section.appendChild(grid);
+            }
+          } else {
             const grid = makeGrid();
-            topLevel.forEach((opt) => grid.appendChild(makeCheckbox(opt)));
+            Array.from(sel.options).forEach((opt) => {
+              if (!opt.disabled) grid.appendChild(makeCheckbox(opt));
+            });
             section.appendChild(grid);
           }
-        } else {
-          const grid = makeGrid();
-          Array.from(sel.options).forEach((opt) => {
-            if (!opt.disabled) grid.appendChild(makeCheckbox(opt));
-          });
-          section.appendChild(grid);
-        }
 
-        // Insert the section before the hidden select
-        sel.parentNode.insertBefore(section, sel);
-        // Hide original select
-        sel.style.display = 'none';
-        sel.dataset.checkboxified = '1';
+          // Insert the section before the hidden select
+          sel.parentNode.insertBefore(section, sel);
+          // Hide original select
+          sel.style.display = "none";
+          sel.dataset.checkboxified = "1";
 
-        // Hook the search input for this select if present
-        const search = sel.parentNode.querySelector(`.pe-search[data-target='${sel.id}']`);
-        if (search) {
-          search.addEventListener('input', () => {
-            const q = search.value.trim().toLowerCase();
-            section.querySelectorAll('label').forEach((lab) => {
-              const txt = lab.textContent.toLowerCase();
-              lab.style.display = q === '' || txt.includes(q) ? 'flex' : 'none';
+          // Hook the search input for this select if present
+          const search = sel.parentNode.querySelector(
+            `.pe-search[data-target='${sel.id}']`
+          );
+          if (search) {
+            search.addEventListener("input", () => {
+              const q = search.value.trim().toLowerCase();
+              section.querySelectorAll("label").forEach((lab) => {
+                const txt = lab.textContent.toLowerCase();
+                lab.style.display =
+                  q === "" || txt.includes(q) ? "flex" : "none";
+              });
             });
-          });
-        }
-      });
-    }
+          }
+        });
+      }
     </script>
 
     <link
@@ -817,6 +869,13 @@
         ReCaptchaV3Provider,
       } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app-check.js";
 
+      // Firebase AI Logic imports
+      import {
+        getAI,
+        getGenerativeModel,
+        GoogleAIBackend,
+      } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js";
+
       const firebaseConfig = {
         apiKey: "AIzaSyB6e_H-E7l6_x9GbOeJONZ515lsclyoogw",
         authDomain: "coronary-64f63.firebaseapp.com",
@@ -845,11 +904,26 @@
       // Initialize Firestore
       const db = getFirestore(app);
 
+      // Initialize Firebase AI Logic with App Check
+      let ai;
+      try {
+        ai = getAI(app, { backend: new GoogleAIBackend() });
+        console.log("[INDEX] Firebase AI Logic initialized successfully");
+      } catch (error) {
+        console.error(
+          "[INDEX] Firebase AI Logic initialization failed:",
+          error
+        );
+      }
+
       // Expose these globally if you want to access from other scripts
       window.firebaseApp = app;
       window.auth = auth;
       window.onAuthStateChanged = onAuthStateChanged;
       window.signOut = signOut;
+      window.firebaseAI = ai;
+      window.getGenerativeModel = getGenerativeModel;
+      window.GoogleAIBackend = GoogleAIBackend;
 
       window.db = db;
       window.getDocs = getDocs;
@@ -1160,7 +1234,8 @@
 
           const footer = document.getElementById(FOOTER_ID);
           function renderFooter() {
-            if (footer) footer.textContent = `Socrates Beta. ${nowText()}. v1.13 LS. v1.20 GS.`;
+            if (footer)
+              footer.textContent = `Socrates Beta. ${nowText()}. v1.13 LS. v1.20 GS.`;
           }
           renderFooter();
           if (!footerInterval) footerInterval = setInterval(renderFooter, 1000);
@@ -1181,7 +1256,8 @@
             const savedPage = sessionStorage.getItem("currentPage") || "bau";
             if (typeof window.loadContent === "function") {
               window.loadContent(savedPage).catch(() => {
-                if (typeof window.loadDefaultPage === "function") window.loadDefaultPage();
+                if (typeof window.loadDefaultPage === "function")
+                  window.loadDefaultPage();
               });
             } else if (typeof window.loadDefaultPage === "function") {
               window.loadDefaultPage();

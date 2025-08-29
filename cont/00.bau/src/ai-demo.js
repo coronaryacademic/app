@@ -1,26 +1,73 @@
 // === AI Demo Functionality ===
+import { firebaseAI } from "./firebase-ai.js";
+import {
+  generateHTMLReport,
+  openHTMLReportInNewTab,
+  downloadHTMLReport,
+} from "./html-report-generator.js";
+
 export function initAIDemo() {
   try {
-    const aiSection = document.getElementById("ai-section");
+    console.log("[AI-DEMO] Starting initialization...");
     const aiButton = document.getElementById("ai-generate");
     const aiOutput = document.getElementById("ai-output");
     const aiModel = document.getElementById("ai-model");
 
-    if (!aiSection || !aiButton || !aiOutput || !aiModel) {
-      console.warn("[BAU] AI demo elements not found");
+    console.log("[AI-DEMO] Elements found:", {
+      aiButton: !!aiButton,
+      aiOutput: !!aiOutput,
+      aiModel: !!aiModel
+    });
+
+    if (!aiButton || !aiOutput || !aiModel) {
+      console.warn("[BAU] AI demo elements not found - missing elements:", {
+        aiButton: !aiButton,
+        aiOutput: !aiOutput,
+        aiModel: !aiModel
+      });
       return;
     }
 
-    // Show AI section for authenticated users
-    if (window.isUserAuthenticated && window.isUserAuthenticated()) {
-      aiSection.style.display = "block";
+    // Initialize Firebase AI and update model options
+    initializeFirebaseAI();
+
+    async function initializeFirebaseAI() {
+      try {
+        await firebaseAI.initialize();
+        updateModelOptions();
+        console.log("[BAU] Firebase AI initialized successfully");
+      } catch (error) {
+        console.error("[BAU] Firebase AI initialization failed:", error);
+        aiOutput.innerHTML = `<p style="color: red;">Firebase AI initialization failed: ${error.message}</p>`;
+      }
+    }
+
+    function updateModelOptions() {
+      const models = firebaseAI.getAvailableModels();
+      aiModel.innerHTML =
+        '<option value="" disabled selected>Select AI model</option>';
+
+      models.forEach((model) => {
+        const option = document.createElement("option");
+        option.value = model.value;
+        option.textContent = model.text;
+        aiModel.appendChild(option);
+      });
+
+      // Restore saved model selection
+      const savedModel = localStorage.getItem("aiModel");
+      if (savedModel && models.some((m) => m.value === savedModel)) {
+        aiModel.value = savedModel;
+      }
     }
 
     // AI generation handler
     aiButton.addEventListener("click", async (e) => {
+      console.log("[AI-DEMO] Button clicked!");
       e.preventDefault();
 
       const selectedModel = aiModel.value;
+      console.log("[AI-DEMO] Selected model:", selectedModel);
       if (!selectedModel) {
         alert("Please select an AI model first.");
         return;
@@ -41,31 +88,24 @@ export function initAIDemo() {
       aiOutput.innerHTML = "<p>Processing your request...</p>";
 
       try {
-        // Make API call to generate AI suggestions
-        const response = await fetch("/api/ai/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: selectedModel,
-            formData: formData,
-            prompt: buildAIPrompt(formData),
-          }),
-        });
+        // Generate HTML report without AI content for testing
+        const htmlReport = generateHTMLReport(formData, null);
+        openHTMLReportInNewTab(htmlReport);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        displayAIResult(result);
+        // Show success message without AI processing
+        aiOutput.innerHTML = `
+          <div class="ai-suggestions">
+            <h3>Report Generated Successfully</h3>
+            <p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab (AI assessment disabled for testing).</p>
+          </div>
+        `;
+        aiOutput.style.display = "block";
       } catch (error) {
-        console.error("AI generation error:", error);
-        aiOutput.innerHTML = `<p style="color: red;">Error generating AI suggestions: ${error.message}</p>`;
+        console.error("Report generation error:", error);
+        aiOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}</p>`;
       } finally {
         aiButton.disabled = false;
-        aiButton.textContent = "Generate AI Suggestions";
+        aiButton.textContent = "Get Report";
       }
     });
 
@@ -89,13 +129,14 @@ export function initAIDemo() {
 
       return {
         patientName: getElementValue("patient-name"),
-        patientAge: getElementValue("patient-age"),
+        patientAge: getElementValue("age"),
+        gender: getElementValue("gender"),
         chiefComplaint: getElementValue("chief-complaint"),
         site: getElementValue("site"),
         onset: getElementValue("onset"),
         character: getElementValue("character"),
         radiation: getElementValue("radiation"),
-        associatedSymptoms: getElementValue("associated-symptoms"),
+        associatedSymptoms: getElementValue("associated"),
         timing: getElementValue("timing"),
         exacerbating: getElementValue("exacerbating"),
         relieving: getElementValue("relieving"),
@@ -104,11 +145,11 @@ export function initAIDemo() {
         medications: getElementValue("medications"),
         allergies: getElementValue("allergies"),
         familyHistory: getElementValue("family-history"),
-        smoking: getElementValue("smoking"),
-        alcohol: getElementValue("alcohol"),
-        occupation: getElementValue("occupation"),
-        living: getElementValue("living"),
-        travel: getElementValue("travel"),
+        smoking: getElementValue("sh-smoking"),
+        alcohol: getElementValue("sh-alcohol"),
+        occupation: getElementValue("sh-occupation"),
+        living: getElementValue("sh-living"),
+        travel: getElementValue("sh-travel"),
         ice: getElementValue("ice"),
         examination: getElementValue("examination"),
         investigations: getElementValue("investigations"),
@@ -169,30 +210,34 @@ export function initAIDemo() {
     }
 
     function displayAIResult(result) {
-      if (result.error) {
-        aiOutput.innerHTML = `<p style="color: red;">Error: ${result.error}</p>`;
+      if (!result.success || result.error) {
+        aiOutput.innerHTML = `<p style="color: red;">Error: ${
+          result.error || "Unknown error occurred"
+        }</p>`;
+        aiOutput.style.display = "block";
         return;
       }
 
       let html = '<div class="ai-suggestions">';
-      html += "<h3>AI Clinical Suggestions</h3>";
+      html += "<h3>Report Generated Successfully</h3>";
+      html +=
+        '<p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab with AI assessment included.</p>';
 
-      if (result.content) {
-        // Format the AI response with proper HTML
-        const formattedContent = result.content
-          .replace(/\n\n/g, "</p><p>")
-          .replace(/\n/g, "<br>")
-          .replace(/^\d+\.\s*/gm, "<strong>$&</strong>")
-          .replace(/^([A-Z][^:]*:)/gm, "<strong>$1</strong>");
-
-        html += `<div class="ai-content"><p>${formattedContent}</p></div>`;
+      // Show usage info if available
+      if (result.usage) {
+        html += `<div class="ai-usage" style="margin-top: 15px; padding: 10px; background: var(--userdiv); border-radius: 8px; font-size: 12px; color: var(--all-text); opacity: 0.8;">
+          <strong>Usage:</strong> ${result.usage.totalTokens || 0} tokens (${
+          result.model
+        })
+        </div>`;
       }
 
       html +=
-        '<p class="ai-disclaimer"><small><em>Note: These are AI-generated suggestions for educational purposes only. Always consult with qualified medical professionals for actual patient care.</em></small></p>';
+        '<p class="ai-disclaimer" style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;"><strong>Educational Use Only:</strong> The AI-generated assessment is for educational purposes only. Always consult qualified medical professionals for actual patient care and clinical decisions.</p>';
       html += "</div>";
 
       aiOutput.innerHTML = html;
+      aiOutput.style.display = "block";
     }
   } catch (e) {
     console.warn("[BAU] AI demo init error:", e);

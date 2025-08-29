@@ -201,65 +201,7 @@ export function initFormDataManagement() {
     }
 
     function addFormValidationStyling() {
-      const style = document.createElement("style");
-      style.textContent = `
-        /* Enhanced Form Field Styling */
-        input, textarea, select {
-          transition: all 0.3s ease !important;
-          border-radius: 6px !important;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-          border-color: #2cc9c7 !important;
-          box-shadow: 0 0 0 3px rgba(44, 201, 199, 0.1) !important;
-          outline: none !important;
-          transform: translateY(-1px) !important;
-        }
-        
-        input.field-error, textarea.field-error, select.field-error {
-          border-color: #dc3545 !important;
-          box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
-        }
-        
-        input.field-success, textarea.field-success, select.field-success {
-          border-color: #28a745 !important;
-          box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1) !important;
-        }
-        
-        /* Form Section Headers */
-        .form-section h3, .form-subsection h4 {
-          color: #2cc9c7 !important;
-          font-weight: 600 !important;
-          margin-bottom: 15px !important;
-        }
-        
-        /* Enhanced Button Styling */
-        button {
-          transition: all 0.3s ease !important;
-          border-radius: 6px !important;
-          font-weight: 500 !important;
-        }
-        
-        button:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-        }
-        
-        #generate-pdf {
-          background: linear-gradient(135deg, #2cc9c7 0%, #1a9b99 100%) !important;
-          border: none !important;
-          color: white !important;
-          padding: 12px 24px !important;
-          font-size: 16px !important;
-        }
-        
-        #clear-form {
-          background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
-          border: none !important;
-          color: white !important;
-        }
-      `;
-      document.head.appendChild(style);
+      // Form validation styling removed
     }
   } catch (e) {
     console.warn("[BAU] Form data management init error:", e);

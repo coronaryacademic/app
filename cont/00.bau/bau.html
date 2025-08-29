@@ -75,7 +75,7 @@
   }
 </style>
 
-<!-- <script type="module" src="bau-new.js"></script> -->
+<script type="module" src="cont/00.bau/bau-new.js"></script>
 
 <div
   style="
@@ -118,7 +118,7 @@
     max-width: 900px;
     margin: 35px auto 0 auto;
     margin-top: 17px;
-    margin-bottom: -50px;
+    margin-bottom: -60px;
     padding: 28px 32px;
     background-color: var(--header-bg);
     border: 1px solid var(--borderbottomdark);
@@ -3190,37 +3190,6 @@
     "
   />
 
-  <!-- Submit -->
-  <div
-    style="
-      text-align: center;
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    "
-  >
-    <button
-      type="button"
-      id="submit-and-download"
-      style="
-        background-color: transparent;
-        color: var(--all-text);
-        border: 1px solid var(--all-text);
-        padding: 12px 24px;
-        font-size: 16px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        font-weight: 600;
-        min-width: 200px;
-      "
-    >
-      Submit & Download PDF
-    </button>
-  </div>
-
   <!-- Separator between AI section and history form -->
   <hr
     id="ai-section-separator"
@@ -3263,23 +3232,68 @@
       data-bwignore="true"
       style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px"
     >
-      <option value="gemini-1.5-flash">Gemini 1.5 Flash (default)</option>
-      <option value="mistral-large-2411">Mistral Large 2411</option>
-      <option value="openai/gpt-5-nano">
-        OpenAI GPT-5 Nano (GitHub Models)
+      <option value="" disabled selected>Select AI model</option>
+      <option value="gemini-1.5-flash">
+        Gemini 1.5 Flash (Recommended - Free Tier)
       </option>
+      <option value="gemini-1.5-pro">
+        Gemini 1.5 Pro (Advanced - Limited Quota)
+      </option>
+      <option value="gemini-1.0-pro">Gemini 1.0 Pro (Legacy)</option>
     </select>
+
+    <button
+      id="ai-generate"
+      type="button"
+      style="
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        background: var(--userdiv);
+        color: var(--all-text);
+        border: 1px dashed var(--all-text);
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      "
+      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'"
+      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+    >
+      Get Report
+    </button>
+
+    <div
+      id="ai-output"
+      style="
+        margin-top: 15px;
+        padding: 0;
+        border-radius: 8px;
+        background: transparent;
+        min-height: 0;
+        display: none;
+      "
+    ></div>
+
+    <div
+      id="ai-model-status"
+      style="
+        font-size: 12px;
+        color: var(--all-text);
+        margin-top: 6px;
+        opacity: 0.8;
+      "
+    >
+      Model: (none selected)
+    </div>
+
     <div
       id="ai-token-hint"
       style="font-size: 12px; color: var(--all-text); margin-top: 6px"
     >
-      No token required — AI calls are proxied server-side. Switching models
-      affects the AI summary/plan generator.
-    </div>
-    <div id="ai-token-section" class="form-subsection" style="margin-top: 10px">
-      <div style="font-size: 12px; color: var(--all-text)">
-        No token required — secrets are handled on the server.
-      </div>
+      Firebase AI Logic integration - Direct access to Gemini models. No server
+      required.
     </div>
   </div>
 
@@ -3296,118 +3310,6 @@
       margin-bottom: 40px;
     "
   />
-
-  <!-- Gated AI demo (visible only when authenticated; controlled by bau.js) -->
-  <section
-    id="ai-demo"
-    style="
-      max-width: 820px;
-      margin: 30px auto;
-      margin-bottom: 0px;
-      padding: 10px 12px;
-      border: 1px solid var(--all-text);
-      border-radius: 10px;
-      background: transparent;
-      color: var(--all-text);
-      display: none;
-    "
-  >
-    <details open>
-      <summary
-        style="cursor: pointer; font-weight: 700; color: var(--all-text)"
-      >
-        <span>AI Beta — Clinical Helper</span>
-        <small style="opacity: 0.8; color: var(--all-text); margin-left: 10px">
-          <span id="ai-model-status"
-            >Model: Choose the AI model at the top of the form.</span
-          >
-        </small>
-      </summary>
-      <div
-        style="
-          margin-top: 10px;
-          display: grid;
-          gap: 8px;
-          color: var(--all-text);
-        "
-      >
-        <textarea
-          id="aiPrompt"
-          rows="3"
-          placeholder="Type a short, non-sensitive prompt (no PHI)."
-          style="
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--all-text);
-            resize: vertical;
-            background: transparent;
-            color: var(--all-text);
-          "
-        ></textarea>
-        <div
-          style="
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            color: var(--all-text);
-          "
-        >
-          <button
-            id="aiSendBtn"
-            style="
-              padding: 8px 12px;
-              border-radius: 8px;
-              border: 1px solid var(--all-text);
-              cursor: pointer;
-              background: transparent;
-              color: var(--all-text);
-            "
-          >
-            Ask AI
-          </button>
-        </div>
-        <!-- Prompt Preview (read-only) -->
-        <div style="display: grid; gap: 6px">
-          <label
-            for="aiPromptPreview"
-            style="font-weight: 600; color: var(--all-text)"
-            >Prompt Preview</label
-          >
-          <pre
-            id="aiPromptPreview"
-            style="
-              white-space: pre-wrap;
-              font-family: Nunito, Arial, sans-serif;
-              font-size: 13px;
-              background: transparent;
-              border: 1px dashed var(--all-text);
-              padding: 8px;
-              border-radius: 8px;
-              min-height: 40px;
-              color: var(--all-text);
-            "
-          ></pre>
-        </div>
-        <pre
-          id="aiResult"
-          style="
-            white-space: pre-wrap;
-            font-family: Nunito, Arial, sans-serif;
-            font-size: 14px;
-            background: transparent;
-            border: 1px dashed var(--all-text);
-            padding: 8px;
-            border-radius: 8px;
-            min-height: 40px;
-            color: var(--all-text);
-          "
-        >
-Sign in to use AI.
-        </pre>
-      </div>
-    </details>
-  </section>
 </div>
 
 <script>
@@ -3774,7 +3676,9 @@ Sign in to use AI.
       sel.dataset.cbBuilt = "1";
 
       if (sel.id) {
-        const search = peRoot.querySelector(`.pe-search[data-target="${sel.id}"]`);
+        const search = peRoot.querySelector(
+          `.pe-search[data-target="${sel.id}"]`
+        );
         if (search && !search.dataset.bound) {
           search.dataset.bound = "1";
           search.addEventListener("input", () => {
@@ -4400,15 +4304,15 @@ Sign in to use AI.
 
       if (cb) {
         // Respect manual user uncheck
-        if (cb.dataset.manual === 'off') {
-          console.log('[SYMPTOM LINK] Skipped (manual OFF):', cb.value);
+        if (cb.dataset.manual === "off") {
+          console.log("[SYMPTOM LINK] Skipped (manual OFF):", cb.value);
         } else {
           console.log(
             "[SYMPTOM LINK] MATCH FOUND! Checking checkbox for:",
             cb.value
           );
           cb.checked = true;
-          cb.dataset.autoAny = '1';
+          cb.dataset.autoAny = "1";
           found = true;
           cb.style.backgroundColor = "lightgreen";
           setTimeout(() => {
@@ -4667,8 +4571,11 @@ Sign in to use AI.
       prevDesired[source] = desiredSet;
 
       // Global cleanup: uncheck stale items not desired by any source and not manual
-      const combinedDesired = new Set([...prevDesired.cc, ...prevDesired.assoc]);
-      document.querySelectorAll('.ros').forEach((cb) => {
+      const combinedDesired = new Set([
+        ...prevDesired.cc,
+        ...prevDesired.assoc,
+      ]);
+      document.querySelectorAll(".ros").forEach((cb) => {
         const val = cb.value;
         if (
           cb.checked &&
@@ -4682,21 +4589,24 @@ Sign in to use AI.
           console.log("[SYMPTOM LINK] Cleaned stale ROS check:", val);
         }
         // Clear manual override once no longer desired by any source
-        if (!combinedDesired.has(val) && (cb.dataset.manual === 'on' || cb.dataset.manual === 'off')) {
-          cb.dataset.manual = '';
-          cb.dataset.manualAt = '';
+        if (
+          !combinedDesired.has(val) &&
+          (cb.dataset.manual === "on" || cb.dataset.manual === "off")
+        ) {
+          cb.dataset.manual = "";
+          cb.dataset.manualAt = "";
           console.log("[SYMPTOM LINK] Cleared manual override for:", val);
         }
       });
     }
 
     // Delegated listener: track manual changes on any .ros checkbox
-    document.addEventListener('change', function(e) {
+    document.addEventListener("change", function (e) {
       const t = e.target;
-      if (t && t.classList && t.classList.contains('ros') && e.isTrusted) {
-        t.dataset.manual = t.checked ? 'on' : 'off';
+      if (t && t.classList && t.classList.contains("ros") && e.isTrusted) {
+        t.dataset.manual = t.checked ? "on" : "off";
         t.dataset.manualAt = String(Date.now());
-        console.log('[SYMPTOM LINK] Manual change:', t.value, '=>', t.checked);
+        console.log("[SYMPTOM LINK] Manual change:", t.value, "=>", t.checked);
       }
     });
 
@@ -4829,8 +4739,11 @@ Sign in to use AI.
       }
 
       if (rosCheckbox) {
-        if (rosCheckbox.dataset.manual === 'off') {
-          console.log('[SYMPTOM LINK] Skipped (manual OFF):', rosCheckbox.value);
+        if (rosCheckbox.dataset.manual === "off") {
+          console.log(
+            "[SYMPTOM LINK] Skipped (manual OFF):",
+            rosCheckbox.value
+          );
           return;
         }
         rosCheckbox.checked = true;

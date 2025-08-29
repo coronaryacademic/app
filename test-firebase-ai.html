@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase AI Logic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, textarea, button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #3367d6;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .status {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Firebase AI Logic Test</h1>
+        <p>Test the Firebase AI Logic integration with Gemini models.</p>
+
+        <div id="status" class="status">Initializing Firebase...</div>
+
+        <div class="form-group">
+            <label for="model">Select AI Model:</label>
+            <select id="model">
+                <option value="">Loading models...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="prompt">Test Prompt:</label>
+            <textarea id="prompt" rows="4" placeholder="Enter your test prompt here...">Explain the pathophysiology of myocardial infarction in simple terms for a medical student.</textarea>
+        </div>
+
+        <button id="testBtn" onclick="testAI()" disabled>Test AI Generation</button>
+
+        <div id="result"></div>
+    </div>
+
+    <!-- Firebase imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js";
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6e_H-E7l6_x9GbOeJONZ515lsclyoogw",
+            authDomain: "coronary-64f63.firebaseapp.com",
+            projectId: "coronary-64f63",
+            storageBucket: "coronary-64f63.firebasestorage.app",
+            messagingSenderId: "110121771753",
+            appId: "1:110121771753:web:bad6365385b0a38fa94678",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // Initialize App Check for testing (optional - can be disabled in Firebase Console)
+        try {
+            const { initializeAppCheck, ReCaptchaV3Provider } = await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-app-check.js");
+            initializeAppCheck(app, {
+                provider: new ReCaptchaV3Provider('6LfOOOUpAAAAAKgKIBnLJjNyUbvNEGRLKWJZZCdH'),
+                isTokenAutoRefreshEnabled: true,
+            });
+            console.log('App Check initialized for test');
+        } catch (e) {
+            console.warn('App Check initialization failed (this is okay for testing):', e);
+        }
+        
+        const ai = getAI(app, { backend: new GoogleAIBackend() });
+
+        // Available models
+        const models = [
+            { value: 'gemini-1.5-flash', text: 'Gemini 1.5 Flash (Recommended - Free Tier)' },
+            { value: 'gemini-1.5-pro', text: 'Gemini 1.5 Pro (Advanced - Limited Quota)' },
+            { value: 'gemini-1.0-pro', text: 'Gemini 1.0 Pro (Legacy)' }
+        ];
+
+        // DOM elements
+        const statusEl = document.getElementById('status');
+        const modelEl = document.getElementById('model');
+        const testBtn = document.getElementById('testBtn');
+        const resultEl = document.getElementById('result');
+
+        // Initialize
+        async function initialize() {
+            try {
+                statusEl.textContent = 'Initializing Firebase AI Logic...';
+                statusEl.className = 'status';
+
+                // Check if user is already authenticated, if not, that's okay for AI Logic
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log('User authenticated:', user.uid);
+                    } else {
+                        console.log('No user authentication - using AI Logic with API key');
+                    }
+                });
+                
+                statusEl.textContent = '✅ Firebase AI Logic ready!';
+                statusEl.className = 'status success';
+
+                // Populate models
+                modelEl.innerHTML = '<option value="">Select a model</option>';
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.value;
+                    option.textContent = model.text;
+                    modelEl.appendChild(option);
+                });
+
+                testBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Initialization failed:', error);
+                statusEl.textContent = `❌ Initialization failed: ${error.message}`;
+                statusEl.className = 'status error';
+            }
+        }
+
+        // Test AI generation
+        window.testAI = async function() {
+            const modelName = modelEl.value;
+            const prompt = document.getElementById('prompt').value;
+
+            if (!modelName) {
+                alert('Please select a model');
+                return;
+            }
+
+            if (!prompt.trim()) {
+                alert('Please enter a prompt');
+                return;
+            }
+
+            testBtn.disabled = true;
+            testBtn.textContent = 'Generating...';
+            resultEl.innerHTML = '<div class="result">Processing your request...</div>';
+
+            try {
+                // Get the generative model
+                const model = getGenerativeModel(ai, {
+                    model: modelName,
+                    generationConfig: {
+                        temperature: 0.7,
+                        topK: 40,
+                        topP: 0.95,
+                        maxOutputTokens: 2048,
+                    },
+                    safetySettings: [
+                        {
+                            category: 'HARM_CATEGORY_HATE_SPEECH',
+                            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                        },
+                        {
+                            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                        },
+                        {
+                            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                        },
+                        {
+                            category: 'HARM_CATEGORY_HARASSMENT',
+                            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                        },
+                    ],
+                });
+
+                console.log('Generating content with model:', modelName);
+                
+                // Generate content
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
+
+                // Display result
+                const usage = response.usageMetadata || {};
+                resultEl.innerHTML = `
+                    <div class="result success">
+                        <h3>✅ Success!</h3>
+                        <h4>Response:</h4>
+                        <div style="white-space: pre-wrap; line-height: 1.6;">${text}</div>
+                        <hr>
+                        <small><strong>Model:</strong> ${modelName} | <strong>Tokens:</strong> ${usage.totalTokenCount || 0}</small>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Generation failed:', error);
+                
+                let errorMessage = error.message || 'Unknown error occurred';
+                if (errorMessage.includes('quota')) {
+                    errorMessage = 'API quota exceeded. Try Gemini 1.5 Flash or wait a moment.';
+                } else if (errorMessage.includes('safety')) {
+                    errorMessage = 'Content blocked by safety filters. Try a different prompt.';
+                }
+
+                resultEl.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error</h3>
+                        <p>${errorMessage}</p>
+                    </div>
+                `;
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = 'Test AI Generation';
+            }
+        };
+
+        // Start initialization
+        initialize();
+    </script>
+</body>
+</html>
