@@ -434,6 +434,7 @@ export function initAIDemo() {
         ice: getElementValue("ice"),
         examination: getElementValue("examination"),
         investigations: getElementValue("investigations"),
+        studentNotes: getElementValue("student-notes"),
       };
     }
 
@@ -484,6 +485,11 @@ export function initAIDemo() {
         prompt += `\nExamination findings: ${data.examination}\n`;
       if (data.investigations)
         prompt += `Investigations: ${data.investigations}\n`;
+
+      if (data.studentNotes) {
+        prompt += `\nStudent Notes & Clinical Reasoning: ${data.studentNotes}\n`;
+        prompt += `\nPlease consider the student's notes and reasoning above when providing your analysis.\n`;
+      }
 
       prompt += `\nPlease provide:\n1. Most likely differential diagnoses (top 3-5)\n2. Recommended investigations\n3. Initial management approach\n4. Red flags to watch for\n\nPlease format your response clearly with headings.`;
 

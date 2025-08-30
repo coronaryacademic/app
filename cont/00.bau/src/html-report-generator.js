@@ -193,6 +193,33 @@ function generateHTMLReport(formData, aiContent) {
             page-break-inside: avoid;
             break-inside: avoid;
         }
+        /* iPad and mobile responsive fixes */
+        @media screen and (max-width: 1024px) {
+            .container {
+                max-width: 100%;
+                margin: 10px;
+                padding: 20px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .grid .label {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            table {
+                font-size: 14px;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+            table thead, table tbody, table tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+        }
         /* Prevent table rows/cells from splitting across pages */
         table, thead, tbody, tr, td, th {
             page-break-inside: avoid;
@@ -569,6 +596,14 @@ function generatePESection(formData) {
         }
       } else if (element.value && element.value.trim()) {
         findings = element.value.trim();
+      }
+
+      // Check for "Others (Specify)" input for this section
+      const othersCheckbox = document.getElementById(section.id + "-others");
+      const othersText = document.getElementById(section.id + "-others-text");
+      if (othersCheckbox && othersCheckbox.checked && othersText && othersText.value.trim()) {
+        const customFindings = "Others: " + othersText.value.trim();
+        findings = findings ? findings + ", " + customFindings : customFindings;
       }
 
       if (findings) {

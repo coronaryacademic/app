@@ -76,6 +76,27 @@
 </style>
 
 <script type="module" src="cont/00.bau/bau-new.js"></script>
+<script src="src/student-autofill.js"></script>
+
+<script>
+  // Function to toggle PE Others input fields
+  function togglePEOthersInput(checkboxId, textInputId) {
+    const checkbox = document.getElementById(checkboxId);
+    const textInput = document.getElementById(textInputId);
+
+    if (checkbox && textInput) {
+      if (checkbox.checked) {
+        textInput.disabled = false;
+        textInput.style.opacity = "1";
+        textInput.focus();
+      } else {
+        textInput.disabled = true;
+        textInput.style.opacity = "0.6";
+        textInput.value = "";
+      }
+    }
+  }
+</script>
 
 <div
   style="
@@ -1945,6 +1966,50 @@
               <option value="lethargic">Lethargic/Drowsy</option>
               <option value="confused">Confused/Disoriented</option>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-general-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-general-others', 'pe-general-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-general-others-text"
+                placeholder="Describe other general appearance findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2049,6 +2114,239 @@
                 <option value="janeway-lesions">Janeway lesions</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-hands-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-hands-others', 'pe-hands-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-hands-others-text"
+                placeholder="Describe other hand findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Legs -->
+        <div class="form-subsection" style="margin-top: 25px">
+          <button
+            type="button"
+            class="pe-accordion-header"
+            style="
+              width: 100%;
+              text-align: left;
+              font-size: 16px;
+              font-weight: 700;
+              padding: 10px 12px;
+              border: 1px solid var(--all-text);
+              border-radius: 6px;
+              background: var(--header-bg);
+              color: var(--all-text);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              cursor: pointer;
+            "
+          >
+            <span>Legs</span>
+            <span class="chev" style="opacity: 0.8">▸</span>
+          </button>
+          <div
+            class="pe-accordion-content"
+            style="
+              display: none;
+              padding: 10px 12px;
+              border: 1px dashed var(--all-text);
+              border-top: none;
+              border-radius: 0 0 6px 6px;
+            "
+          >
+            <input
+              type="text"
+              placeholder="Search leg findings..."
+              class="pe-search"
+              data-target="pe-legs"
+              style="
+                width: 100%;
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                border: 1px solid var(--all-text);
+                border-radius: 4px;
+                background: var(--header-bg);
+                color: var(--all-text);
+              "
+            />
+            <select
+              id="pe-legs"
+              multiple
+              style="
+                width: 100%;
+                padding: 8px;
+                font-size: 14px;
+                min-height: 100px;
+              "
+            >
+              <optgroup label="General">
+                <option value="legs-normal">Normal legs and feet</option>
+                <option value="legs-warm">Warm legs</option>
+                <option value="legs-cold">Cold legs</option>
+                <option value="feet-warm">Warm feet</option>
+                <option value="feet-cold">Cold feet</option>
+                <option value="legs-dry">Dry legs</option>
+                <option value="legs-moist">Moist/clammy legs</option>
+              </optgroup>
+              <optgroup label="Circulation">
+                <option value="pedal-pulses-normal">Normal pedal pulses</option>
+                <option value="pedal-pulses-diminished">
+                  Diminished pedal pulses
+                </option>
+                <option value="pedal-pulses-absent">Absent pedal pulses</option>
+                <option value="dorsalis-pedis-present">
+                  Dorsalis pedis pulse present
+                </option>
+                <option value="dorsalis-pedis-absent">
+                  Dorsalis pedis pulse absent
+                </option>
+                <option value="posterior-tibial-present">
+                  Posterior tibial pulse present
+                </option>
+                <option value="posterior-tibial-absent">
+                  Posterior tibial pulse absent
+                </option>
+                <option value="capillary-refill-normal">
+                  Normal capillary refill (<2 sec)
+                </option>
+                <option value="capillary-refill-delayed">
+                  Delayed capillary refill (>2 sec)
+                </option>
+              </optgroup>
+              <optgroup label="Edema">
+                <option value="no-leg-edema">No leg edema</option>
+                <option value="ankle-edema-mild">Mild ankle edema</option>
+                <option value="ankle-edema-moderate">
+                  Moderate ankle edema
+                </option>
+                <option value="ankle-edema-severe">Severe ankle edema</option>
+                <option value="pitting-edema">Pitting edema</option>
+                <option value="non-pitting-edema">Non-pitting edema</option>
+                <option value="bilateral-leg-edema">Bilateral leg edema</option>
+                <option value="unilateral-leg-edema">
+                  Unilateral leg edema
+                </option>
+              </optgroup>
+              <optgroup label="Skin & Appearance">
+                <option value="leg-skin-normal">Normal leg skin</option>
+                <option value="leg-cyanosis">Leg cyanosis</option>
+                <option value="leg-pallor">Leg pallor</option>
+                <option value="leg-erythema">Leg erythema</option>
+                <option value="varicose-veins">Varicose veins</option>
+                <option value="spider-veins">Spider veins</option>
+                <option value="leg-ulcers">Leg ulcers</option>
+                <option value="venous-stasis-changes">
+                  Venous stasis changes
+                </option>
+                <option value="hair-loss-legs">Hair loss on legs</option>
+                <option value="skin-atrophy-legs">Skin atrophy</option>
+              </optgroup>
+              <optgroup label="Movement & Function">
+                <option value="normal-leg-movement">Normal leg movement</option>
+                <option value="leg-weakness">Leg weakness</option>
+                <option value="foot-drop">Foot drop</option>
+                <option value="leg-pain-movement">Pain on leg movement</option>
+                <option value="claudication-symptoms">
+                  Claudication symptoms
+                </option>
+                <option value="restless-legs">Restless leg symptoms</option>
+              </optgroup>
+              <optgroup label="Deformities">
+                <option value="no-leg-deformities">No leg deformities</option>
+                <option value="bow-legs">Bow legs (genu varum)</option>
+                <option value="knock-knees">Knock knees (genu valgum)</option>
+                <option value="flat-feet">Flat feet</option>
+                <option value="high-arches">High arches</option>
+                <option value="bunions">Bunions</option>
+                <option value="hammer-toes">Hammer toes</option>
+              </optgroup>
+            </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-legs-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-legs-others', 'pe-legs-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-legs-others-text"
+                placeholder="Describe other leg findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2123,6 +2421,50 @@
               <option value="hypothermic">Hypothermic</option>
               <option value="hypoxic">Hypoxic (low O2 sat)</option>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-vitals-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-vitals-others', 'pe-vitals-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-vitals-others-text"
+                placeholder="Describe other vital sign findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2194,7 +2536,19 @@
                 <option value="s3-gallop">S3 gallop</option>
                 <option value="s4-gallop">S4 gallop</option>
                 <option value="murmur-systolic">Systolic murmur</option>
+                <option value="murmur-early-systolic">
+                  Early systolic murmur
+                </option>
+                <option value="murmur-late-systolic">
+                  Late systolic murmur
+                </option>
                 <option value="murmur-diastolic">Diastolic murmur</option>
+                <option value="murmur-early-diastolic">
+                  Early diastolic murmur
+                </option>
+                <option value="murmur-late-diastolic">
+                  Late diastolic murmur
+                </option>
                 <option value="murmur-holosystolic">Holosystolic murmur</option>
                 <option value="rub">Pericardial friction rub</option>
                 <option value="thrills">Thrills palpable</option>
@@ -2214,6 +2568,50 @@
                 <option value="cyanosis">Cyanosis</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-cardiovascular-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-cardiovascular-others', 'pe-cardiovascular-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-cardiovascular-others-text"
+                placeholder="Describe other cardiovascular findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2315,6 +2713,50 @@
                 <option value="pleural-rub">Pleural friction rub</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-respiratory-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-respiratory-others', 'pe-respiratory-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-respiratory-others-text"
+                placeholder="Describe other respiratory findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2430,6 +2872,50 @@
                 <option value="bowel-sounds-absent">Absent bowel sounds</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-abdominal-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-abdominal-others', 'pe-abdominal-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-abdominal-others-text"
+                placeholder="Describe other abdominal findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
           <!-- cleanup of duplicated lines handled by accordion refactor above -->
         </div>
@@ -2609,6 +3095,50 @@
                 <option value="dysmetria">Dysmetria</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-neurological-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-neurological-others', 'pe-neurological-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-neurological-others-text"
+                placeholder="Describe other neurological findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2706,6 +3236,50 @@
                 <option value="mp-joint">MP joint abnormality</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-musculoskeletal-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-musculoskeletal-others', 'pe-musculoskeletal-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-musculoskeletal-others-text"
+                placeholder="Describe other musculoskeletal findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2799,6 +3373,50 @@
                 <option value="dry-skin">Dry skin</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-dermatological-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-dermatological-others', 'pe-dermatological-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-dermatological-others-text"
+                placeholder="Describe other skin findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -2918,6 +3536,50 @@
                 </option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-ent-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-ent-others', 'pe-ent-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-ent-others-text"
+                placeholder="Describe other ENT findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -3097,6 +3759,50 @@
                 </option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-ophthalmological-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-ophthalmological-others', 'pe-ophthalmological-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-ophthalmological-others-text"
+                placeholder="Describe other eye findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -3199,6 +3905,50 @@
                 <option value="vaginal-discharge">Vaginal discharge</option>
               </optgroup>
             </select>
+
+            <!-- Others (Specify) option -->
+            <div
+              style="
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed var(--all-text);
+                border-radius: 4px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  cursor: pointer;
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="pe-genitourinary-others"
+                  style="margin: 0"
+                  onchange="togglePEOthersInput('pe-genitourinary-others', 'pe-genitourinary-others-text')"
+                />
+                <span style="font-weight: 500">Others (Specify):</span>
+              </label>
+              <input
+                type="text"
+                id="pe-genitourinary-others-text"
+                placeholder="Describe other GU findings..."
+                disabled
+                style="
+                  width: 100%;
+                  margin-top: 6px;
+                  padding: 6px;
+                  font-size: 13px;
+                  border: 1px solid var(--all-text);
+                  border-radius: 3px;
+                  background: var(--header-bg);
+                  color: var(--all-text);
+                  opacity: 0.6;
+                "
+              />
+            </div>
           </div>
         </div>
 
@@ -3227,6 +3977,77 @@
           ></textarea>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Separator between AI section and history form -->
+  <hr
+    id="ai-section-separator"
+    style="
+      margin: 20px 0 30px 0;
+      border: 0;
+      border-top: 1px solid var(--all-text);
+      opacity: 1;
+      width: 100%;
+      margin-top: 30px;
+    "
+  />
+
+  <!-- Student Notes Section -->
+  <div class="form-section" style="margin-top: 30px">
+    <h2
+      style="
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--all-text);
+      "
+    >
+      Student Notes & Analysis
+    </h2>
+    <div class="form-subsection">
+      <label
+        for="student-notes"
+        style="
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 8px;
+          display: block;
+          color: var(--all-text);
+        "
+      >
+        Additional Notes & Clinical Reasoning
+      </label>
+      <p
+        style="
+          font-size: 13px;
+          color: var(--all-text);
+          opacity: 0.8;
+          margin-bottom: 10px;
+          line-height: 1.4;
+        "
+      >
+        Add your clinical thoughts, differential diagnoses, reasoning, or any
+        additional observations. The AI will consider these notes when analyzing
+        the case to provide more accurate and personalized insights.
+      </p>
+      <textarea
+        id="student-notes"
+        placeholder="Example: Patient appears anxious about symptoms. Considering differential of acute coronary syndrome vs. anxiety disorder based on presentation. Need to rule out cardiac causes first given chest pain characteristics..."
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px;
+          font-size: 14px;
+          min-height: 120px;
+          border: 2px dashed var(--all-text);
+          border-radius: 8px;
+          background: var(--header-bg);
+          color: var(--all-text);
+          resize: vertical;
+          line-height: 1.5;
+        "
+      ></textarea>
     </div>
   </div>
 
