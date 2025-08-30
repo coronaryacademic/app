@@ -150,6 +150,36 @@ function generateClinicalTutorPrompt(formData) {
           .join(", ")
       : "No significant past medical history";
 
+  // Get drug history
+  const drugHistory = [];
+  
+  // Regular medications
+  const regularMedsElement = document.getElementById("regular-meds");
+  if (regularMedsElement && regularMedsElement.selectedOptions.length > 0) {
+    const meds = Array.from(regularMedsElement.selectedOptions)
+      .map((opt) => opt.text)
+      .join(", ");
+    drugHistory.push(`Regular Medications: ${meds}`);
+  }
+  
+  // OTC medications
+  const otcElement = document.getElementById("otc");
+  if (otcElement && otcElement.selectedOptions.length > 0) {
+    const otc = Array.from(otcElement.selectedOptions)
+      .map((opt) => opt.text)
+      .join(", ");
+    drugHistory.push(`OTC Medications: ${otc}`);
+  }
+  
+  // Drug allergies
+  const drugAllergiesElement = document.getElementById("drug-allergies");
+  if (drugAllergiesElement && drugAllergiesElement.selectedOptions.length > 0) {
+    const allergies = Array.from(drugAllergiesElement.selectedOptions)
+      .map((opt) => opt.text)
+      .join(", ");
+    drugHistory.push(`Drug Allergies: ${allergies}`);
+  }
+
   // Get family history
   const familyHistoryElement = document.getElementById("family-history");
   const familyHistory = familyHistoryElement
@@ -159,6 +189,62 @@ function generateClinicalTutorPrompt(formData) {
   // Get ICE
   const iceElement = document.getElementById("ice");
   const ice = iceElement ? iceElement.value.trim() : "No ICE documented";
+
+  // Get Physical Examination findings
+  const peToggle = document.getElementById("pe-toggle");
+  const isPEEnabled = peToggle && peToggle.checked;
+  let peFindings = [];
+  
+  if (isPEEnabled) {
+    const peSections = [
+      { id: "pe-general", name: "General Appearance" },
+      { id: "pe-hands", name: "Hands" },
+      { id: "pe-vitals", name: "Vital Signs" },
+      { id: "pe-cardiovascular", name: "Cardiovascular" },
+      { id: "pe-respiratory", name: "Respiratory" },
+      { id: "pe-abdominal", name: "Abdominal" },
+      { id: "pe-neurological", name: "Neurological" },
+      { id: "pe-musculoskeletal", name: "Musculoskeletal" },
+      { id: "pe-legs", name: "Legs" },
+      { id: "pe-dermatological", name: "Dermatological" },
+      { id: "pe-ent", name: "ENT" },
+      { id: "pe-ophthalmological", name: "Ophthalmological" },
+      { id: "pe-genitourinary", name: "Genitourinary" },
+      { id: "pe-additional", name: "Additional Findings" },
+    ];
+
+    peSections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) {
+        let findings = "";
+        if (element.multiple) {
+          const selectedOptions = Array.from(element.selectedOptions);
+          if (selectedOptions.length > 0) {
+            findings = selectedOptions.map((opt) => opt.text).join(", ");
+          }
+        } else if (element.value && element.value.trim()) {
+          findings = element.value.trim();
+        }
+
+        // Check for "Others (Specify)" input for this section
+        const othersCheckbox = document.getElementById(section.id + "-others");
+        const othersText = document.getElementById(section.id + "-others-text");
+        if (
+          othersCheckbox &&
+          othersCheckbox.checked &&
+          othersText &&
+          othersText.value.trim()
+        ) {
+          const customFindings = "Others: " + othersText.value.trim();
+          findings = findings ? findings + ", " + customFindings : customFindings;
+        }
+
+        if (findings) {
+          peFindings.push(`${section.name}: ${findings}`);
+        }
+      }
+    });
+  }
 
   const prompt = `Create a professional clinical narrative from this patient data:
 
@@ -179,7 +265,14 @@ function generateClinicalTutorPrompt(formData) {
 
 **Review of Systems:** ${rosData.length > 0 ? rosData.join(", ") : "Negative"}
 
+**Physical Examination:** ${
+    peFindings.length > 0 ? "\n- " + peFindings.join("\n- ") : "Not performed"
+  }
+
 **Past Medical History:** ${pmh}
+**Drug History:** ${
+    drugHistory.length > 0 ? drugHistory.join(", ") : "No medications or allergies documented"
+  }
 **Family History:** ${familyHistory}
 **Social History:** ${
     socialHistory.length > 0 ? socialHistory.join(", ") : "Not documented"
@@ -742,6 +835,7 @@ function generatePESection(formData) {
     { id: "pe-abdominal", name: "Abdominal" },
     { id: "pe-neurological", name: "Neurological" },
     { id: "pe-musculoskeletal", name: "Musculoskeletal" },
+    { id: "pe-legs", name: "Legs" },
     { id: "pe-dermatological", name: "Dermatological" },
     { id: "pe-ent", name: "ENT" },
     { id: "pe-ophthalmological", name: "Ophthalmological" },
