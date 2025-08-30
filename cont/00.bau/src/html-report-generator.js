@@ -87,6 +87,28 @@ function generateClinicalTutorPrompt(formData) {
     ? studentNotesElement.value.trim()
     : "";
 
+  // Get Past Surgical History (PSH)
+  const pshElement = document.getElementById("past-surgical");
+  const psh =
+    pshElement && pshElement.selectedOptions.length > 0
+      ? Array.from(pshElement.selectedOptions)
+          .map((opt) => opt.text)
+          .join(", ")
+      : "No significant past surgical history";
+
+  // Add smoking quantitative data
+  const cigsPerDayElement = document.getElementById("sh-cigs-per-day");
+  const yearsSmoked = document.getElementById("sh-years-smoked");
+  let smokingDetails = "";
+  if (cigsPerDayElement && cigsPerDayElement.value) {
+    smokingDetails += ` (${cigsPerDayElement.value} cigarettes/day`;
+    if (yearsSmoked && yearsSmoked.value) {
+      smokingDetails += `, ${yearsSmoked.value} years)`;
+    } else {
+      smokingDetails += ")";
+    }
+  }
+
   // Build comprehensive form data summary
   const patientName = formData.patientName || "Patient";
   const age = formData.patientAge || "Unknown age";
@@ -137,7 +159,12 @@ function generateClinicalTutorPrompt(formData) {
   shFields.forEach((field) => {
     const element = document.getElementById(field.id);
     if (element && element.value) {
-      socialHistory.push(`${field.label}: ${element.value}`);
+      let value = element.value;
+      // Add smoking quantitative details if smoking field
+      if (field.id === "sh-smoking" && smokingDetails) {
+        value += smokingDetails;
+      }
+      socialHistory.push(`${field.label}: ${value}`);
     }
   });
 
@@ -190,12 +217,14 @@ function generateClinicalTutorPrompt(formData) {
   const iceElement = document.getElementById("ice");
   const ice = iceElement ? iceElement.value.trim() : "No ICE documented";
 
-  // Get Physical Examination findings
+  // Get Physical Examination findings - COMPREHENSIVE PE DATA COLLECTION
   const peToggle = document.getElementById("pe-toggle");
   const isPEEnabled = peToggle && peToggle.checked;
   let peFindings = [];
+  let gcsData = "";
   
   if (isPEEnabled) {
+    // Complete PE sections list - ensure ALL subsections are captured
     const peSections = [
       { id: "pe-general", name: "General Appearance" },
       { id: "pe-hands", name: "Hands" },
@@ -213,20 +242,25 @@ function generateClinicalTutorPrompt(formData) {
       { id: "pe-additional", name: "Additional Findings" },
     ];
 
+    // Collect findings from each PE subsection
     peSections.forEach((section) => {
       const element = document.getElementById(section.id);
       if (element) {
         let findings = "";
+        
+        // Handle multi-select dropdowns
         if (element.multiple) {
           const selectedOptions = Array.from(element.selectedOptions);
           if (selectedOptions.length > 0) {
             findings = selectedOptions.map((opt) => opt.text).join(", ");
           }
-        } else if (element.value && element.value.trim()) {
+        } 
+        // Handle single select or text inputs
+        else if (element.value && element.value.trim()) {
           findings = element.value.trim();
         }
 
-        // Check for "Others (Specify)" input for this section
+        // Check for "Others (Specify)" custom input for this section
         const othersCheckbox = document.getElementById(section.id + "-others");
         const othersText = document.getElementById(section.id + "-others-text");
         if (
@@ -239,11 +273,44 @@ function generateClinicalTutorPrompt(formData) {
           findings = findings ? findings + ", " + customFindings : customFindings;
         }
 
+        // Add findings if any exist
         if (findings) {
           peFindings.push(`${section.name}: ${findings}`);
         }
       }
     });
+
+    // Collect GCS data if available
+    const eyeEl = document.getElementById("gcs-eye");
+    const verbalEl = document.getElementById("gcs-verbal");
+    const motorEl = document.getElementById("gcs-motor");
+    
+    if (eyeEl || verbalEl || motorEl) {
+      const getSelectedText = (sel) => {
+        if (!sel) return "";
+        const opt = sel.options[sel.selectedIndex];
+        return opt ? (opt.text || "").trim() : "";
+      };
+      const getSelectedValue = (sel) => {
+        if (!sel) return 0;
+        const v = parseInt(sel.value, 10);
+        return Number.isFinite(v) ? v : 0;
+      };
+
+      const eyeText = getSelectedText(eyeEl);
+      const verbalText = getSelectedText(verbalEl);
+      const motorText = getSelectedText(motorEl);
+      
+      const eye = getSelectedValue(eyeEl);
+      const verbal = getSelectedValue(verbalEl);
+      const motor = getSelectedValue(motorEl);
+      const total = eye + verbal + motor;
+
+      if (eyeText || verbalText || motorText) {
+        gcsData = `Glasgow Coma Scale: Eye ${eyeText ? eyeText + " (" + eye + "/4)" : "not assessed"}, Verbal ${verbalText ? verbalText + " (" + verbal + "/5)" : "not assessed"}, Motor ${motorText ? motorText + " (" + motor + "/6)" : "not assessed"}, Total: ${total}/15`;
+        peFindings.push(gcsData);
+      }
+    }
   }
 
   const prompt = `Create a professional clinical narrative from this patient data:
@@ -266,10 +333,11 @@ function generateClinicalTutorPrompt(formData) {
 **Review of Systems:** ${rosData.length > 0 ? rosData.join(", ") : "Negative"}
 
 **Physical Examination:** ${
-    peFindings.length > 0 ? "\n- " + peFindings.join("\n- ") : "Not performed"
+    peFindings.length > 0 ? "\n- " + peFindings.join("\n- ") : "Not performed or PE toggle disabled"
   }
 
 **Past Medical History:** ${pmh}
+**Past Surgical History:** ${psh}
 **Drug History:** ${
     drugHistory.length > 0 ? drugHistory.join(", ") : "No medications or allergies documented"
   }
