@@ -26,6 +26,15 @@
   rel="stylesheet"
 />
 
+<!-- Environment Configuration -->
+<script>
+  // Set environment variables for API access
+  window.ENV = window.ENV || {};
+  // These values will be replaced with actual values during deployment
+  window.ENV.MISTRAL_API_KEY = '{{MISTRAL_API_KEY}}';
+  window.ENV.GITHUB_MODELS_TOKEN = '{{GITHUB_MODELS_TOKEN}}';
+</script>
+
 <style>
   /* Defensive override: any element inside history form that explicitly used white-ish bg */
   #history-form-container * {

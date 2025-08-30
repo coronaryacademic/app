@@ -73,15 +73,53 @@ export function initAIDemo() {
 
     function updateModelOptions() {
       const models = firebaseAI.getAvailableModels();
-      aiModel.innerHTML =
-        '<option value="" disabled selected>Select AI model</option>';
+      aiModel.innerHTML = '';
 
-      models.forEach((model) => {
-        const option = document.createElement("option");
-        option.value = model.value;
-        option.textContent = model.text;
-        aiModel.appendChild(option);
+      // Group models by provider and type
+      const modelGroups = models.reduce((groups, model) => {
+        const provider = model.provider || 'other';
+        const type = model.type || 'other';
+        if (!groups[provider]) {
+          groups[provider] = {};
+        }
+        if (!groups[provider][type]) {
+          groups[provider][type] = [];
+        }
+        groups[provider][type].push(model);
+        return groups;
+      }, {});
+
+      // Create optgroups for each provider and type
+      Object.entries(modelGroups).forEach(([provider, types]) => {
+        Object.entries(types).forEach(([type, modelList]) => {
+          const groupLabel = `${provider.toUpperCase()} ${type === 'vercel' ? 'API' : type.toUpperCase()}`;
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = groupLabel;
+          
+          modelList.forEach((model) => {
+            const option = document.createElement("option");
+            option.value = model.value;
+            option.textContent = model.text;
+            // Store additional model metadata as data attributes
+            option.dataset.type = model.type;
+            option.dataset.provider = model.provider;
+            if (model.apiBase) {
+              option.dataset.apiBase = model.apiBase;
+            }
+            optgroup.appendChild(option);
+          });
+          
+          aiModel.appendChild(optgroup);
+        });
       });
+
+      // Add a default disabled option at the top
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      defaultOption.textContent = 'Select AI model';
+      aiModel.insertBefore(defaultOption, aiModel.firstChild);
 
       // Restore saved model selection
       const savedModel = localStorage.getItem("aiModel");
@@ -430,18 +468,21 @@ export function initAIDemo() {
         updateStatus(4, false);
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Generate HTML report (with or without AI content)
-        const html = window.generateHTMLReport(
-          formData,
-          aiContent
-        );
-        if (!html) return;
-        (window.openHTMLReportInNewTab || (() => {}))(html);
+        // Generate the HTML report with the AI content and model information
+        const htmlReport = window.generateHTMLReport(formData, aiContent, {
+          modelInfo: {
+            modelUsed: selectedModel,
+            fallbackUsed: false,
+            timestamp: Date.now()
+          }
+        });
+        if (!htmlReport) return;
+        (window.openHTMLReportInNewTab || (() => {}))(htmlReport);
 
         // Save to Firestore history (best-effort)
         const saveResult = await saveReportToHistory({
           formData,
-          htmlReport: html,
+          htmlReport: htmlReport, // Use the htmlReport variable we already have
           aiModelValue: selectedModel,
           aiContent,
         });

@@ -73,10 +73,18 @@ function generateAIClinicalAnalysisSection(formData, aiContent) {
 
 function getModelDisplayName(modelValue) {
   const modelNames = {
-    "gemini-1.5-flash": "Gemini 1.5 Flash",
-    "gemini-1.5-pro": "Gemini 1.5 Pro",
-    "gemini-1.0-pro": "Gemini 1.0 Pro",
+    // Firebase models
+    "gemini-1.5-flash": "Gemini 1.5 Flash (Fast)",
+    "gemini-1.5-pro": "Gemini 1.5 Pro (Advanced)",
+    "gemini-1.0-pro": "Gemini 1.0 Pro (Legacy)",
+
+    // Vercel models
+    "vercel/gemini-pro": "Vercel: Gemini Pro",
+    "vercel/gpt-4": "Vercel: GPT-4",
+    "vercel/claude-3-opus": "Vercel: Claude 3 Opus",
   };
+
+  // Default to the model value if not found in the mapping
   return modelNames[modelValue] || modelValue;
 }
 
@@ -179,7 +187,7 @@ function generateClinicalTutorPrompt(formData) {
 
   // Get drug history
   const drugHistory = [];
-  
+
   // Regular medications
   const regularMedsElement = document.getElementById("regular-meds");
   if (regularMedsElement && regularMedsElement.selectedOptions.length > 0) {
@@ -188,7 +196,7 @@ function generateClinicalTutorPrompt(formData) {
       .join(", ");
     drugHistory.push(`Regular Medications: ${meds}`);
   }
-  
+
   // OTC medications
   const otcElement = document.getElementById("otc");
   if (otcElement && otcElement.selectedOptions.length > 0) {
@@ -197,7 +205,7 @@ function generateClinicalTutorPrompt(formData) {
       .join(", ");
     drugHistory.push(`OTC Medications: ${otc}`);
   }
-  
+
   // Drug allergies
   const drugAllergiesElement = document.getElementById("drug-allergies");
   if (drugAllergiesElement && drugAllergiesElement.selectedOptions.length > 0) {
@@ -222,7 +230,7 @@ function generateClinicalTutorPrompt(formData) {
   const isPEEnabled = peToggle && peToggle.checked;
   let peFindings = [];
   let gcsData = "";
-  
+
   if (isPEEnabled) {
     // Complete PE sections list - ensure ALL subsections are captured
     const peSections = [
@@ -247,14 +255,14 @@ function generateClinicalTutorPrompt(formData) {
       const element = document.getElementById(section.id);
       if (element) {
         let findings = "";
-        
+
         // Handle multi-select dropdowns
         if (element.multiple) {
           const selectedOptions = Array.from(element.selectedOptions);
           if (selectedOptions.length > 0) {
             findings = selectedOptions.map((opt) => opt.text).join(", ");
           }
-        } 
+        }
         // Handle single select or text inputs
         else if (element.value && element.value.trim()) {
           findings = element.value.trim();
@@ -270,7 +278,9 @@ function generateClinicalTutorPrompt(formData) {
           othersText.value.trim()
         ) {
           const customFindings = "Others: " + othersText.value.trim();
-          findings = findings ? findings + ", " + customFindings : customFindings;
+          findings = findings
+            ? findings + ", " + customFindings
+            : customFindings;
         }
 
         // Add findings if any exist
@@ -284,7 +294,7 @@ function generateClinicalTutorPrompt(formData) {
     const eyeEl = document.getElementById("gcs-eye");
     const verbalEl = document.getElementById("gcs-verbal");
     const motorEl = document.getElementById("gcs-motor");
-    
+
     if (eyeEl || verbalEl || motorEl) {
       const getSelectedText = (sel) => {
         if (!sel) return "";
@@ -300,14 +310,20 @@ function generateClinicalTutorPrompt(formData) {
       const eyeText = getSelectedText(eyeEl);
       const verbalText = getSelectedText(verbalEl);
       const motorText = getSelectedText(motorEl);
-      
+
       const eye = getSelectedValue(eyeEl);
       const verbal = getSelectedValue(verbalEl);
       const motor = getSelectedValue(motorEl);
       const total = eye + verbal + motor;
 
       if (eyeText || verbalText || motorText) {
-        gcsData = `Glasgow Coma Scale: Eye ${eyeText ? eyeText + " (" + eye + "/4)" : "not assessed"}, Verbal ${verbalText ? verbalText + " (" + verbal + "/5)" : "not assessed"}, Motor ${motorText ? motorText + " (" + motor + "/6)" : "not assessed"}, Total: ${total}/15`;
+        gcsData = `Glasgow Coma Scale: Eye ${
+          eyeText ? eyeText + " (" + eye + "/4)" : "not assessed"
+        }, Verbal ${
+          verbalText ? verbalText + " (" + verbal + "/5)" : "not assessed"
+        }, Motor ${
+          motorText ? motorText + " (" + motor + "/6)" : "not assessed"
+        }, Total: ${total}/15`;
         peFindings.push(gcsData);
       }
     }
@@ -333,13 +349,17 @@ function generateClinicalTutorPrompt(formData) {
 **Review of Systems:** ${rosData.length > 0 ? rosData.join(", ") : "Negative"}
 
 **Physical Examination:** ${
-    peFindings.length > 0 ? "\n- " + peFindings.join("\n- ") : "Not performed or PE toggle disabled"
+    peFindings.length > 0
+      ? "\n- " + peFindings.join("\n- ")
+      : "Not performed or PE toggle disabled"
   }
 
 **Past Medical History:** ${pmh}
 **Past Surgical History:** ${psh}
 **Drug History:** ${
-    drugHistory.length > 0 ? drugHistory.join(", ") : "No medications or allergies documented"
+    drugHistory.length > 0
+      ? drugHistory.join(", ")
+      : "No medications or allergies documented"
   }
 **Family History:** ${familyHistory}
 **Social History:** ${
@@ -458,7 +478,7 @@ function generateGCSSection(formData) {
   `;
 }
 
-function generateHTMLReport(formData, aiContent) {
+function generateHTMLReport(formData, aiContent, options = {}) {
   const reportDate = new Date().toLocaleString();
   const patientName = formData.patientName || "Unknown Patient";
 
@@ -466,6 +486,16 @@ function generateHTMLReport(formData, aiContent) {
   const reportId = generateReportId();
   const buildVersion = "2.0";
   const reportCount = incrementReportCount();
+
+  // Get model information
+  const modelInfo = options.modelInfo || {};
+  const modelDisplayName = modelInfo.modelUsed
+    ? getModelDisplayName(modelInfo.modelUsed)
+    : "Unknown model";
+  const isFallback = modelInfo.fallbackUsed || false;
+  const modelInfoText = isFallback
+    ? ` (Fallback: ${modelDisplayName})`
+    : ` (${modelDisplayName})`;
 
   // Build the HTML report using ECG report styling
   const htmlContent = `<!DOCTYPE html>
@@ -690,7 +720,13 @@ function generateHTMLReport(formData, aiContent) {
         <div class="report-header">
             <h1>Medical Assessment Report</h1>
             <p style="font-size: 14px; color: #666; margin-top: 10px;">Report Date: ${reportDate}</p>
-            <p style="font-size: 12px; color: #adb5bd; margin-top: 5px;">Report #${reportCount} • Build ${buildVersion} • ID: ${reportId}</p>
+            <div style="text-align: center; margin: 10px 0 20px 0;">
+                <p style="font-size: 13px; color: #6c757d; margin: 0; padding: 5px 0; display: inline-block;  border-radius: 4px; padding: 6px 12px; ">
+                  <span>Report #${reportCount} • Build ${buildVersion} • ID: ${reportId}</span>
+                  <span style="margin: 0 5px;">•</span>
+                  <span title="AI model used for generation" >${modelInfoText}</span>
+                </p>
+            </div>
         </div>
         
         ${generateAIClinicalAnalysisSection(formData, aiContent)}
