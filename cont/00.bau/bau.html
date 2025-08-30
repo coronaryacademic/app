@@ -461,6 +461,8 @@
     >
       <optgroup label="Cardiovascular">
         <option value="chest-pain">Chest Pain</option>
+        <option value="tearing-chest-pain">Tearing Chest Pain</option>
+        <option value="back-pain-cvs">Back Pain (CVS)</option>
         <option value="palpitations">Palpitations</option>
         <option value="syncope">Syncope/Fainting</option>
         <option value="leg-swelling">Leg Swelling</option>
@@ -618,6 +620,7 @@
             <option value="chest-right">Chest - Right sided</option>
             <option value="chest-upper">Chest - Upper</option>
             <option value="chest-lower">Chest - Lower</option>
+            <option value="chest-back">Chest - Back</option>
             <option value="precordial">Precordial</option>
             <option value="intercostal">Intercostal</option>
           </optgroup>
@@ -705,6 +708,7 @@
           <option value="dull">Dull/Aching</option>
           <option value="burning">Burning</option>
           <option value="crushing">Crushing/Pressure</option>
+          <option value="tearing">Tearing/Ripping</option>
           <option value="cramping">Cramping</option>
           <option value="throbbing">Throbbing/Pulsating</option>
           <option value="shooting">Shooting</option>
@@ -742,6 +746,7 @@
             <option value="chills">Chills</option>
             <option value="night-sweats">Night sweats</option>
             <option value="sweating">Sweating</option>
+            <option value="excessive-sweating">Excessive sweating</option>
             <option value="fatigue">Fatigue</option>
             <option value="weight-loss">Unintentional weight loss</option>
             <option value="weight-gain">Weight gain</option>
@@ -815,7 +820,6 @@
             <option value="itching">Itching</option>
             <option value="skin-lesions">Skin lesions</option>
             <option value="hair-loss">Hair loss</option>
-            <option value="sweating">Excessive sweating</option>
           </optgroup>
           <optgroup label="ENT">
             <option value="sore-throat">Sore throat</option>
@@ -1747,6 +1751,15 @@
               />
               Memory loss</label
             >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="CNS"
+                value="Lightheadedness/syncope"
+              />
+              Lightheadedness/syncope</label
+            >
           </td>
         </tr>
 
@@ -1788,6 +1801,15 @@
                 value="Swelling"
               />
               Swelling</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="ros"
+                data-system="MSK"
+                value="Back pain"
+              />
+              Back pain</label
             >
           </td>
         </tr>
@@ -4949,6 +4971,7 @@
         fever: ["Fever"],
         "night-sweats": ["Night sweats"],
         sweating: ["Sweating"],
+        "excessive-sweating": ["Sweating"],
         fatigue: ["Fatigue"],
         "weight-loss": ["Weight loss"],
         orthopnea: ["Orthopnoea"],
