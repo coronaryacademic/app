@@ -124,7 +124,7 @@ function generateHTMLReport(formData, aiContent) {
 
   // Generate report metadata
   const reportId = generateReportId();
-  const buildVersion = "1.0";
+  const buildVersion = "2.0";
   const reportCount = incrementReportCount();
 
   // Build the HTML report using ECG report styling
@@ -601,7 +601,12 @@ function generatePESection(formData) {
       // Check for "Others (Specify)" input for this section
       const othersCheckbox = document.getElementById(section.id + "-others");
       const othersText = document.getElementById(section.id + "-others-text");
-      if (othersCheckbox && othersCheckbox.checked && othersText && othersText.value.trim()) {
+      if (
+        othersCheckbox &&
+        othersCheckbox.checked &&
+        othersText &&
+        othersText.value.trim()
+      ) {
         const customFindings = "Others: " + othersText.value.trim();
         findings = findings ? findings + ", " + customFindings : customFindings;
       }
@@ -654,7 +659,7 @@ function generateSocialHistorySection(formData) {
     }
     display = display.trim();
     // Filter out placeholders like "Select ..." and empty values
-    if (display && !display.toLowerCase().startsWith('select'))
+    if (display && !display.toLowerCase().startsWith("select"))
       socialData.push({ label: field.label, value: capitalizeFirst(display) });
   });
 
