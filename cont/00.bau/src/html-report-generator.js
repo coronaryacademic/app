@@ -11,11 +11,41 @@ function initHTMLReportGenerator() {
   }
 }
 
+function capitalizeFirst(str) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function computePackYears() {
+  try {
+    const smokeSel = document.getElementById("sh-smoking");
+    const statusVal = smokeSel ? smokeSel.value : "";
+    const cigs = parseFloat(document.getElementById("sh-cigs-per-day")?.value);
+    const years = parseFloat(document.getElementById("sh-years-smoked")?.value);
+
+    // Only compute for current/ex-smokers with valid numbers
+    if (
+      statusVal &&
+      statusVal !== "never-smoker" &&
+      Number.isFinite(cigs) &&
+      cigs > 0 &&
+      Number.isFinite(years) &&
+      years > 0
+    ) {
+      const packYears = (cigs / 20) * years;
+      return `${packYears.toFixed(1)} pack-years`;
+    }
+  } catch {}
+  return "";
+}
+
 function generateGCSSection(formData) {
   // Only include GCS if PE is enabled (PE toggle checked)
   const peToggle = document.getElementById("pe-toggle");
   if (!peToggle || !peToggle.checked) {
-    try { console.debug("[REPORT:GCS] Skipped: PE toggle is off"); } catch {}
+    try {
+      console.debug("[REPORT:GCS] Skipped: PE toggle is off");
+    } catch {}
     return "";
   }
 
@@ -48,21 +78,40 @@ function generateGCSSection(formData) {
 
   // If nothing selected text-wise, skip
   if (!eyeText && !verbalText && !motorText) {
-    try { console.debug("[REPORT:GCS] Skipped: No selections"); } catch {}
+    try {
+      console.debug("[REPORT:GCS] Skipped: No selections");
+    } catch {}
     return "";
   }
 
   try {
-    console.debug("[REPORT:GCS] Render", { eyeText, verbalText, motorText, total });
+    console.debug("[REPORT:GCS] Render", {
+      eyeText,
+      verbalText,
+      motorText,
+      total,
+    });
   } catch {}
 
   return `
     <section class="section">
       <h2>Glasgow Coma Scale (GCS)</h2>
       <div class="grid">
-        ${eyeText ? `<span class="label">Eye (/4):</span><span>${eyeText}</span>` : ""}
-        ${verbalText ? `<span class="label">Verbal (/5):</span><span>${verbalText}</span>` : ""}
-        ${motorText ? `<span class="label">Motor (/6):</span><span>${motorText}</span>` : ""}
+        ${
+          eyeText
+            ? `<span class="label">Eye (/4):</span><span>${eyeText}</span>`
+            : ""
+        }
+        ${
+          verbalText
+            ? `<span class="label">Verbal (/5):</span><span>${verbalText}</span>`
+            : ""
+        }
+        ${
+          motorText
+            ? `<span class="label">Motor (/6):</span><span>${motorText}</span>`
+            : ""
+        }
         <span class="label">Total:</span><span><strong>${total}</strong> / 15</span>
       </div>
     </section>
@@ -119,6 +168,8 @@ function generateHTMLReport(formData, aiContent) {
             margin-bottom: 40px; 
             padding: 20px 0; 
             border-bottom: 1px solid #f1f3f4;
+            page-break-inside: avoid; /* Legacy */
+            break-inside: avoid;      /* Modern */
         }
         .section:last-child {
             border-bottom: none;
@@ -130,12 +181,22 @@ function generateHTMLReport(formData, aiContent) {
             padding-bottom: 12px; 
             margin-bottom: 20px; 
             margin-top: 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            page-break-after: avoid;
         }
         .grid { 
             display: grid; 
             grid-template-columns: 180px 1fr; 
             gap: 15px 25px; 
             margin-top: 15px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        /* Prevent table rows/cells from splitting across pages */
+        table, thead, tbody, tr, td, th {
+            page-break-inside: avoid;
+            break-inside: avoid;
         }
         .grid .label { font-weight: bold; }
         .recommendation { font-weight: bold; }
@@ -193,8 +254,74 @@ function generateHTMLReport(formData, aiContent) {
             color: #856404;
         }
     </style>
+    <!-- Attempt to preload html2pdf; if not available, we'll load dynamically on click -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      function __ensureHtml2PdfLoaded() {
+        return new Promise((resolve, reject) => {
+          if (window.html2pdf) return resolve();
+          try {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            s.crossOrigin = 'anonymous';
+            s.referrerPolicy = 'no-referrer';
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error('Failed to load html2pdf.js'));
+            document.head.appendChild(s);
+          } catch (e) { reject(e); }
+        });
+      }
+      // Provide in-report download helpers
+      function __downloadCurrentHTML(patientName) {
+        try {
+          const name = (patientName || document.title || 'Clinical_Report')
+            .replace(/[^a-zA-Z0-9]/g, '_');
+          const fileName = name + '_' + new Date().toISOString().split('T')[0] + '.html';
+          const html = document.documentElement.outerHTML;
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+        } catch (e) {
+          console.error('Download failed:', e);
+        }
+      }
+      async function __downloadPDF() {
+        try {
+          await __ensureHtml2PdfLoaded();
+          const element = document.querySelector('.container');
+          const titleEl = document.querySelector('.report-header h1');
+          const title = (titleEl ? titleEl.textContent : 'Clinical_Report').replace(/[^a-zA-Z0-9]/g, '_');
+          const date = (new Date().toISOString().split('T')[0]);
+          const opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     title + '_' + date + '.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'avoid-all'] }
+          };
+          if (!element) throw new Error('Report content not found');
+          const clone = element.cloneNode(true);
+          window.html2pdf().set(opt).from(clone).save();
+        } catch (e) {
+          console.error('PDF generation failed:', e);
+          alert('PDF generation failed. Please try again or use Download HTML.');
+        }
+      }
+    </script>
 </head>
 <body>
+    <div style="position: sticky; top: 0; z-index: 999; background: #fff; border-bottom: 1px solid #e9ecef; padding: 10px 12px; display: flex; gap: 10px; align-items: center;">
+        <button onclick="__downloadPDF()" style="padding: 6px 10px; border: 1px solid #dee2e6; background: #0d6efd; color: white; border-radius: 6px; cursor: pointer;">Download PDF</button>
+        <button onclick="__downloadCurrentHTML()" style="padding: 6px 10px; border: 1px solid #dee2e6; background: #198754; color: white; border-radius: 6px; cursor: pointer;">Download HTML</button>
+        <div style="margin-left: auto; color: #6c757d; font-size: 12px;">Download a PDF or the standalone HTML file</div>
+    </div>
     <div class="container">
         <div class="report-header">
             <h1>Medical Assessment Report</h1>
@@ -341,12 +468,16 @@ function generateROSSection(formData) {
   // try to render from baseline snapshot's _rosData
   if (rosCheckboxes.length === 0) {
     try {
-      const snap = (typeof window !== "undefined") ? window.__bauBaselineSnapshot : null;
+      const snap =
+        typeof window !== "undefined" ? window.__bauBaselineSnapshot : null;
       const rosSnap = snap && snap._rosData ? snap._rosData : null;
       if (rosSnap && typeof rosSnap === "object") {
-        console.debug("[REPORT:ROS] Using fallback _rosData from baseline snapshot", {
-          systems: Object.keys(rosSnap),
-        });
+        console.debug(
+          "[REPORT:ROS] Using fallback _rosData from baseline snapshot",
+          {
+            systems: Object.keys(rosSnap),
+          }
+        );
         Object.keys(rosSnap).forEach((system) => {
           const arr = Array.isArray(rosSnap[system]) ? rosSnap[system] : [];
           if (arr.length) {
@@ -364,7 +495,13 @@ function generateROSSection(formData) {
   });
 
   try {
-    console.debug("[REPORT:ROS] Systems rendered:", rosData.map(r => ({ system: r.system, count: (r.findings ? r.findings.split(',').length : 0) })));
+    console.debug(
+      "[REPORT:ROS] Systems rendered:",
+      rosData.map((r) => ({
+        system: r.system,
+        count: r.findings ? r.findings.split(",").length : 0,
+      }))
+    );
   } catch {}
 
   if (rosData.length === 0) return "";
@@ -471,10 +608,26 @@ function generateSocialHistorySection(formData) {
   const socialData = [];
   socialFields.forEach((field) => {
     const element = document.getElementById(field.id);
-    if (element && element.value && element.value.trim()) {
-      socialData.push({ label: field.label, value: element.value });
+    if (!element) return;
+    let display = "";
+    // Prefer the visible option text when it's a <select>
+    if (element.tagName === "SELECT") {
+      const opt = element.options && element.options[element.selectedIndex];
+      display = (opt && opt.text ? opt.text : element.value) || "";
+    } else {
+      display = element.value || "";
     }
+    display = display.trim();
+    // Filter out placeholders like "Select ..." and empty values
+    if (display && !display.toLowerCase().startsWith('select'))
+      socialData.push({ label: field.label, value: capitalizeFirst(display) });
   });
+
+  // Append Pack-Years if applicable
+  const packYearsText = computePackYears();
+  if (packYearsText) {
+    socialData.push({ label: "Pack-Years (Smoking)", value: packYearsText });
+  }
 
   if (socialData.length === 0) return "";
 
@@ -643,8 +796,13 @@ function generateChiefComplaintSection(formData) {
     ccText = selected.join(", ");
   } else {
     // Fallback for input/select single
-    const selected = ccElement.options ? ccElement.options[ccElement.selectedIndex] : null;
-    ccText = selected && !selected.disabled ? (selected.text || "").trim() : (ccElement.value || "").trim();
+    const selected = ccElement.options
+      ? ccElement.options[ccElement.selectedIndex]
+      : null;
+    ccText =
+      selected && !selected.disabled
+        ? (selected.text || "").trim()
+        : (ccElement.value || "").trim();
   }
 
   if (!ccText) return "";
@@ -698,7 +856,8 @@ function checkIfReportEmpty(formData) {
 
   const peToggle = document.getElementById("pe-toggle");
   const hasPEEnabled = !!(peToggle && peToggle.checked);
-  const hasROSSelections = (document.querySelectorAll("input.ros:checked").length || 0) > 0;
+  const hasROSSelections =
+    (document.querySelectorAll("input.ros:checked").length || 0) > 0;
   const hasGCSSelections = [
     document.getElementById("gcs-eye")?.value,
     document.getElementById("gcs-verbal")?.value,
@@ -708,7 +867,8 @@ function checkIfReportEmpty(formData) {
   // Also consider baseline snapshot ROS (in case DOM checkboxes aren't restored yet)
   let hasBaselineROS = false;
   try {
-    const snap = (typeof window !== "undefined") ? window.__bauBaselineSnapshot : null;
+    const snap =
+      typeof window !== "undefined" ? window.__bauBaselineSnapshot : null;
     const ros = snap && snap._rosData ? snap._rosData : null;
     if (ros && typeof ros === "object") {
       hasBaselineROS = Object.values(ros).some(
@@ -833,16 +993,16 @@ function downloadHTMLReport(htmlContent, patientName) {
 
 function openHTMLReportInNewTab(htmlContent) {
   try {
-    const newWindow = window.open("", "_blank");
-    if (newWindow) {
-      newWindow.document.write(htmlContent);
-      newWindow.document.close();
-      console.log("[HTML Report] Report opened in new tab");
-      return true;
-    } else {
+    const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
       console.error("[HTML Report] Failed to open new window - popup blocked?");
       return false;
     }
+    // Do not revoke the Blob URL so that refresh keeps the content
+    console.log("[HTML Report] Report opened in new tab via Blob URL");
+    return true;
   } catch (error) {
     console.error("[HTML Report] Failed to open in new tab:", error);
     return false;
@@ -852,9 +1012,11 @@ function openHTMLReportInNewTab(htmlContent) {
 // Expose globals for classic scripts
 try {
   if (typeof window !== "undefined") {
-    window.initHTMLReportGenerator = window.initHTMLReportGenerator || initHTMLReportGenerator;
+    window.initHTMLReportGenerator =
+      window.initHTMLReportGenerator || initHTMLReportGenerator;
     window.generateHTMLReport = window.generateHTMLReport || generateHTMLReport;
-    window.openHTMLReportInNewTab = window.openHTMLReportInNewTab || openHTMLReportInNewTab;
+    window.openHTMLReportInNewTab =
+      window.openHTMLReportInNewTab || openHTMLReportInNewTab;
     window.downloadHTMLReport = window.downloadHTMLReport || downloadHTMLReport;
   }
 } catch (_) {}

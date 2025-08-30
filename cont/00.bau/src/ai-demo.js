@@ -23,11 +23,45 @@ export function initAIDemo() {
       return;
     }
 
+    // Hoisted helper to ensure HTML report generator globals are available
+    function ensureHTMLReportGenerator() {
+      return new Promise((resolve) => {
+        if (window.generateHTMLReport && window.initHTMLReportGenerator) {
+          return resolve(true);
+        }
+        const existing = document.querySelector(
+          'script[src="cont/00.bau/src/html-report-generator.js"]'
+        );
+        if (existing) {
+          existing.addEventListener("load", () => resolve(true));
+          existing.addEventListener("error", () => resolve(false));
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = "cont/00.bau/src/html-report-generator.js";
+        s.onload = () => resolve(true);
+        s.onerror = () => resolve(false);
+        document.body.appendChild(s);
+      });
+    }
+
     // Initialize Firebase AI and update model options
     initializeFirebaseAI();
 
     async function initializeFirebaseAI() {
       try {
+        // Ensure report generator is present (handles rare race conditions)
+        const ok = await ensureHTMLReportGenerator();
+        try {
+          if (typeof window.initHTMLReportGenerator === "function") {
+            window.initHTMLReportGenerator();
+          }
+        } catch {}
+        if (!ok || typeof window.generateHTMLReport !== "function") {
+          console.error("[AI-DEMO] HTML report generator unavailable");
+          aiOutput.innerHTML = `<p style="color: red;">Report generator not loaded. Please try again.</p>`;
+          return;
+        }
         await firebaseAI.initialize();
         updateModelOptions();
         console.log("[BAU] Firebase AI initialized successfully");
@@ -304,7 +338,7 @@ export function initAIDemo() {
         }
 
         // Generate HTML report (with or without AI content)
-        const html = (window.generateHTMLReport || (() => ""))(
+        const html = window.generateHTMLReport(
           formData,
           aiOutput.value
         );

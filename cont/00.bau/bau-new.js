@@ -42,7 +42,7 @@ function initBAU() {
         console.warn("[BAU] initHTMLReportGenerator failed:", e);
       }
     });
-    
+
     // Initialize AI Demo after a short delay to ensure DOM is ready
     setTimeout(() => {
       initAIDemo();

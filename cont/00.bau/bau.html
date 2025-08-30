@@ -246,6 +246,56 @@
           <option value="vaper">E-cigarette/Vape user</option>
           <option value="other-tobacco">Other tobacco products</option>
         </select>
+        <!-- Pack-years inputs -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+          "
+        >
+          <div>
+            <label for="sh-cigs-per-day" style="font-size: 13px"
+              >Cigarettes per day</label
+            >
+            <input
+              type="number"
+              id="sh-cigs-per-day"
+              min="0"
+              max="500"
+              step="1"
+              inputmode="numeric"
+              oninput="if(this.value===''){return;} const v=Number(this.value); if(!Number.isFinite(v)||v<0){this.value=0;} else if(v>500){this.value=500;}"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 8px;
+                font-size: 14px;
+              "
+            />
+          </div>
+          <div>
+            <label for="sh-years-smoked" style="font-size: 13px"
+              >Years smoked</label
+            >
+            <input
+              type="number"
+              id="sh-years-smoked"
+              min="0"
+              max="100"
+              step="0.1"
+              inputmode="decimal"
+              oninput="if(this.value===''){return;} const v=Number(this.value); if(!Number.isFinite(v)||v<0){this.value=0;} else if(v>100){this.value=100;}"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 8px;
+                font-size: 14px;
+              "
+            />
+          </div>
+        </div>
       </div>
 
       <div class="form-subsection">
@@ -3233,7 +3283,9 @@
       data-bwignore="true"
       style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px"
     >
-      <option value="" disabled selected>Select AI model</option>
+      <option value="" disabled selected>
+        Select AI model - If no model is selected, AI will remain off
+      </option>
       <option value="gemini-1.5-flash">
         Gemini 1.5 Flash (Recommended - Free Tier)
       </option>
