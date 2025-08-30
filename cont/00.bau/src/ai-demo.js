@@ -309,6 +309,50 @@ export function initAIDemo() {
       }
     }
 
+    // Status tracking functions
+    function showStatusBox() {
+      const statusBox = document.getElementById("report-status");
+      if (statusBox) {
+        statusBox.style.display = "block";
+        // Reset all steps to pending state
+        for (let i = 1; i <= 4; i++) {
+          const step = document.getElementById(`status-step-${i}`);
+          if (step) {
+            step.style.opacity = "0.6";
+            const icon = step.querySelector(".status-icon");
+            if (icon) icon.textContent = "○";
+          }
+        }
+      }
+    }
+
+    function updateStatus(stepNumber, completed = false) {
+      const step = document.getElementById(`status-step-${stepNumber}`);
+      if (step) {
+        if (completed) {
+          step.style.opacity = "1";
+          const icon = step.querySelector(".status-icon");
+          if (icon) {
+            icon.textContent = "✓";
+            icon.style.color = "#28a745";
+          }
+        } else {
+          step.style.opacity = "1";
+          const icon = step.querySelector(".status-icon");
+          if (icon) {
+            icon.innerHTML = '<div class="loading-spinner"></div>';
+          }
+        }
+      }
+    }
+
+    function hideStatusBox() {
+      const statusBox = document.getElementById("report-status");
+      if (statusBox) {
+        statusBox.style.display = "none";
+      }
+    }
+
     // AI generation handler
     aiButton.addEventListener("click", async (e) => {
       console.log("[AI-DEMO] Button clicked!");
@@ -317,30 +361,79 @@ export function initAIDemo() {
       const selectedModel = aiModel.value;
       console.log("[AI-DEMO] Selected model:", selectedModel);
 
-      // Collect form data for processing
-      const formData = collectFormData();
-
-      // Show loading state
+      // Show loading state and status box
       aiButton.disabled = true;
       aiButton.textContent = "Generating...";
-      aiOutput.innerHTML = "<p>Processing your request...</p>";
+      aiOutput.style.display = "none";
+      showStatusBox();
+      
+      // Step 1: Sending inputs to client
+      updateStatus(1, false);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Collect form data for processing
+      const formData = collectFormData();
+      updateStatus(1, true);
+      
+      // Step 2: Report setting up
+      updateStatus(2, false);
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       try {
         let aiContent = null;
+        updateStatus(2, true);
 
-        // Only generate AI content if model is selected
+        // Step 3: AI Assessment (if model selected)
         if (selectedModel) {
-          // AI generation would go here when re-enabled
-          // For now, skip AI processing
-          console.log(
-            "[AI-DEMO] AI model selected but AI processing disabled for testing"
-          );
+          updateStatus(3, false);
+          console.log("[AI-DEMO] Generating AI content with model:", selectedModel);
+          
+          try {
+            // Build the clinical tutor prompt
+            const prompt = buildAIPrompt(formData);
+            console.log("[AI-DEMO] Using prompt:", prompt.substring(0, 200) + "...");
+            
+            // Generate AI content using Firebase AI
+            const aiResult = await firebaseAI.generateContent(selectedModel, prompt);
+            
+            if (aiResult.success) {
+              aiContent = aiResult.content;
+              console.log("[AI-DEMO] AI content generated successfully");
+              updateStatus(3, true);
+              
+              // Save model selection
+              localStorage.setItem("aiModel", selectedModel);
+            } else {
+              console.error("[AI-DEMO] AI generation failed:", aiResult.error);
+              // Skip AI step but continue with report
+              updateStatus(3, true);
+            }
+          } catch (aiError) {
+            console.error("[AI-DEMO] AI generation error:", aiError);
+            // Skip AI step but continue with report
+            updateStatus(3, true);
+          }
+        } else {
+          // No AI model selected, mark step 3 as skipped with X
+          const step = document.getElementById("status-step-3");
+          if (step) {
+            step.style.opacity = "1";
+            const icon = step.querySelector(".status-icon");
+            if (icon) {
+              icon.textContent = "✗";
+              icon.style.color = "#dc3545";
+            }
+          }
         }
+
+        // Step 4: Finishing up
+        updateStatus(4, false);
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         // Generate HTML report (with or without AI content)
         const html = window.generateHTMLReport(
           formData,
-          aiOutput.value
+          aiContent
         );
         if (!html) return;
         (window.openHTMLReportInNewTab || (() => {}))(html);
@@ -365,25 +458,34 @@ export function initAIDemo() {
           }
         }
 
-        // Show success message
-        const aiStatus = selectedModel
-          ? "(AI assessment disabled for testing)"
-          : "(No AI model selected)";
-        aiOutput.innerHTML = `
-          <div class="ai-suggestions">
-            <h3>Report Generated Successfully</h3>
-            <p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab ${aiStatus}.</p>
-            <p style="margin-top:8px; color: var(--all-text); opacity: 0.85; font-size: 13px;">${
-              window.auth?.currentUser
-                ? "Saved to your history."
-                : "Sign in to save to history."
-            }</p>
-          </div>
-        `;
-        aiOutput.style.display = "block";
+        updateStatus(4, true);
+        
+        // Hide status box and show success message
+        setTimeout(() => {
+          hideStatusBox();
+          const aiStatus = selectedModel && aiContent
+            ? "with AI assessment"
+            : selectedModel && !aiContent
+            ? "(AI assessment failed, report generated without AI)"
+            : "(No AI model selected)";
+          aiOutput.innerHTML = `
+            <div class="ai-suggestions" style="text-align: center; padding: 20px;">
+              <h3 style="margin-bottom: 15px; color: var(--all-text);">Report Generated Successfully</h3>
+              <p style="color: #198754; font-weight: 600; margin-bottom: 10px;">Clinical report has been opened in a new tab ${aiStatus}.</p>
+              <p style="margin-top: 8px; color: var(--all-text); opacity: 0.85; font-size: 13px; margin-bottom: 0;">${
+                window.auth?.currentUser
+                  ? "Saved to your history."
+                  : "Sign in to save to history."
+              }</p>
+            </div>
+          `;
+          aiOutput.style.display = "block";
+        }, 500);
       } catch (error) {
         console.error("Report generation error:", error);
+        hideStatusBox();
         aiOutput.innerHTML = `<p style="color: red;">Error generating report: ${error.message}</p>`;
+        aiOutput.style.display = "block";
       } finally {
         aiButton.disabled = false;
         aiButton.textContent = "Get Report";
@@ -439,6 +541,16 @@ export function initAIDemo() {
     }
 
     function buildAIPrompt(data) {
+      // Use the clinical tutor prompt from the HTML report generator
+      if (typeof window.generateClinicalTutorPrompt === "function") {
+        try {
+          return window.generateClinicalTutorPrompt(data);
+        } catch (e) {
+          console.warn("[AI-DEMO] Failed to use clinical tutor prompt, falling back to basic prompt:", e);
+        }
+      }
+      
+      // Fallback to basic prompt if clinical tutor prompt is not available
       let prompt = `Please analyze this patient case and provide clinical insights:\n\n`;
 
       if (data.patientAge) {

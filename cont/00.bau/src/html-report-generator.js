@@ -39,6 +39,185 @@ function computePackYears() {
   return "";
 }
 
+function generateAIClinicalAnalysisSection(formData, aiContent) {
+  // Check if AI model is selected and content is available
+  const aiModelSelect = document.getElementById("ai-model");
+  const selectedModel = aiModelSelect ? aiModelSelect.value : "";
+
+  // Only show AI section if model is selected and content exists
+  if (!selectedModel || !aiContent) {
+    return "";
+  }
+
+  // Get student notes if available
+  const studentNotesElement = document.getElementById("student-notes");
+  const studentNotes = studentNotesElement
+    ? studentNotesElement.value.trim()
+    : "";
+
+  return `
+    <section class="section">
+      <h2>Clinical Assessment</h2>
+      <div class="ai-content">
+        ${formatAIContent(aiContent)}
+      </div>
+      ${
+        studentNotes
+          ? `
+      `
+          : ""
+      }
+    </section>
+  `;
+}
+
+function getModelDisplayName(modelValue) {
+  const modelNames = {
+    "gemini-1.5-flash": "Gemini 1.5 Flash",
+    "gemini-1.5-pro": "Gemini 1.5 Pro",
+    "gemini-1.0-pro": "Gemini 1.0 Pro",
+  };
+  return modelNames[modelValue] || modelValue;
+}
+
+function generateClinicalTutorPrompt(formData) {
+  // Get student notes
+  const studentNotesElement = document.getElementById("student-notes");
+  const studentNotes = studentNotesElement
+    ? studentNotesElement.value.trim()
+    : "";
+
+  // Build comprehensive form data summary
+  const patientName = formData.patientName || "Patient";
+  const age = formData.patientAge || "Unknown age";
+  const gender = formData.gender || "Unknown gender";
+
+  // Get chief complaint
+  const ccElement = document.getElementById("chief-complaint");
+  const chiefComplaint =
+    ccElement && ccElement.selectedOptions.length > 0
+      ? Array.from(ccElement.selectedOptions)
+          .map((opt) => opt.text)
+          .join(", ")
+      : "No chief complaint specified";
+
+  // Build SOCRATES data
+  const socrates = {
+    site: formData.site || "Not specified",
+    onset: formData.onset || "Not specified",
+    character: formData.character || "Not specified",
+    radiation: formData.radiation || "Not specified",
+    associatedSymptoms: formData.associatedSymptoms || "Not specified",
+    timing: formData.timing || "Not specified",
+    exacerbating: formData.exacerbating || "Not specified",
+    relieving: formData.relieving || "Not specified",
+    severity: formData.severity || "Not specified",
+  };
+
+  // Get ROS data
+  const rosData = [];
+  const rosCheckboxes = document.querySelectorAll("input.ros:checked");
+  rosCheckboxes.forEach((checkbox) => {
+    const system = checkbox.getAttribute("data-system");
+    const value = checkbox.value;
+    rosData.push(`${system}: ${value}`);
+  });
+
+  // Get social history
+  const socialHistory = [];
+  const shFields = [
+    { id: "sh-smoking", label: "Smoking" },
+    { id: "sh-alcohol", label: "Alcohol" },
+    { id: "sh-drugs", label: "Drugs" },
+    { id: "sh-occupation", label: "Occupation" },
+    { id: "sh-living", label: "Living situation" },
+    { id: "sh-travel", label: "Travel history" },
+  ];
+
+  shFields.forEach((field) => {
+    const element = document.getElementById(field.id);
+    if (element && element.value) {
+      socialHistory.push(`${field.label}: ${element.value}`);
+    }
+  });
+
+  // Get past medical history
+  const pmhElement = document.getElementById("past-medical");
+  const pmh =
+    pmhElement && pmhElement.selectedOptions.length > 0
+      ? Array.from(pmhElement.selectedOptions)
+          .map((opt) => opt.text)
+          .join(", ")
+      : "No significant past medical history";
+
+  // Get family history
+  const familyHistoryElement = document.getElementById("family-history");
+  const familyHistory = familyHistoryElement
+    ? familyHistoryElement.value.trim()
+    : "No family history provided";
+
+  // Get ICE
+  const iceElement = document.getElementById("ice");
+  const ice = iceElement ? iceElement.value.trim() : "No ICE documented";
+
+  const prompt = `Create a professional clinical narrative from this patient data:
+
+**Patient:** ${patientName}, ${age}, ${gender}
+
+**Chief Complaint:** ${chiefComplaint}
+
+**History of Present Illness:**
+- Site: ${socrates.site}
+- Onset: ${socrates.onset}
+- Character: ${socrates.character}
+- Radiation: ${socrates.radiation}
+- Associated Symptoms: ${socrates.associatedSymptoms}
+- Timing: ${socrates.timing}
+- Exacerbating: ${socrates.exacerbating}
+- Relieving: ${socrates.relieving}
+- Severity: ${socrates.severity}
+
+**Review of Systems:** ${rosData.length > 0 ? rosData.join(", ") : "Negative"}
+
+**Past Medical History:** ${pmh}
+**Family History:** ${familyHistory}
+**Social History:** ${
+    socialHistory.length > 0 ? socialHistory.join(", ") : "Not documented"
+  }
+**ICE:** ${ice}
+
+${
+  studentNotes
+    ? `**Student Clinical Reasoning & Questions:** ${studentNotes}
+
+Please specifically address the student's clinical reasoning and any questions they have raised in your analysis.`
+    : ""
+}
+
+Provide:
+## History of Present Illness
+[Professional chronological narrative]
+
+## Differential Diagnoses
+[List top 3-5 differentials${
+    studentNotes
+      ? " and specifically address the student's clinical reasoning/questions"
+      : ""
+  }]
+
+## Next Steps for Investigation
+[Format as organized table with Investigation | Rationale columns]${
+    studentNotes
+      ? `
+
+## Note
+[Provide clinical insights and address any questions raised, formatted as professional clinical notes without reference to students]`
+      : ""
+  }`;
+
+  return prompt;
+}
+
 function generateGCSSection(formData) {
   // Only include GCS if PE is enabled (PE toggle checked)
   const peToggle = document.getElementById("pe-toggle");
@@ -257,10 +436,7 @@ function generateHTMLReport(formData, aiContent) {
             color: #0d6efd; 
         }
         .ai-content {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
+            padding: 0px;
             margin-top: 15px;
         }
         .ai-content h4 {
@@ -356,6 +532,10 @@ function generateHTMLReport(formData, aiContent) {
             <p style="font-size: 12px; color: #adb5bd; margin-top: 5px;">Report #${reportCount} • Build ${buildVersion} • ID: ${reportId}</p>
         </div>
         
+        ${generateAIClinicalAnalysisSection(formData, aiContent)}
+        
+        ${isReportEmpty(formData) ? "" : "<h1>Summary:</h1>"}
+        
         ${generatePatientDetailsSection(formData)}
         
         ${generateChiefComplaintSection(formData)}
@@ -434,22 +614,6 @@ function generateHTMLReport(formData, aiContent) {
         ${generatePESection(formData)}
 
         ${generateGCSSection(formData)}
-        
-        ${
-          aiContent
-            ? `
-        <section class="section">
-            <h2>AI Clinical Assessment</h2>
-            <div class="ai-content">
-                ${formatAIContent(aiContent)}
-            </div>
-            <div class="disclaimer">
-                <strong>Educational Use Only:</strong> This AI-generated assessment is for educational purposes only. Always consult qualified medical professionals for actual patient care and clinical decisions.
-            </div>
-        </section>
-        `
-            : ""
-        }
         
         ${checkIfReportEmpty(formData)}
         
@@ -855,6 +1019,82 @@ function generateChiefComplaintSection(formData) {
   `;
 }
 
+function isReportEmpty(formData) {
+  // Check if any sections would be generated
+  const hasPatientDetails =
+    document.getElementById("patient-name")?.value?.trim() ||
+    document.getElementById("age")?.value?.trim() ||
+    document.getElementById("gender")?.value?.trim();
+
+  const hasChiefComplaint = document
+    .getElementById("chief-complaint")
+    ?.value?.trim();
+
+  const hasSocrates =
+    document.getElementById("site")?.value ||
+    document.getElementById("onset")?.value ||
+    document.getElementById("character")?.value;
+
+  const hasSocialHistory =
+    document.getElementById("sh-smoking")?.value ||
+    document.getElementById("sh-alcohol")?.value ||
+    document.getElementById("sh-drugs")?.value ||
+    document.getElementById("sh-occupation")?.value ||
+    document.getElementById("sh-living")?.value ||
+    document.getElementById("sh-travel")?.value;
+
+  const hasPMH =
+    document.getElementById("past-medical")?.selectedOptions?.length > 0;
+  const hasPSH =
+    document.getElementById("past-surgical")?.selectedOptions?.length > 0;
+
+  const hasDrugHistory =
+    document.getElementById("regular-meds")?.selectedOptions?.length > 0 ||
+    document.getElementById("otc")?.selectedOptions?.length > 0 ||
+    document.getElementById("drug-allergies")?.selectedOptions?.length > 0;
+
+  const hasFamilyHistory = document
+    .getElementById("family-history")
+    ?.value?.trim();
+  const hasICE = document.getElementById("ice")?.value?.trim();
+
+  const peToggle = document.getElementById("pe-toggle");
+  const hasPEEnabled = !!(peToggle && peToggle.checked);
+  const hasROSSelections =
+    (document.querySelectorAll("input.ros:checked").length || 0) > 0;
+  const hasGCSSelections = [
+    document.getElementById("gcs-eye")?.value,
+    document.getElementById("gcs-verbal")?.value,
+    document.getElementById("gcs-motor")?.value,
+  ].some((v) => v && String(v).trim() !== "");
+
+  // Also consider baseline snapshot ROS
+  let hasBaselineROS = false;
+  try {
+    const snap =
+      typeof window !== "undefined" ? window.__bauBaselineSnapshot : null;
+    const ros = snap && snap._rosData ? snap._rosData : null;
+    if (ros && typeof ros === "object") {
+      hasBaselineROS = Object.values(ros).some(
+        (arr) => Array.isArray(arr) && arr.length > 0
+      );
+    }
+  } catch {}
+
+  return (
+    !hasPatientDetails &&
+    !hasChiefComplaint &&
+    !hasSocrates &&
+    !hasSocialHistory &&
+    !hasPMH &&
+    !hasPSH &&
+    !hasDrugHistory &&
+    !hasFamilyHistory &&
+    !hasICE &&
+    !(hasROSSelections || hasBaselineROS || (hasPEEnabled && hasGCSSelections))
+  );
+}
+
 function checkIfReportEmpty(formData) {
   // Check if any sections would be generated
   const hasPatientDetails =
@@ -969,21 +1209,89 @@ function checkIfReportEmpty(formData) {
 function formatAIContent(content) {
   if (!content) return "";
 
-  // Enhanced formatting for medical content
+  // Enhanced markdown processing for medical content
   let formattedContent = content
     // Convert markdown-style headers to HTML
-    .replace(/^## (.*$)/gm, "<h4>$1</h4>")
-    .replace(/^\*\*(.*?)\*\*/gm, "<strong>$1</strong>")
-    // Format numbered lists
-    .replace(/^\d+\.\s+\*\*(.*?)\*\*/gm, "<strong>$1</strong>")
+    .replace(/^### (.*$)/gm, "<h4>$1</h4>")
+    .replace(/^## (.*$)/gm, "<h3>$1</h3>")
+    // Convert bold text (both ** and __)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/__(.*?)__/g, "<strong>$1</strong>")
+    // Convert italic text (both * and _)
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/_(.*?)_/g, "<em>$1</em>")
+    // Format numbered lists with bold headers
+    .replace(/^(\d+\.)\s*\*\*(.*?)\*\*(.*)$/gm, "$1 <strong>$2</strong>$3")
     // Format bullet points
-    .replace(/^- (.*$)/gm, "• $1")
-    // Convert double line breaks to paragraphs
-    .replace(/\n\n/g, "</p><p>")
+    .replace(/^[-*+]\s+(.*$)/gm, "• $1")
+    // Format investigation tables - convert markdown table format to HTML
+    .replace(
+      /\|(.+)\|\n\|[-\s|]+\|\n((?:\|.+\|\n?)*)/g,
+      (match, header, rows) => {
+        const headerCells = header
+          .split("|")
+          .map((cell) => cell.trim())
+          .filter((cell) => cell);
+        const headerRow =
+          "<tr>" +
+          headerCells
+            .map(
+              (cell) =>
+                `<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5;">${cell}</th>`
+            )
+            .join("") +
+          "</tr>";
+
+        const bodyRows = rows
+          .trim()
+          .split("\n")
+          .map((row) => {
+            const cells = row
+              .replace(/^\||\|$/g, "")
+              .split("|")
+              .map((cell) => cell.trim());
+            return (
+              "<tr>" +
+              cells
+                .map(
+                  (cell) =>
+                    `<td style="border: 1px solid #ddd; padding: 8px;">${cell}</td>`
+                )
+                .join("") +
+              "</tr>"
+            );
+          })
+          .join("");
+
+        return `<table style="border-collapse: collapse; width: 100%; margin: 10px 0;">${headerRow}${bodyRows}</table>`;
+      }
+    )
+    // Handle simple pipe-separated lines as table rows
+    .replace(/^\|(.+)\|$/gm, (match, content) => {
+      const cells = content.split("|").map((cell) => cell.trim());
+      return (
+        "<tr>" +
+        cells
+          .map(
+            (cell) =>
+              `<td style="border: 1px solid #ddd; padding: 8px;">${cell}</td>`
+          )
+          .join("") +
+        "</tr>"
+      );
+    })
+    // Convert double line breaks to paragraph breaks
+    .replace(/\n\s*\n/g, "</p><p>")
     // Convert single line breaks to <br>
     .replace(/\n/g, "<br>");
 
-  return `<p>${formattedContent}</p>`;
+  // Wrap in paragraph tags
+  let result = `<p>${formattedContent}</p>`;
+
+  // Clean up any empty paragraphs
+  result = result.replace(/<p>\s*<\/p>/g, "");
+
+  return result;
 }
 
 function generateReportId() {
@@ -1055,6 +1363,8 @@ try {
     window.initHTMLReportGenerator =
       window.initHTMLReportGenerator || initHTMLReportGenerator;
     window.generateHTMLReport = window.generateHTMLReport || generateHTMLReport;
+    window.generateClinicalTutorPrompt =
+      window.generateClinicalTutorPrompt || generateClinicalTutorPrompt;
     window.openHTMLReportInNewTab =
       window.openHTMLReportInNewTab || openHTMLReportInNewTab;
     window.downloadHTMLReport = window.downloadHTMLReport || downloadHTMLReport;

@@ -4160,6 +4160,58 @@
       Get Report
     </button>
 
+    <!-- Status Box -->
+    <div
+      id="report-status"
+      style="
+        display: none;
+        margin-top: 15px;
+        padding: 20px;
+        background: var(--userdiv);
+        border: 1px solid var(--all-text);
+        border-radius: 8px;
+        font-size: 13px;
+        text-align: center;
+      "
+    >
+      <div style="margin-bottom: 15px; font-weight: 600; color: var(--all-text); font-size: 14px;">
+        Report Generation Progress
+      </div>
+      <div id="status-step-1" class="status-step" style="margin-bottom: 12px; color: var(--all-text); opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span class="status-icon">○</span> Sending inputs to the client...
+      </div>
+      <div id="status-step-2" class="status-step" style="margin-bottom: 12px; color: var(--all-text); opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span class="status-icon">○</span> Report setting up...
+      </div>
+      <div id="status-step-3" class="status-step" style="margin-bottom: 12px; color: var(--all-text); opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span class="status-icon">○</span> Requesting an AI assessment...
+      </div>
+      <div id="status-step-4" class="status-step" style="margin-bottom: 0; color: var(--all-text); opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span class="status-icon">○</span> Finishing up...
+      </div>
+    </div>
+
+    <style>
+      .loading-spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(135, 206, 250, 0.3);
+        border-top: 2px solid #87CEEFA;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .status-step {
+        transition: opacity 0.3s ease;
+      }
+    </style>
+
     <div
       id="ai-output"
       style="
