@@ -294,83 +294,109 @@ export class FirebaseAIService {
 ## Patient Case:
 `;
 
-    // Patient demographics
-    if (formData.patientAge) {
-      prompt += `**Age**: ${formData.patientAge} years old\n`;
-    }
-    if (formData.gender) {
-      prompt += `**Gender**: ${formData.gender}\n`;
-    }
-
-    // Chief complaint
-    if (formData.chiefComplaint) {
-      prompt += `\n**Chief Complaint**: ${formData.chiefComplaint}\n`;
-    }
-
-    // History of Present Illness (HPI)
-    prompt += `\n## History of Present Illness (HPI):\n`;
+    // Start building the HPI as a narrative
+    let hpi = [];
     
-    // Presenting complaint details
-    if (formData.site || formData.onset || formData.character) {
-      prompt += `\n**Presenting Complaint**:\n`;
-      if (formData.site) prompt += `- Site: ${formData.site}\n`;
-      if (formData.onset) prompt += `- Onset: ${formData.onset}\n`;
-      if (formData.character) prompt += `- Character: ${formData.character}\n`;
-      if (formData.radiation) prompt += `- Radiation: ${formData.radiation}\n`;
-      if (formData.associatedSymptoms) prompt += `- Associated Symptoms: ${formData.associatedSymptoms}\n`;
-      if (formData.timing) prompt += `- Timing: ${formData.timing}\n`;
-      if (formData.exacerbating) prompt += `- Exacerbating Factors: ${formData.exacerbating}\n`;
-      if (formData.relieving) prompt += `- Relieving Factors: ${formData.relieving}\n`;
-      if (formData.severity) prompt += `- Severity: ${formData.severity}\n`;
-      if (formData.ice) prompt += `- Patient's Ideas, Concerns, Expectations: ${formData.ice}\n`;
-    }
-
-    // Include all medical history in HPI
+    // Patient identification and demographics
+    let patientInfo = [];
+    if (formData.patientName) patientInfo.push(formData.patientName);
+    if (formData.patientAge) patientInfo.push(`${formData.patientAge}-year-old`);
+    if (formData.gender) patientInfo.push(formData.gender);
+    
+    // Past Medical History
+    let pmh = [];
     if (formData.pastMedicalHistory) {
-      prompt += `\n**Past Medical History**: ${formData.pastMedicalHistory}\n`;
+      pmh = formData.pastMedicalHistory.split(',').map(item => item.trim());
     }
-
-    // Include Past Surgical History in HPI
+    
+    // Past Surgical History
+    let psh = [];
     if (formData.pastSurgicalHistory) {
-      prompt += `\n**Past Surgical History**: ${formData.pastSurgicalHistory}\n`;
+      psh = formData.pastSurgicalHistory.split(',').map(item => item.trim());
     }
-
-    // Include Drug History (DH) in HPI
+    
+    // Build the HPI narrative
+    if (patientInfo.length > 0) {
+      hpi.push(patientInfo.join(' '));
+    }
+    
+    // Add PMH and PSH to the narrative
+    let medicalHistory = [];
+    if (pmh.length > 0) medicalHistory.push(`history of ${pmh.join(', ')}`);
+    if (psh.length > 0) medicalHistory.push(`past surgical history including ${psh.join(', ')}`);
+    
+    if (medicalHistory.length > 0) {
+      hpi[0] += ` with ${medicalHistory.join(' and ')}`;
+    }
+    
+    // Chief Complaint
+    if (formData.chiefComplaint) {
+      hpi[0] += `, presented with ${formData.chiefComplaint.toLowerCase()}.`;
+    } else {
+      hpi[0] += '.';
+    }
+    
+    // Presenting Complaint Details
+    let presentingDetails = [];
+    if (formData.site) presentingDetails.push(`The pain is located in the ${formData.site}`);
+    if (formData.onset) presentingDetails.push(`it began ${formData.onset}`);
+    if (formData.character) presentingDetails.push(`is described as ${formData.character}`);
+    if (formData.radiation) presentingDetails.push(`radiates to ${formData.radiation}`);
+    if (formData.severity) presentingDetails.push(`with a severity of ${formData.severity}/10`);
+    if (formData.timing) presentingDetails.push(`timing is ${formData.timing}`);
+    if (formData.exacerbating) presentingDetails.push(`exacerbated by ${formData.exacerbating}`);
+    if (formData.relieving) presentingDetails.push(`relieved by ${formData.relieving}`);
+    
+    if (presentingDetails.length > 0) {
+      hpi.push(presentingDetails.join(', ') + '.');
+    }
+    
+    // Associated Symptoms
+    if (formData.associatedSymptoms) {
+      hpi.push(`Associated symptoms include: ${formData.associatedSymptoms}.`);
+    }
+    
+    // Drug History
     if (formData.medications) {
-      prompt += `\n**Drug History**: ${formData.medications}\n`;
+      hpi.push(`Current medications include: ${formData.medications}.`);
     }
     
-    // Include Allergies
+    // Allergies
     if (formData.allergies) {
-      prompt += `\n**Allergies**: ${formData.allergies}\n`;
+      hpi.push(`Allergies: ${formData.allergies}.`);
     }
-
-    // Include Physical Examination in HPI
-    if (formData.examination) {
-      prompt += `\n**Physical Examination**: ${formData.examination}\n`;
-    }
-
-    // Include family history in HPI
-    if (formData.familyHistory) {
-      prompt += `\n**Family History**: ${formData.familyHistory}\n`;
-    }
-
-    // Include social history in HPI
-    let socialHistory = [];
-    if (formData.smoking) socialHistory.push(`Smoking: ${formData.smoking}`);
-    if (formData.alcohol) socialHistory.push(`Alcohol: ${formData.alcohol}`);
-    if (formData.occupation) socialHistory.push(`Occupation: ${formData.occupation}`);
-    if (formData.living) socialHistory.push(`Living: ${formData.living}`);
-    if (formData.travel) socialHistory.push(`Travel: ${formData.travel}`);
     
+    // Social History
+    let socialHistory = [];
+    if (formData.smoking) socialHistory.push(`smoking: ${formData.smoking}`);
+    if (formData.alcohol) socialHistory.push(`alcohol: ${formData.alcohol}`);
+    if (formData.occupation) socialHistory.push(`occupation: ${formData.occupation}`);
     if (socialHistory.length > 0) {
-      prompt += `\n**Social History**: ${socialHistory.join(', ')}\n`;
+      hpi.push(`Social history: ${socialHistory.join('; ')}.`);
     }
-
-    // Include investigations in HPI
+    
+    // Family History
+    if (formData.familyHistory) {
+      hpi.push(`Family history: ${formData.familyHistory}.`);
+    }
+    
+    // Physical Examination
+    if (formData.examination) {
+      hpi.push(`Physical examination reveals: ${formData.examination}.`);
+    }
+    
+    // Investigations
     if (formData.investigations) {
-      prompt += `\n**Investigations**: ${formData.investigations}\n`;
+      hpi.push(`Investigations: ${formData.investigations}.`);
     }
+    
+    // ICE (Ideas, Concerns, Expectations)
+    if (formData.ice) {
+      hpi.push(`Patient's concerns/expectations: ${formData.ice}.`);
+    }
+    
+    // Add the HPI to the prompt
+    prompt += `\n## History of Present Illness (HPI):\n\n${hpi.join(' ')}`;
 
     prompt += `\n## Please Provide:
 

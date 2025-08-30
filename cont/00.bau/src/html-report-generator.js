@@ -557,45 +557,51 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         }
         .grid { 
             display: grid; 
-            grid-template-columns: 180px 1fr; 
-            gap: 15px 25px; 
-            margin-top: 15px;
+            grid-template-columns: minmax(150px, 180px) 1fr; 
+            gap: 12px 20px; 
+            margin: 15px 0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            align-items: baseline;
+        }
+        .grid .label { 
+            font-weight: 600;
+            color: #495057;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .grid .value {
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+       
+        /* Table styling with overflow handling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            table-layout: fixed;
+            word-wrap: break-word;
+            page-break-inside: auto;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            text-align: left;
+            vertical-align: top;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
             page-break-inside: avoid;
             break-inside: avoid;
         }
-        /* iPad and mobile responsive fixes */
-        @media screen and (max-width: 1024px) {
-            .container {
-                max-width: 100%;
-                margin: 10px;
-                padding: 20px;
-            }
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .grid .label {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-            table {
-                font-size: 14px;
-                overflow-x: auto;
-                display: block;
-                white-space: nowrap;
-            }
-            table thead, table tbody, table tr {
-                display: table;
-                width: 100%;
-                table-layout: fixed;
-            }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
         }
-        /* Prevent table rows/cells from splitting across pages */
-        table, thead, tbody, tr, td, th {
-            page-break-inside: avoid;
-            break-inside: avoid;
-        }
-        .grid .label { font-weight: bold; }
+        /* Moved .grid .label styles above with enhanced styling */
         .recommendation { font-weight: bold; }
         .recommendation.critical { color: #dc3545; }
         .recommendation.normal { color: #198754; }
