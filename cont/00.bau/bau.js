@@ -1655,7 +1655,7 @@ async function renderHistorySidebar() {
   note.style.color = "var(--all-text)";
   note.style.opacity = "0.7";
   note.textContent =
-    "Note: Items here are automatically deleted after 7 days. You can archive each history to your account to save it. Use the recycle bin icon to delete all.";
+    "Note: Items here are automatically deleted after 7 days. Use the recycle bin icon to delete all. Or use the three-dots on a single history to delete it.";
 
   drawer.appendChild(header);
   drawer.appendChild(sidebarMsg);
@@ -2601,8 +2601,12 @@ async function renderHistorySidebar() {
                     const snap = data.data || {};
                     applySnapshotToForm(snap);
                     try {
-                      const cnt = document.querySelectorAll("input.ros:checked").length;
-                      console.debug("[HISTORY:LOAD] ROS checked after applySnapshotToForm:", cnt);
+                      const cnt =
+                        document.querySelectorAll("input.ros:checked").length;
+                      console.debug(
+                        "[HISTORY:LOAD] ROS checked after applySnapshotToForm:",
+                        cnt
+                      );
                     } catch {}
 
                     // Initialize AI demo handlers to ensure Generate works
@@ -2616,7 +2620,8 @@ async function renderHistorySidebar() {
                     try {
                       window.__bauBaselineSnapshot = snap;
                       window.__bauBaselineHash = JSON.stringify(snap);
-                      const rosSnap = snap && snap._rosData ? snap._rosData : null;
+                      const rosSnap =
+                        snap && snap._rosData ? snap._rosData : null;
                       console.debug("[HISTORY:LOAD] Baseline snapshot set", {
                         hasROS: !!rosSnap,
                         rosSystems: rosSnap ? Object.keys(rosSnap) : [],
@@ -2656,8 +2661,12 @@ async function renderHistorySidebar() {
                       const snap = data.data || {};
                       applySnapshotToForm(snap);
                       try {
-                        const cnt = document.querySelectorAll("input.ros:checked").length;
-                        console.debug("[HISTORY:LOAD:FALLBACK] ROS checked after applySnapshotToForm:", cnt);
+                        const cnt =
+                          document.querySelectorAll("input.ros:checked").length;
+                        console.debug(
+                          "[HISTORY:LOAD:FALLBACK] ROS checked after applySnapshotToForm:",
+                          cnt
+                        );
                       } catch {}
                       try {
                         if (typeof window.initAIDemo === "function") {
@@ -2667,11 +2676,15 @@ async function renderHistorySidebar() {
                       try {
                         window.__bauBaselineSnapshot = snap;
                         window.__bauBaselineHash = JSON.stringify(snap);
-                        const rosSnap = snap && snap._rosData ? snap._rosData : null;
-                        console.debug("[HISTORY:LOAD:FALLBACK] Baseline snapshot set", {
-                          hasROS: !!rosSnap,
-                          rosSystems: rosSnap ? Object.keys(rosSnap) : [],
-                        });
+                        const rosSnap =
+                          snap && snap._rosData ? snap._rosData : null;
+                        console.debug(
+                          "[HISTORY:LOAD:FALLBACK] Baseline snapshot set",
+                          {
+                            hasROS: !!rosSnap,
+                            rosSystems: rosSnap ? Object.keys(rosSnap) : [],
+                          }
+                        );
                       } catch {}
                     } catch {}
                   });
@@ -2680,8 +2693,12 @@ async function renderHistorySidebar() {
               const snap = data.data || {};
               applySnapshotToForm(snap);
               try {
-                const cnt = document.querySelectorAll("input.ros:checked").length;
-                console.debug("[HISTORY:LOAD:NO-SIDEBAR] ROS checked after applySnapshotToForm:", cnt);
+                const cnt =
+                  document.querySelectorAll("input.ros:checked").length;
+                console.debug(
+                  "[HISTORY:LOAD:NO-SIDEBAR] ROS checked after applySnapshotToForm:",
+                  cnt
+                );
               } catch {}
               try {
                 if (typeof window.initAIDemo === "function") {
@@ -2692,10 +2709,13 @@ async function renderHistorySidebar() {
                 window.__bauBaselineSnapshot = snap;
                 window.__bauBaselineHash = JSON.stringify(snap);
                 const rosSnap = snap && snap._rosData ? snap._rosData : null;
-                console.debug("[HISTORY:LOAD:NO-SIDEBAR] Baseline snapshot set", {
-                  hasROS: !!rosSnap,
-                  rosSystems: rosSnap ? Object.keys(rosSnap) : [],
-                });
+                console.debug(
+                  "[HISTORY:LOAD:NO-SIDEBAR] Baseline snapshot set",
+                  {
+                    hasROS: !!rosSnap,
+                    rosSystems: rosSnap ? Object.keys(rosSnap) : [],
+                  }
+                );
               } catch {}
             }
             close();
@@ -2716,10 +2736,12 @@ async function renderHistorySidebar() {
           ? dt.toLocaleDateString(undefined, {
               year: "numeric",
               month: "short",
-              day: "2-digit"
-            }) + "\n" + dt.toLocaleTimeString(undefined, {
+              day: "2-digit",
+            }) +
+            "\n" +
+            dt.toLocaleTimeString(undefined, {
               hour: "2-digit",
-              minute: "2-digit"
+              minute: "2-digit",
             })
           : data.createdAt || "";
         // Remaining time
@@ -3315,7 +3337,10 @@ function applySnapshotToForm(snapshot) {
 
   // Handle ROS checkboxes specially (with bounded retry for late DOM readiness)
   if (snapshot._rosData) {
-    const norm = (s) => String(s ?? "").trim().toLowerCase();
+    const norm = (s) =>
+      String(s ?? "")
+        .trim()
+        .toLowerCase();
     const rosData = snapshot._rosData || {};
 
     const applyROS = () => {
@@ -3338,9 +3363,7 @@ function applySnapshotToForm(snapshot) {
           "";
 
         const arr =
-          (rosData && rosData[sysKey]) ||
-          rosBySysLower[norm(sysKey)] ||
-          [];
+          (rosData && rosData[sysKey]) || rosBySysLower[norm(sysKey)] || [];
 
         let isChecked =
           Array.isArray(arr) && arr.some((v) => norm(v) === norm(valueRaw));
@@ -3365,7 +3388,7 @@ function applySnapshotToForm(snapshot) {
       }, 0);
       const checkedNow = root.querySelectorAll("input.ros:checked").length;
       if (totalSelections > 0 && checkedNow === 0) {
-        window.__rosApplyRetries = (window.__rosApplyRetries || 0);
+        window.__rosApplyRetries = window.__rosApplyRetries || 0;
         if (window.__rosApplyRetries < 5) {
           window.__rosApplyRetries++;
           setTimeout(() => {
@@ -3374,7 +3397,9 @@ function applySnapshotToForm(snapshot) {
         }
       } else {
         // Reset counter on success
-        try { window.__rosApplyRetries = 0; } catch {}
+        try {
+          window.__rosApplyRetries = 0;
+        } catch {}
       }
     } catch {}
   }
