@@ -310,56 +310,67 @@ export class FirebaseAIService {
     // History of Present Illness (HPI)
     prompt += `\n## History of Present Illness (HPI):\n`;
     
-    // Include all relevant details in HPI
+    // Presenting complaint details
     if (formData.site || formData.onset || formData.character) {
       prompt += `\n**Presenting Complaint**:\n`;
-      if (formData.site) prompt += `- **Site**: ${formData.site}\n`;
-      if (formData.onset) prompt += `- **Onset**: ${formData.onset}\n`;
-      if (formData.character) prompt += `- **Character**: ${formData.character}\n`;
-      if (formData.radiation) prompt += `- **Radiation**: ${formData.radiation}\n`;
-      if (formData.associatedSymptoms) prompt += `- **Associated Symptoms**: ${formData.associatedSymptoms}\n`;
-      if (formData.timing) prompt += `- **Timing**: ${formData.timing}\n`;
-      if (formData.exacerbating) prompt += `- **Exacerbating Factors**: ${formData.exacerbating}\n`;
-      if (formData.relieving) prompt += `- **Relieving Factors**: ${formData.relieving}\n`;
-      if (formData.severity) prompt += `- **Severity**: ${formData.severity}\n`;
+      if (formData.site) prompt += `- Site: ${formData.site}\n`;
+      if (formData.onset) prompt += `- Onset: ${formData.onset}\n`;
+      if (formData.character) prompt += `- Character: ${formData.character}\n`;
+      if (formData.radiation) prompt += `- Radiation: ${formData.radiation}\n`;
+      if (formData.associatedSymptoms) prompt += `- Associated Symptoms: ${formData.associatedSymptoms}\n`;
+      if (formData.timing) prompt += `- Timing: ${formData.timing}\n`;
+      if (formData.exacerbating) prompt += `- Exacerbating Factors: ${formData.exacerbating}\n`;
+      if (formData.relieving) prompt += `- Relieving Factors: ${formData.relieving}\n`;
+      if (formData.severity) prompt += `- Severity: ${formData.severity}\n`;
+      if (formData.ice) prompt += `- Patient's Ideas, Concerns, Expectations: ${formData.ice}\n`;
     }
 
-    // Include Past Medical History in HPI
+    // Include all medical history in HPI
     if (formData.pastMedicalHistory) {
       prompt += `\n**Past Medical History**: ${formData.pastMedicalHistory}\n`;
     }
 
     // Include Past Surgical History in HPI
     if (formData.pastSurgicalHistory) {
-      prompt += `**Past Surgical History**: ${formData.pastSurgicalHistory}\n`;
+      prompt += `\n**Past Surgical History**: ${formData.pastSurgicalHistory}\n`;
     }
 
-    // Include Physical Exam in HPI
+    // Include Drug History (DH) in HPI
+    if (formData.medications) {
+      prompt += `\n**Drug History**: ${formData.medications}\n`;
+    }
+    
+    // Include Allergies
+    if (formData.allergies) {
+      prompt += `\n**Allergies**: ${formData.allergies}\n`;
+    }
+
+    // Include Physical Examination in HPI
     if (formData.examination) {
-      prompt += `**Physical Examination**: ${formData.examination}\n`;
+      prompt += `\n**Physical Examination**: ${formData.examination}\n`;
     }
-
-    // Include medications and allergies in HPI
-    if (formData.medications) prompt += `**Current Medications**: ${formData.medications}\n`;
-    if (formData.allergies) prompt += `**Allergies**: ${formData.allergies}\n`;
 
     // Include family history in HPI
-    if (formData.familyHistory) prompt += `**Family History**: ${formData.familyHistory}\n`;
+    if (formData.familyHistory) {
+      prompt += `\n**Family History**: ${formData.familyHistory}\n`;
+    }
 
     // Include social history in HPI
-    if (formData.smoking || formData.alcohol || formData.occupation) {
-      prompt += `**Social History**: `;
-      const socialHistory = [];
-      if (formData.smoking) socialHistory.push(`Smoking: ${formData.smoking}`);
-      if (formData.alcohol) socialHistory.push(`Alcohol: ${formData.alcohol}`);
-      if (formData.occupation) socialHistory.push(`Occupation: ${formData.occupation}`);
-      if (formData.living) socialHistory.push(`Living: ${formData.living}`);
-      if (formData.travel) socialHistory.push(`Travel: ${formData.travel}`);
-      prompt += socialHistory.join(', ') + '\n';
+    let socialHistory = [];
+    if (formData.smoking) socialHistory.push(`Smoking: ${formData.smoking}`);
+    if (formData.alcohol) socialHistory.push(`Alcohol: ${formData.alcohol}`);
+    if (formData.occupation) socialHistory.push(`Occupation: ${formData.occupation}`);
+    if (formData.living) socialHistory.push(`Living: ${formData.living}`);
+    if (formData.travel) socialHistory.push(`Travel: ${formData.travel}`);
+    
+    if (socialHistory.length > 0) {
+      prompt += `\n**Social History**: ${socialHistory.join(', ')}\n`;
     }
 
     // Include investigations in HPI
-    if (formData.investigations) prompt += `**Investigations**: ${formData.investigations}\n`;
+    if (formData.investigations) {
+      prompt += `\n**Investigations**: ${formData.investigations}\n`;
+    }
 
     prompt += `\n## Please Provide:
 
