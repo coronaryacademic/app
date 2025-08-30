@@ -2713,12 +2713,13 @@ async function renderHistorySidebar() {
             ? new Date(data.createdMs)
             : null);
         const when = dt
-          ? dt.toLocaleString(undefined, {
+          ? dt.toLocaleDateString(undefined, {
               year: "numeric",
               month: "short",
-              day: "2-digit",
+              day: "2-digit"
+            }) + "\n" + dt.toLocaleTimeString(undefined, {
               hour: "2-digit",
-              minute: "2-digit",
+              minute: "2-digit"
             })
           : data.createdAt || "";
         // Remaining time
@@ -2741,6 +2742,7 @@ async function renderHistorySidebar() {
         dateLine.style.fontSize = "12px";
         dateLine.style.opacity = "0.85";
         dateLine.style.whiteSpace = "pre-line";
+        dateLine.style.lineHeight = "1.4";
         meta.replaceChildren(nameLine, dateLine);
         meta.title = `${
           data.patientName || "Unknown"
