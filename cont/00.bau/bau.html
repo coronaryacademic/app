@@ -139,6 +139,58 @@
     z-index: -1;
   "
 ></div>
+
+<style>
+  .warning-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 35px auto;
+    padding: 1rem 1.5rem;
+    max-width: 600px;
+    border: 2px solid #dc2626;
+    border-radius: 12px;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+  }
+
+  .warning-box svg {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    fill: #dc2626;
+    margin-top: 2px;
+  }
+</style>
+
+<!-- First Warning -->
+<div class="warning-box">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path
+      d="M12 2L1 21h22L12 2zm0 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-1-7h2v5h-2V9z"
+    />
+  </svg>
+  <span>
+    This report should <strong>not</strong> be exposed nor shared with anyone in
+    the faculty, even the tutor. It is intended only to help students organize
+    ideas and prepare for possible case discussions. It is
+    <strong>not for cheating</strong> or reliance, only for summarizing and
+    structuring thought. Patient name or details must <strong>never</strong> be
+    shared.
+  </span>
+  <span>
+    The
+    <strong>investigation and differential diagnosis AI summary</strong> should
+    not be discussed with others. Since this is an introductory course, it is
+    only meant to connect history and physical exam with results, making sense
+    of the patient’s true case. It is strictly for learning and linking ideas.
+  </span>
+</div>
+
 <!-- Form Container -->
 <div
   id="history-form-container"

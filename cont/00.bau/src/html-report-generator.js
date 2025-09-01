@@ -39,6 +39,91 @@ function computePackYears() {
   return "";
 }
 
+function generateClinicalReasoningSection(formData) {
+  const chiefComplaint = formData.chiefComplaint || "presenting concern";
+  const site = formData.site ? ` in the ${formData.site.toLowerCase()}` : "";
+  const onset = formData.onset || "recently";
+  const character = formData.character || "";
+  const severity = formData.severity || "";
+  const timing = formData.timing || "";
+  const exacerbating = formData.exacerbating || "";
+  const relieving = formData.relieving || "";
+  const associatedSymptoms = formData.associatedSymptoms || "";
+
+  // Analyze physical exam findings
+  const peFindings = [];
+  const peSections = ["cardiovascular", "respiratory", "abdominal", "neurological"];
+  peSections.forEach(section => {
+    const element = document.getElementById(`pe-${section}`);
+    if (element && element.value) {
+      peFindings.push({
+        system: section,
+        findings: element.multiple 
+          ? Array.from(element.selectedOptions).map(opt => opt.text).join(", ")
+          : element.value
+      });
+    }
+  });
+
+  // Build reasoning for history taking
+  let historyReasoning = [];
+  
+  if (site) {
+    historyReasoning.push(`<strong>Site (${site}):</strong> The location of symptoms helps localize the anatomical structure involved.`);
+  }
+  if (onset) {
+    historyReasoning.push(`<strong>Onset (${onset}):</strong> Understanding when symptoms began helps determine acuity and possible causes.`);
+  }
+  if (character) {
+    historyReasoning.push(`<strong>Character (${character}):</strong> The quality of symptoms provides clues about the underlying pathology.`);
+  }
+  if (severity) {
+    historyReasoning.push(`<strong>Severity (${severity}):</strong> Quantifying symptom severity helps assess clinical urgency.`);
+  }
+  if (timing) {
+    historyReasoning.push(`<strong>Timing (${timing}):</strong> The pattern of symptoms over time helps differentiate between conditions.`);
+  }
+  if (exacerbating || relieving) {
+    historyReasoning.push(`<strong>Modifying Factors:</strong> Identifying what worsens (${exacerbating || 'none noted'}) or improves (${relieving || 'none noted'}) symptoms provides diagnostic clues.`);
+  }
+  if (associatedSymptoms) {
+    historyReasoning.push(`<strong>Associated Symptoms (${associatedSymptoms}):</strong> These help identify related system involvement and potential complications.`);
+  }
+
+  // Build reasoning for physical examination
+  let peReasoning = [];
+  if (peFindings.length > 0) {
+    peFindings.forEach(finding => {
+      peReasoning.push(`<strong>${capitalizeFirst(finding.system)} Exam:</strong> ${finding.findings}`);
+    });
+  } else {
+    peReasoning.push("No specific physical examination findings were documented.");
+  }
+
+  return `
+    <section class="section">
+      <h2>Clinical Reasoning</h2>
+      <div class="reasoning-section">
+        <h3>History-Taking Rationale</h3>
+        <p>For a patient presenting with ${chiefComplaint}${site}, the following aspects were explored to narrow down potential diagnoses:</p>
+        <ul class="reasoning-list">
+          ${historyReasoning.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+        
+        <h3>Physical Examination Rationale</h3>
+        <p>The physical examination focused on systems relevant to the ${chiefComplaint} and associated symptoms:</p>
+        <ul class="reasoning-list">
+          ${peReasoning.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+        
+        <div class="educational-note">
+          <strong>Learning Point:</strong> This clinical reasoning demonstrates how patient history and physical examination findings are systematically evaluated to develop a differential diagnosis and guide further investigation.
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function generateAIClinicalAnalysisSection(formData, aiContent) {
   // Check if AI model is selected and content is available
   const aiModelSelect = document.getElementById("ai-model");
@@ -60,6 +145,13 @@ function generateAIClinicalAnalysisSection(formData, aiContent) {
       <h2>Clinical Assessment</h2>
       <div class="ai-content">
         ${formatAIContent(aiContent)}
+        <div class="warning-box" style="margin-top: 20px;">
+          <strong>REMINDER:</strong> The AI-generated differential diagnoses and investigation summaries are 
+          provided as a learning aid for this introductory course. These are starting points to help you 
+          connect the patient's history and physical exam findings. <strong>Do not discuss these specific 
+          AI-generated insights with others.</strong> Focus on understanding how the clinical presentation 
+          leads to the suggested investigations and potential diagnoses.
+        </div>
       </div>
       ${
         studentNotes
@@ -605,6 +697,38 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         .recommendation { font-weight: bold; }
         .recommendation.critical { color: #dc3545; }
         .recommendation.normal { color: #198754; }
+        
+        /* Clinical Reasoning Section Styles */
+        .reasoning-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #0d6efd;
+        }
+        .reasoning-section h3 {
+            color: #0d6efd;
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 1px dashed #dee2e6;
+            padding-bottom: 8px;
+        }
+        .reasoning-list {
+            margin: 10px 0 20px 20px;
+            padding: 0;
+        }
+        .reasoning-list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .educational-note {
+            background-color: #e7f5ff;
+            border-left: 4px solid #4dabf7;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
         .archive-title { 
             text-align: center; 
             margin-bottom: 40px; 
@@ -652,6 +776,20 @@ function generateHTMLReport(formData, aiContent, options = {}) {
             padding: 15px;
             margin-top: 20px;
             color: #856404;
+        }
+        .warning-box {
+            background-color: #fde8e8;
+            border-left: 4px solid #e53e3e;
+            padding: 12px 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #9b2c2c;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .warning-box strong {
+            color: #c53030;
+            font-weight: 600;
         }
     </style>
     <!-- Attempt to preload html2pdf; if not available, we'll load dynamically on click -->
@@ -742,6 +880,8 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         ${generatePatientDetailsSection(formData)}
         
         ${generateChiefComplaintSection(formData)}
+        
+        ${generateClinicalReasoningSection(formData)}
 
         ${
           formData.site || formData.onset || formData.character
@@ -822,10 +962,18 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         
         <footer style="margin-top: 50px; padding: 30px 0; padding-bottom: 0px; border-top: 2px solid #e9ecef; text-align: center; color: #6c757d; font-size: 12px; line-height: 1.5;">
             <div style="margin-bottom: 15px;">
-                <strong style="color: #495057;">Generated for educational purposes</strong> • This report is generated for medical education and training purposes only. Always consult with qualified healthcare professionals for actual patient care.
-            </div>
-            <div style="color: #868e96; margin-bottom: 10px;">
-                Developed and coded by <strong>Momen</strong>
+                <p class="disclaimer">
+                <strong>Important:</strong> This report is generated for medical education and training purposes only. 
+                It is not a substitute for professional medical advice, diagnosis, or treatment. 
+                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+            </p>
+            <div class="warning-box">
+                <strong>CONFIDENTIALITY WARNING:</strong> This report is for your personal educational use only. 
+                <strong>DO NOT share this report with faculty, tutors, or other students.</strong> It is designed to help you 
+                organize your thoughts and prepare for potential case discussions. The patient's name and identifying details 
+                must never be shared. This is not meant to be a source for cheating or a replacement for your own learning 
+                and critical thinking.
+            </div>    Developed and coded by <strong>Momen</strong>
             </div>
             <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
                 Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
