@@ -510,14 +510,27 @@ export function initAIDemo() {
             ? "(AI assessment failed, report generated without AI)"
             : "(No AI model selected)";
           aiOutput.innerHTML = `
-            <div class="ai-suggestions" style="text-align: center; padding: 20px;">
-              <h3 style="margin-bottom: 15px; color: var(--all-text);">Report Generated Successfully</h3>
-              <p style="color: #198754; font-weight: 600; margin-bottom: 10px;">Clinical report has been opened in a new tab ${aiStatus}.</p>
-              <p style="margin-top: 8px; color: var(--all-text); opacity: 0.85; font-size: 13px; margin-bottom: 0;">${
-                window.auth?.currentUser
-                  ? "Saved to your history."
-                  : "Sign in to save to history."
-              }</p>
+            <div class="ai-suggestions" style="
+              text-align: center;
+              padding: 25px;
+              border: 2px solid #198754;
+              border-radius: 12px;
+              background-color: rgba(25, 135, 84, 0.05);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+              max-width: 600px;
+              margin: 0 auto;
+            ">
+              <h3 style="margin: 0 0 15px 0; color: var(--all-text); font-weight: 600; font-size: 1.4rem;">
+                <i class="fas fa-check-circle" style="color: #198754; margin-right: 8px;"></i>
+                Report Generated Successfully
+              </h3>
+              <p style="color: var(--all-text); font-size: 1rem; margin-bottom: 12px; line-height: 1.5;">
+                Clinical report has been opened in a new tab ${aiStatus}.
+              </p>
+              <p style="margin: 0; color: var(--all-text); opacity: 0.9; font-size: 0.9rem;">
+                <i class="fas ${window.auth?.currentUser ? 'fa-check' : 'fa-user'} fa-sm" style="margin-right: 5px;"></i>
+                ${window.auth?.currentUser ? 'Saved to your history.' : 'Sign in to save to history.'}
+              </p>
             </div>
           `;
           aiOutput.style.display = "block";
@@ -659,9 +672,29 @@ export function initAIDemo() {
       }
 
       let html = '<div class="ai-suggestions">';
-      html += "<h3>Report Generated Successfully</h3>";
-      html +=
-        '<p style="color: #198754; font-weight: 600;">Clinical report has been opened in a new tab with AI assessment included.</p>';
+      html += `
+        <div style="
+          text-align: center;
+          padding: 25px;
+          border: 2px solid #198754;
+          border-radius: 12px;
+          background-color: rgba(25, 135, 84, 0.05);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          max-width: 600px;
+          margin: 0 auto;
+        ">
+          <h3 style="margin: 0 0 15px 0; color: var(--all-text); font-weight: 600; font-size: 1.4rem;">
+            <i class="fas fa-check-circle" style="color: #198754; margin-right: 8px;"></i>
+            Report Generated Successfully
+          </h3>
+          <p style="color: var(--all-text); font-size: 1rem; margin-bottom: 12px; line-height: 1.5;">
+            Clinical report has been opened in a new tab with AI assessment included.
+          </p>
+          <p style="margin: 0; color: var(--all-text); opacity: 0.9; font-size: 0.9rem;">
+            <i class="fas fa-check fa-sm" style="margin-right: 5px;"></i>
+            Saved to your history.
+          </p>
+        </div>`;
 
       // Show usage info if available
       if (result.usage) {
