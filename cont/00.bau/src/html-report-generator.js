@@ -67,27 +67,28 @@ function generateClinicalReasoningSection(formData) {
 
   // Build reasoning for history taking
   let historyReasoning = [];
+  const systemAffected = formData.systemAffected || 'the affected system';
   
   if (site) {
-    historyReasoning.push(`<strong>Site (${site}):</strong> The location of symptoms helps localize the anatomical structure involved.`);
+    historyReasoning.push(`<strong>Site (${site}):</strong> The ${site} is involved because it contains structures related to ${systemAffected}. For example, ${site}-related symptoms in ${systemAffected} could indicate involvement of specific anatomical structures or referred pain patterns.`);
   }
   if (onset) {
-    historyReasoning.push(`<strong>Onset (${onset}):</strong> Understanding when symptoms began helps determine acuity and possible causes.`);
+    historyReasoning.push(`<strong>Onset (${onset}):</strong> A ${onset} onset suggests specific pathophysiological processes in ${systemAffected}. This timing helps differentiate between acute conditions (like infections or trauma) and chronic conditions (like degenerative diseases) affecting ${systemAffected}.`);
   }
   if (character) {
-    historyReasoning.push(`<strong>Character (${character}):</strong> The quality of symptoms provides clues about the underlying pathology.`);
+    historyReasoning.push(`<strong>Character (${character}):</strong> The ${character} quality is characteristic of how ${systemAffected} manifests symptoms. This specific quality helps distinguish between different types of pathology within ${systemAffected} (e.g., ischemic vs. inflammatory pain).`);
   }
   if (severity) {
-    historyReasoning.push(`<strong>Severity (${severity}):</strong> Quantifying symptom severity helps assess clinical urgency.`);
+    historyReasoning.push(`<strong>Severity (${severity}):</strong> The ${severity} intensity indicates the degree of ${systemAffected} involvement. This helps assess disease progression and guides treatment urgency for ${systemAffected} conditions.`);
   }
   if (timing) {
-    historyReasoning.push(`<strong>Timing (${timing}):</strong> The pattern of symptoms over time helps differentiate between conditions.`);
+    historyReasoning.push(`<strong>Timing (${timing}):</strong> The ${timing} pattern is significant because it reflects how ${systemAffected} responds to various stimuli or follows diurnal/physiological patterns specific to ${systemAffected}.`);
   }
   if (exacerbating || relieving) {
-    historyReasoning.push(`<strong>Modifying Factors:</strong> Identifying what worsens (${exacerbating || 'none noted'}) or improves (${relieving || 'none noted'}) symptoms provides diagnostic clues.`);
+    historyReasoning.push(`<strong>Modifying Factors:</strong> In ${systemAffected}, factors that worsen (${exacerbating || 'none noted'}) or improve (${relieving || 'none noted'}) symptoms provide critical diagnostic clues about the underlying pathology and help differentiate between conditions affecting ${systemAffected}.`);
   }
   if (associatedSymptoms) {
-    historyReasoning.push(`<strong>Associated Symptoms (${associatedSymptoms}):</strong> These help identify related system involvement and potential complications.`);
+    historyReasoning.push(`<strong>Associated Symptoms (${associatedSymptoms}):</strong> These symptoms suggest additional system involvement or complications related to ${systemAffected}, helping to build a more complete clinical picture of the ${systemAffected} pathology.`);
   }
 
   // Build reasoning for physical examination
@@ -100,28 +101,41 @@ function generateClinicalReasoningSection(formData) {
     peReasoning.push("No specific physical examination findings were documented.");
   }
 
-  return `
-    <section class="section">
-      <h2>Clinical Reasoning</h2>
-      <div class="reasoning-section">
-        <h3>History-Taking Rationale</h3>
-        <p>For a patient presenting with ${chiefComplaint}${site}, the following aspects were explored to narrow down potential diagnoses:</p>
-        <ul class="reasoning-list">
-          ${historyReasoning.map(item => `<li>${item}</li>`).join('')}
-        </ul>
-        
-        <h3>Physical Examination Rationale</h3>
-        <p>The physical examination focused on systems relevant to the ${chiefComplaint} and associated symptoms:</p>
-        <ul class="reasoning-list">
-          ${peReasoning.map(item => `<li>${item}</li>`).join('')}
-        </ul>
-        
-        <div class="educational-note">
-          <strong>Learning Point:</strong> This clinical reasoning demonstrates how patient history and physical examination findings are systematically evaluated to develop a differential diagnosis and guide further investigation.
+  // Only return the section if we have actual content beyond placeholders
+  const hasRealContent = historyReasoning.some(item => 
+    !item.includes('the affected system') && 
+    !item.includes('No specific') &&
+    !item.includes('recently') &&
+    !item.includes('presenting concern')
+  );
+  
+  if (hasRealContent) {
+    // Add the clinical reasoning right after the AI content
+    return `
+      <section class="section" style="margin-top: 20px;">
+        <h2 style="color: #212529; border-bottom: 1px solid #dee2e6; padding-bottom: 8px;">Clinical Reasoning</h2>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 10px;">
+          <h3 style="color: #212529; font-size: 16px; margin-top: 0;">Pathophysiological Basis of Symptoms</h3>
+          <p>For a patient presenting with ${chiefComplaint}${site}, the following analysis explains how these symptoms relate to the underlying pathology in ${systemAffected}:</p>
+          <ul style="margin: 10px 0 20px 20px; padding: 0; list-style-type: disc;">
+            ${historyReasoning.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}
+          </ul>
+          
+          ${peReasoning.length > 0 ? `
+          <h3 style="color: #212529; font-size: 16px; margin-top: 20px;">Physical Examination Correlates</h3>
+          <p>The physical examination findings relate to ${systemAffected} as follows:</p>
+          <ul style="margin: 10px 0 20px 20px; padding: 0; list-style-type: disc;">
+            ${peReasoning.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}
+          </ul>` : ''}
+          
+          <div style="background-color: #e9ecef; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 14px;">
+            <strong>Clinical Correlation:</strong> This analysis demonstrates how the patient's symptoms and examination findings relate to the pathophysiology of ${systemAffected}, helping to narrow the differential diagnosis and guide further investigation.
+          </div>
         </div>
-      </div>
-    </section>
-  `;
+      </section>
+    `;
+  }
+  return ''; // Return empty string if no reasoning to show
 }
 
 function generateAIClinicalAnalysisSection(formData, aiContent) {
@@ -769,14 +783,6 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         .ai-content h4:first-child {
             margin-top: 0;
         }
-        .disclaimer {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            color: #856404;
-        }
         .warning-box {
             background-color: #fde8e8;
             border-left: 4px solid #e53e3e;
@@ -875,14 +881,14 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         
         ${generateAIClinicalAnalysisSection(formData, aiContent)}
         
+        ${generateClinicalReasoningSection(formData) ? generateClinicalReasoningSection(formData) : ""}
+        
         ${isReportEmpty(formData) ? "" : "<h1>Summary:</h1>"}
         
         ${generatePatientDetailsSection(formData)}
         
         ${generateChiefComplaintSection(formData)}
         
-        ${generateClinicalReasoningSection(formData)}
-
         ${
           formData.site || formData.onset || formData.character
             ? `
@@ -962,21 +968,21 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         
         <footer style="margin-top: 50px; padding: 30px 0; padding-bottom: 0px; border-top: 2px solid #e9ecef; text-align: center; color: #6c757d; font-size: 12px; line-height: 1.5;">
             <div style="margin-bottom: 15px;">
-                <p class="disclaimer">
-                <strong>Important:</strong> This report is generated for medical education and training purposes only. 
-                It is not a substitute for professional medical advice, diagnosis, or treatment. 
-                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
-            </p>
-            <div class="warning-box">
-                <strong>CONFIDENTIALITY WARNING:</strong> This report is for your personal educational use only. 
-                <strong>DO NOT share this report with faculty, tutors, or other students.</strong> It is designed to help you 
-                organize your thoughts and prepare for potential case discussions. The patient's name and identifying details 
-                must never be shared. This is not meant to be a source for cheating or a replacement for your own learning 
-                and critical thinking.
-            </div>    Developed and coded by <strong>Momen</strong>
+                <p><strong>Important:</strong> This report is generated for <strong>medical education and training purposes only</strong>. 
+                It is <strong>not a substitute for professional medical advice, diagnosis, or treatment</strong>. 
+                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                
+                <p><strong>CONFIDENTIALITY WARNING:</strong> This report is for your <strong>personal educational use only</strong>. 
+                <strong>DO NOT</strong> share this report with faculty, tutors, or other students. 
+                It is designed to help you organize your thoughts and prepare for potential case discussions. 
+                The patient's name and identifying details must <strong>never</strong> be shared. 
+                This is <strong>not</strong> meant to be a source for cheating or a replacement for your own learning and critical thinking.</p>
             </div>
             <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
                 Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
+            </div>
+            <div style="margin-top: 15px; font-size: 11px;">
+                Developed and coded by <strong>Momen</strong>
             </div>
         </footer>
     </div>
