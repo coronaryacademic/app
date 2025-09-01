@@ -1223,7 +1223,7 @@ function generateHTMLReport(formData, aiContent, options = {}) {
                 It is <strong>not a substitute for professional medical advice, diagnosis, or treatment</strong>. 
                 Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
                 
-                <p><strong>CONFIDENTIALITY WARNING:</strong> This report is for your <strong>personal educational use only</strong>. 
+                <p><strong>Confidentiality warning:</strong> This report is for your <strong>personal educational use only</strong>. 
                 <strong>DO NOT</strong> share this report with faculty, tutors, or other students. You have to write your own history. 
                 It is only designed to help you organize your thoughts and prepare for potential case discussions. 
                 The patient's name and identifying details must <strong>never</strong> be shared, unless allowed.  
