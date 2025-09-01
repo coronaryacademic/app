@@ -73,12 +73,12 @@ export function initAIDemo() {
 
     function updateModelOptions() {
       const models = firebaseAI.getAvailableModels();
-      aiModel.innerHTML = '';
+      aiModel.innerHTML = "";
 
       // Group models by provider and type
       const modelGroups = models.reduce((groups, model) => {
-        const provider = model.provider || 'other';
-        const type = model.type || 'other';
+        const provider = model.provider || "other";
+        const type = model.type || "other";
         if (!groups[provider]) {
           groups[provider] = {};
         }
@@ -92,10 +92,12 @@ export function initAIDemo() {
       // Create optgroups for each provider and type
       Object.entries(modelGroups).forEach(([provider, types]) => {
         Object.entries(types).forEach(([type, modelList]) => {
-          const groupLabel = `${provider.toUpperCase()} ${type === 'vercel' ? 'API' : type.toUpperCase()}`;
-          const optgroup = document.createElement('optgroup');
+          const groupLabel = `${provider.toUpperCase()} ${
+            type === "vercel" ? "API" : type.toUpperCase()
+          }`;
+          const optgroup = document.createElement("optgroup");
           optgroup.label = groupLabel;
-          
+
           modelList.forEach((model) => {
             const option = document.createElement("option");
             option.value = model.value;
@@ -108,17 +110,17 @@ export function initAIDemo() {
             }
             optgroup.appendChild(option);
           });
-          
+
           aiModel.appendChild(optgroup);
         });
       });
 
       // Add a default disabled option at the top
-      const defaultOption = document.createElement('option');
-      defaultOption.value = '';
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
       defaultOption.disabled = true;
       defaultOption.selected = true;
-      defaultOption.textContent = 'Select AI model';
+      defaultOption.textContent = "Select AI model";
       aiModel.insertBefore(defaultOption, aiModel.firstChild);
 
       // Restore saved model selection
@@ -208,7 +210,9 @@ export function initAIDemo() {
 
       // Second pass: be defensive and collect any ROS by data-system even if class="ros" is missing
       try {
-        const rosBoxes = root.querySelectorAll('input[type="checkbox"][data-system]');
+        const rosBoxes = root.querySelectorAll(
+          'input[type="checkbox"][data-system]'
+        );
         rosBoxes.forEach((el) => {
           const system = (el.getAttribute("data-system") || "").trim();
           if (!system || !el.checked) return;
@@ -246,8 +250,12 @@ export function initAIDemo() {
 
       if (Object.keys(rosData).length) snapshot._rosData = rosData;
       try {
-        const allRos = root.querySelectorAll('input[type="checkbox"][data-system]');
-        const checkedRos = root.querySelectorAll('input[type="checkbox"][data-system]:checked');
+        const allRos = root.querySelectorAll(
+          'input[type="checkbox"][data-system]'
+        );
+        const checkedRos = root.querySelectorAll(
+          'input[type="checkbox"][data-system]:checked'
+        );
         console.debug("[SNAPSHOT] Built form snapshot", {
           hasROS: !!snapshot._rosData,
           rosSystems: snapshot._rosData ? Object.keys(snapshot._rosData) : [],
@@ -404,18 +412,18 @@ export function initAIDemo() {
       aiButton.textContent = "Generating...";
       aiOutput.style.display = "none";
       showStatusBox();
-      
+
       // Step 1: Sending inputs to client
       updateStatus(1, false);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       // Collect form data for processing
       const formData = collectFormData();
       updateStatus(1, true);
-      
+
       // Step 2: Report setting up
       updateStatus(2, false);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       try {
         let aiContent = null;
@@ -424,21 +432,30 @@ export function initAIDemo() {
         // Step 3: AI Assessment (if model selected)
         if (selectedModel) {
           updateStatus(3, false);
-          console.log("[AI-DEMO] Generating AI content with model:", selectedModel);
-          
+          console.log(
+            "[AI-DEMO] Generating AI content with model:",
+            selectedModel
+          );
+
           try {
             // Build the clinical tutor prompt
             const prompt = buildAIPrompt(formData);
-            console.log("[AI-DEMO] Using prompt:", prompt.substring(0, 200) + "...");
-            
+            console.log(
+              "[AI-DEMO] Using prompt:",
+              prompt.substring(0, 200) + "..."
+            );
+
             // Generate AI content using Firebase AI
-            const aiResult = await firebaseAI.generateContent(selectedModel, prompt);
-            
+            const aiResult = await firebaseAI.generateContent(
+              selectedModel,
+              prompt
+            );
+
             if (aiResult.success) {
               aiContent = aiResult.content;
               console.log("[AI-DEMO] AI content generated successfully");
               updateStatus(3, true);
-              
+
               // Save model selection
               localStorage.setItem("aiModel", selectedModel);
             } else {
@@ -466,15 +483,15 @@ export function initAIDemo() {
 
         // Step 4: Finishing up
         updateStatus(4, false);
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
         // Generate the HTML report with the AI content and model information
         const htmlReport = window.generateHTMLReport(formData, aiContent, {
           modelInfo: {
             modelUsed: selectedModel,
             fallbackUsed: false,
-            timestamp: Date.now()
-          }
+            timestamp: Date.now(),
+          },
         });
         if (!htmlReport) return;
         (window.openHTMLReportInNewTab || (() => {}))(htmlReport);
@@ -500,15 +517,16 @@ export function initAIDemo() {
         }
 
         updateStatus(4, true);
-        
+
         // Hide status box and show success message
         setTimeout(() => {
           hideStatusBox();
-          const aiStatus = selectedModel && aiContent
-            ? "with AI assessment"
-            : selectedModel && !aiContent
-            ? "(AI assessment failed, report generated without AI)"
-            : "(No AI model selected)";
+          const aiStatus =
+            selectedModel && aiContent
+              ? "with AI assessment"
+              : selectedModel && !aiContent
+              ? `<span style="color: #dc3545; font-weight: 500;">(AI assessment failed, report generated without AI)</span>`
+              : "(No AI model selected)";
           aiOutput.innerHTML = `
             <div class="ai-suggestions" style="
               text-align: center;
@@ -519,6 +537,7 @@ export function initAIDemo() {
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
               max-width: 600px;
               margin: 0 auto;
+              margin-bottom: -26px;
             ">
               <h3 style="margin: 0 0 15px 0; color: var(--all-text); font-weight: 600; font-size: 1.4rem;">
                 <i class="fas fa-check-circle" style="color: #198754; margin-right: 8px;"></i>
@@ -528,8 +547,14 @@ export function initAIDemo() {
                 Clinical report has been opened in a new tab ${aiStatus}.
               </p>
               <p style="margin: 0; color: var(--all-text); opacity: 0.9; font-size: 0.9rem;">
-                <i class="fas ${window.auth?.currentUser ? 'fa-check' : 'fa-user'} fa-sm" style="margin-right: 5px;"></i>
-                ${window.auth?.currentUser ? 'Saved to your history.' : 'Sign in to save to history.'}
+                <i class="fas ${
+                  window.auth?.currentUser ? "fa-check" : "fa-user"
+                } fa-sm" style="margin-right: 5px;"></i>
+                ${
+                  window.auth?.currentUser
+                    ? "Saved to your history."
+                    : "Sign in to save to history."
+                }
               </p>
             </div>
           `;
@@ -600,10 +625,13 @@ export function initAIDemo() {
         try {
           return window.generateClinicalTutorPrompt(data);
         } catch (e) {
-          console.warn("[AI-DEMO] Failed to use clinical tutor prompt, falling back to basic prompt:", e);
+          console.warn(
+            "[AI-DEMO] Failed to use clinical tutor prompt, falling back to basic prompt:",
+            e
+          );
         }
       }
-      
+
       // Fallback to basic prompt if clinical tutor prompt is not available
       let prompt = `Please analyze this patient case and provide clinical insights:\n\n`;
 

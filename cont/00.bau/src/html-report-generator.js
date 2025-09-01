@@ -52,63 +52,95 @@ function generateClinicalReasoningSection(formData) {
 
   // Analyze physical exam findings
   const peFindings = [];
-  const peSections = ["cardiovascular", "respiratory", "abdominal", "neurological"];
-  peSections.forEach(section => {
+  const peSections = [
+    "cardiovascular",
+    "respiratory",
+    "abdominal",
+    "neurological",
+  ];
+  peSections.forEach((section) => {
     const element = document.getElementById(`pe-${section}`);
     if (element && element.value) {
       peFindings.push({
         system: section,
-        findings: element.multiple 
-          ? Array.from(element.selectedOptions).map(opt => opt.text).join(", ")
-          : element.value
+        findings: element.multiple
+          ? Array.from(element.selectedOptions)
+              .map((opt) => opt.text)
+              .join(", ")
+          : element.value,
       });
     }
   });
 
   // Build reasoning for history taking
   let historyReasoning = [];
-  const systemAffected = formData.systemAffected || 'the affected system';
-  
+  const systemAffected = formData.systemAffected || "the affected system";
+
   if (site) {
-    historyReasoning.push(`<strong>Site (${site}):</strong> The ${site} is involved because it contains structures related to ${systemAffected}. For example, ${site}-related symptoms in ${systemAffected} could indicate involvement of specific anatomical structures or referred pain patterns.`);
+    historyReasoning.push(
+      `<strong>Site (${site}):</strong> The ${site} is involved because it contains structures related to ${systemAffected}. For example, ${site}-related symptoms in ${systemAffected} could indicate involvement of specific anatomical structures or referred pain patterns.`
+    );
   }
   if (onset) {
-    historyReasoning.push(`<strong>Onset (${onset}):</strong> A ${onset} onset suggests specific pathophysiological processes in ${systemAffected}. This timing helps differentiate between acute conditions (like infections or trauma) and chronic conditions (like degenerative diseases) affecting ${systemAffected}.`);
+    historyReasoning.push(
+      `<strong>Onset (${onset}):</strong> A ${onset} onset suggests specific pathophysiological processes in ${systemAffected}. This timing helps differentiate between acute conditions (like infections or trauma) and chronic conditions (like degenerative diseases) affecting ${systemAffected}.`
+    );
   }
   if (character) {
-    historyReasoning.push(`<strong>Character (${character}):</strong> The ${character} quality is characteristic of how ${systemAffected} manifests symptoms. This specific quality helps distinguish between different types of pathology within ${systemAffected} (e.g., ischemic vs. inflammatory pain).`);
+    historyReasoning.push(
+      `<strong>Character (${character}):</strong> The ${character} quality is characteristic of how ${systemAffected} manifests symptoms. This specific quality helps distinguish between different types of pathology within ${systemAffected} (e.g., ischemic vs. inflammatory pain).`
+    );
   }
   if (severity) {
-    historyReasoning.push(`<strong>Severity (${severity}):</strong> The ${severity} intensity indicates the degree of ${systemAffected} involvement. This helps assess disease progression and guides treatment urgency for ${systemAffected} conditions.`);
+    historyReasoning.push(
+      `<strong>Severity (${severity}):</strong> The ${severity} intensity indicates the degree of ${systemAffected} involvement. This helps assess disease progression and guides treatment urgency for ${systemAffected} conditions.`
+    );
   }
   if (timing) {
-    historyReasoning.push(`<strong>Timing (${timing}):</strong> The ${timing} pattern is significant because it reflects how ${systemAffected} responds to various stimuli or follows diurnal/physiological patterns specific to ${systemAffected}.`);
+    historyReasoning.push(
+      `<strong>Timing (${timing}):</strong> The ${timing} pattern is significant because it reflects how ${systemAffected} responds to various stimuli or follows diurnal/physiological patterns specific to ${systemAffected}.`
+    );
   }
   if (exacerbating || relieving) {
-    historyReasoning.push(`<strong>Modifying Factors:</strong> In ${systemAffected}, factors that worsen (${exacerbating || 'none noted'}) or improve (${relieving || 'none noted'}) symptoms provide critical diagnostic clues about the underlying pathology and help differentiate between conditions affecting ${systemAffected}.`);
+    historyReasoning.push(
+      `<strong>Modifying Factors:</strong> In ${systemAffected}, factors that worsen (${
+        exacerbating || "none noted"
+      }) or improve (${
+        relieving || "none noted"
+      }) symptoms provide critical diagnostic clues about the underlying pathology and help differentiate between conditions affecting ${systemAffected}.`
+    );
   }
   if (associatedSymptoms) {
-    historyReasoning.push(`<strong>Associated Symptoms (${associatedSymptoms}):</strong> These symptoms suggest additional system involvement or complications related to ${systemAffected}, helping to build a more complete clinical picture of the ${systemAffected} pathology.`);
+    historyReasoning.push(
+      `<strong>Associated Symptoms (${associatedSymptoms}):</strong> These symptoms suggest additional system involvement or complications related to ${systemAffected}, helping to build a more complete clinical picture of the ${systemAffected} pathology.`
+    );
   }
 
   // Build reasoning for physical examination
   let peReasoning = [];
   if (peFindings.length > 0) {
-    peFindings.forEach(finding => {
-      peReasoning.push(`<strong>${capitalizeFirst(finding.system)} Exam:</strong> ${finding.findings}`);
+    peFindings.forEach((finding) => {
+      peReasoning.push(
+        `<strong>${capitalizeFirst(finding.system)} Exam:</strong> ${
+          finding.findings
+        }`
+      );
     });
   } else {
-    peReasoning.push("No specific physical examination findings were documented.");
+    peReasoning.push(
+      "No specific physical examination findings were documented."
+    );
   }
 
   // Only return the section if we have actual content beyond placeholders
-  const hasRealContent = historyReasoning.some(item => 
-    !item.includes('the affected system') && 
-    !item.includes('No specific') &&
-    !item.includes('recently') &&
-    !item.includes('presenting concern')
+  const hasRealContent = historyReasoning.some(
+    (item) =>
+      !item.includes("the affected system") &&
+      !item.includes("No specific") &&
+      !item.includes("recently") &&
+      !item.includes("presenting concern")
   );
-  
+
   if (hasRealContent) {
     // Add the clinical reasoning right after the AI content
     return `
@@ -118,15 +150,23 @@ function generateClinicalReasoningSection(formData) {
           <h3 style="color: #212529; font-size: 16px; margin-top: 0;">Pathophysiological Basis of Symptoms</h3>
           <p>For a patient presenting with ${chiefComplaint}${site}, the following analysis explains how these symptoms relate to the underlying pathology in ${systemAffected}:</p>
           <ul style="margin: 10px 0 20px 20px; padding: 0; list-style-type: disc;">
-            ${historyReasoning.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}
+            ${historyReasoning
+              .map((item) => `<li style="margin-bottom: 8px;">${item}</li>`)
+              .join("")}
           </ul>
           
-          ${peReasoning.length > 0 ? `
+          ${
+            peReasoning.length > 0
+              ? `
           <h3 style="color: #212529; font-size: 16px; margin-top: 20px;">Physical Examination Correlates</h3>
           <p>The physical examination findings relate to ${systemAffected} as follows:</p>
           <ul style="margin: 10px 0 20px 20px; padding: 0; list-style-type: disc;">
-            ${peReasoning.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}
-          </ul>` : ''}
+            ${peReasoning
+              .map((item) => `<li style="margin-bottom: 8px;">${item}</li>`)
+              .join("")}
+          </ul>`
+              : ""
+          }
           
           <div style="background-color: #e9ecef; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 14px;">
             <strong>Clinical Correlation:</strong> This analysis demonstrates how the patient's symptoms and examination findings relate to the pathophysiology of ${systemAffected}, helping to narrow the differential diagnosis and guide further investigation.
@@ -135,150 +175,205 @@ function generateClinicalReasoningSection(formData) {
       </section>
     `;
   }
-  return ''; // Return empty string if no reasoning to show
+  return ""; // Return empty string if no reasoning to show
 }
 
 function generateSOCRATESExplanation(formData) {
   const {
-    site = '',
-    onset = '',
-    character = '',
-    severity = '',
-    radiation = '',
-    timing = '',
-    exacerbating = '',
-    relieving = '',
-    associatedSymptoms = '',
-    systemAffected = ''
+    site = "",
+    onset = "",
+    character = "",
+    severity = "",
+    radiation = "",
+    timing = "",
+    exacerbating = "",
+    relieving = "",
+    associatedSymptoms = "",
+    systemAffected = "",
   } = formData;
 
   if (!site && !onset && !character) {
-    return ''; // Don't show if no relevant data
+    return ""; // Don't show if no relevant data
   }
 
   const explanations = [];
-  
+
   if (site) {
     let explanation = `<strong>Site (${site}):</strong> `;
-    if (site.toLowerCase().includes('retrosternal') || site.toLowerCase().includes('chest')) {
+    if (
+      site.toLowerCase().includes("retrosternal") ||
+      site.toLowerCase().includes("chest")
+    ) {
       explanation += `In cardiac conditions like myocardial ischemia, pain is often retrosternal because the heart is located in the mediastinum behind the sternum. The visceral pain fibers from the heart enter the spinal cord at T1-T4 levels, which is why the pain is typically felt in this central chest region.`;
-    } else if (site.toLowerCase().includes('epigastr')) {
+    } else if (site.toLowerCase().includes("epigastr")) {
       explanation += `Epigastric pain can occur in cardiac ischemia due to the shared embryological origin of the heart and upper abdominal organs, leading to referred pain patterns through the T5-T9 dermatomes.`;
-    } else if (site.toLowerCase().includes('left arm') || site.toLowerCase().includes('shoulder')) {
+    } else if (
+      site.toLowerCase().includes("left arm") ||
+      site.toLowerCase().includes("shoulder")
+    ) {
       explanation += `Referred pain to the left arm/shoulder occurs because the heart and arm share the same spinal cord segments (C3-C5 and T1-T2). The brain may misinterpret the visceral afferent signals as coming from the somatic structures of the arm.`;
-    } else if (site.toLowerCase().includes('jaw') || site.toLowerCase().includes('neck')) {
+    } else if (
+      site.toLowerCase().includes("jaw") ||
+      site.toLowerCase().includes("neck")
+    ) {
       explanation += `Jaw or neck pain in cardiac conditions results from the convergence of visceral afferent fibers from the heart with somatic afferent fibers from these areas at the spinal cord level (trigeminocervical complex).`;
     } else {
       explanation += `The location of pain provides important diagnostic clues about the affected organ system and potential underlying pathology.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (onset) {
     let explanation = `<strong>Onset (${onset}):</strong> `;
-    if (onset.toLowerCase().includes('sudden') || onset.toLowerCase().includes('acute')) {
+    if (
+      onset.toLowerCase().includes("sudden") ||
+      onset.toLowerCase().includes("acute")
+    ) {
       explanation += `Sudden onset is characteristic of acute vascular events like myocardial infarction or pulmonary embolism, where there is abrupt occlusion of blood flow to tissues.`;
     } else {
       explanation += `The timing of symptom onset helps differentiate between acute and chronic conditions, with more gradual onset suggesting conditions like stable angina or heart failure.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (character) {
     let explanation = `<strong>Character (${character}):</strong> `;
-    if (character.toLowerCase().includes('pressure') || character.toLowerCase().includes('tightness')) {
+    if (
+      character.toLowerCase().includes("pressure") ||
+      character.toLowerCase().includes("tightness")
+    ) {
       explanation += `Pressure or tightness suggests myocardial ischemia, where reduced blood flow leads to inadequate oxygen supply to the heart muscle, causing a sensation of heaviness or constriction.`;
-    } else if (character.toLowerCase().includes('tearing') || character.toLowerCase().includes('ripping')) {
+    } else if (
+      character.toLowerCase().includes("tearing") ||
+      character.toLowerCase().includes("ripping")
+    ) {
       explanation += `Tearing pain is classic for aortic dissection, where blood enters the arterial wall, creating a false lumen and causing severe, sharp pain that may radiate to the back.`;
-    } else if (character.toLowerCase().includes('sharp') || character.toLowerCase().includes('stabbing')) {
+    } else if (
+      character.toLowerCase().includes("sharp") ||
+      character.toLowerCase().includes("stabbing")
+    ) {
       explanation += `Sharp pain may indicate pericarditis (worsening with inspiration), pleuritis, or pneumothorax, where inflammation of serous membranes causes localized, well-defined pain.`;
-    } else if (character.toLowerCase().includes('burning')) {
+    } else if (character.toLowerCase().includes("burning")) {
       explanation += `Burning pain often suggests esophageal reflux or gastritis, where gastric acid irritates the esophageal or gastric mucosa.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (radiation) {
     let explanation = `<strong>Radiation (${radiation}):</strong> `;
-    if (radiation.toLowerCase().includes('left arm') || radiation.toLowerCase().includes('shoulder')) {
+    if (
+      radiation.toLowerCase().includes("left arm") ||
+      radiation.toLowerCase().includes("shoulder")
+    ) {
       explanation += `Radiation to the left arm occurs because the heart and arm share the same spinal cord segments (C8-T1). The brain misinterprets the visceral afferent signals from the heart as coming from the somatic structures of the arm.`;
-    } else if (radiation.toLowerCase().includes('jaw') || radiation.toLowerCase().includes('neck')) {
+    } else if (
+      radiation.toLowerCase().includes("jaw") ||
+      radiation.toLowerCase().includes("neck")
+    ) {
       explanation += `Radiation to the jaw or neck is due to the convergence of visceral afferent fibers from the heart with somatic afferent fibers from these areas at the spinal cord level (trigeminocervical complex).`;
-    } else if (radiation.toLowerCase().includes('back')) {
+    } else if (radiation.toLowerCase().includes("back")) {
       explanation += `Back radiation is characteristic of aortic dissection, where the tearing of the aortic wall causes severe pain that radiates to the interscapular region.`;
-    } else if (radiation.toLowerCase().includes('epigastr')) {
+    } else if (radiation.toLowerCase().includes("epigastr")) {
       explanation += `Radiation to the epigastrium can occur with inferior wall myocardial infarction due to irritation of the adjacent diaphragm (phrenic nerve, C3-C5).`;
     }
     explanations.push(explanation);
   }
-  
+
   if (timing) {
     let explanation = `<strong>Timing (${timing}):</strong> `;
-    if (timing.toLowerCase().includes('exertion')) {
+    if (timing.toLowerCase().includes("exertion")) {
       explanation += `Exertional symptoms suggest conditions with fixed oxygen supply, like stable angina, where increased myocardial oxygen demand during activity cannot be met due to coronary artery disease.`;
-    } else if (timing.toLowerCase().includes('rest')) {
+    } else if (timing.toLowerCase().includes("rest")) {
       explanation += `Rest pain may indicate unstable angina or Prinzmetal's angina, where coronary artery spasm reduces blood flow independent of oxygen demand.`;
-    } else if (timing.toLowerCase().includes('nocturnal')) {
+    } else if (timing.toLowerCase().includes("nocturnal")) {
       explanation += `Nocturnal symptoms can occur in heart failure due to fluid redistribution when lying down, increasing pulmonary venous pressure and causing orthopnea or paroxysmal nocturnal dyspnea.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (exacerbating) {
     let explanation = `<strong>Exacerbated by (${exacerbating}):</strong> `;
-    if (exacerbating.toLowerCase().includes('exertion')) {
+    if (exacerbating.toLowerCase().includes("exertion")) {
       explanation += `Symptoms worsened by exertion suggest conditions where oxygen demand increases, such as in stable angina or heart failure.`;
-    } else if (exacerbating.toLowerCase().includes('breath') || exacerbating.toLowerCase().includes('inspiration')) {
+    } else if (
+      exacerbating.toLowerCase().includes("breath") ||
+      exacerbating.toLowerCase().includes("inspiration")
+    ) {
       explanation += `Worsening with inspiration suggests pleural or pericardial inflammation, where movement of the inflamed surfaces causes sharp, localized pain.`;
-    } else if (exacerbating.toLowerCase().includes('food') || exacerbating.toLowerCase().includes('meal')) {
+    } else if (
+      exacerbating.toLowerCase().includes("food") ||
+      exacerbating.toLowerCase().includes("meal")
+    ) {
       explanation += `Post-prandial worsening may indicate gastrointestinal causes like peptic ulcer disease or mesenteric ischemia.`;
-    } else if (exacerbating.toLowerCase().includes('position')) {
+    } else if (exacerbating.toLowerCase().includes("position")) {
       explanation += `Positional changes may suggest pericarditis (relieved by sitting forward) or musculoskeletal causes.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (relieving) {
     let explanation = `<strong>Relieved by (${relieving}):</strong> `;
-    if (relieving.toLowerCase().includes('rest')) {
+    if (relieving.toLowerCase().includes("rest")) {
       explanation += `Relief with rest is classic for stable angina, where decreased myocardial oxygen demand allows supply to meet demand.`;
-    } else if (relieving.toLowerCase().includes('nitro')) {
+    } else if (relieving.toLowerCase().includes("nitro")) {
       explanation += `Nitroglycerin relieves symptoms by causing venous and coronary artery dilation, reducing preload and increasing coronary blood flow.`;
-    } else if (relieving.toLowerCase().includes('antacid') || relieving.toLowerCase().includes('food')) {
+    } else if (
+      relieving.toLowerCase().includes("antacid") ||
+      relieving.toLowerCase().includes("food")
+    ) {
       explanation += `Relief with antacids or food suggests gastroesophageal reflux disease (GERD) or peptic ulcer disease.`;
-    } else if (relieving.toLowerCase().includes('sitting forward')) {
+    } else if (relieving.toLowerCase().includes("sitting forward")) {
       explanation += `Relief when sitting forward is characteristic of pericarditis, as this position reduces pressure on the inflamed pericardium.`;
     }
     explanations.push(explanation);
   }
-  
+
   if (associatedSymptoms) {
     let explanation = `<strong>Associated Symptoms (${associatedSymptoms}):</strong> `;
-    if (associatedSymptoms.toLowerCase().includes('dyspn') || associatedSymptoms.toLowerCase().includes('shortness of breath')) {
+    if (
+      associatedSymptoms.toLowerCase().includes("dyspn") ||
+      associatedSymptoms.toLowerCase().includes("shortness of breath")
+    ) {
       explanation += `Dyspnea may indicate pulmonary congestion from left ventricular failure or reduced cardiac output.`;
-    } else if (associatedSymptoms.toLowerCase().includes('nausea') || associatedSymptoms.toLowerCase().includes('vomit')) {
+    } else if (
+      associatedSymptoms.toLowerCase().includes("nausea") ||
+      associatedSymptoms.toLowerCase().includes("vomit")
+    ) {
       explanation += `Nausea and vomiting can occur with inferior wall MI due to vagal stimulation or as part of the vasovagal response to pain.`;
-    } else if (associatedSymptoms.toLowerCase().includes('diaphores') || associatedSymptoms.toLowerCase().includes('sweat')) {
+    } else if (
+      associatedSymptoms.toLowerCase().includes("diaphores") ||
+      associatedSymptoms.toLowerCase().includes("sweat")
+    ) {
       explanation += `Diaphoresis results from sympathetic nervous system activation in response to pain or hemodynamic compromise.`;
-    } else if (associatedSymptoms.toLowerCase().includes('palpitation')) {
+    } else if (associatedSymptoms.toLowerCase().includes("palpitation")) {
       explanation += `Palpitations may indicate arrhythmias, which can accompany acute coronary syndromes or occur secondary to electrolyte imbalances.`;
-    } else if (associatedSymptoms.toLowerCase().includes('syncope') || associatedSymptoms.toLowerCase().includes('presyncope')) {
+    } else if (
+      associatedSymptoms.toLowerCase().includes("syncope") ||
+      associatedSymptoms.toLowerCase().includes("presyncope")
+    ) {
       explanation += `Syncope suggests reduced cerebral perfusion, which can occur with severe aortic stenosis, arrhythmias, or massive pulmonary embolism.`;
     }
     explanations.push(explanation);
   }
 
   if (explanations.length === 0) {
-    return '';
+    return "";
   }
 
   return `
     <section class="section" style="margin-top: 20px;">
       <h2 style="color: #212529; border-bottom: 1px solid #dee2e6; padding-bottom: 8px;">SOCRATES Analysis</h2>
       <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 10px;">
-        <p>The following explains how the patient's symptoms relate to the underlying pathophysiology in ${systemAffected || 'the affected system'}:</p>
+        <p>The following explains how the patient's symptoms relate to the underlying pathophysiology in ${
+          systemAffected || "the affected system"
+        }:</p>
         <ul style="margin: 10px 0 20px 20px; padding: 0; list-style-type: disc;">
-          ${explanations.map(exp => `<li style="margin-bottom: 12px; line-height: 1.5;">${exp}</li>`).join('')}
+          ${explanations
+            .map(
+              (exp) =>
+                `<li style="margin-bottom: 12px; line-height: 1.5;">${exp}</li>`
+            )
+            .join("")}
         </ul>
         <div style="background-color: #e9ecef; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 14px;">
           <strong>Educational Note:</strong> This SOCRATES analysis helps connect the patient's symptoms to potential underlying pathologies, guiding the diagnostic process and differential diagnosis.
@@ -1031,7 +1126,11 @@ function generateHTMLReport(formData, aiContent, options = {}) {
         
         ${generateAIClinicalAnalysisSection(formData, aiContent)}
         
-        ${generateClinicalReasoningSection(formData) ? generateClinicalReasoningSection(formData) : ""}
+        ${
+          generateClinicalReasoningSection(formData)
+            ? generateClinicalReasoningSection(formData)
+            : ""
+        }
         
         ${generateSOCRATESExplanation(formData)}
         
@@ -1130,12 +1229,13 @@ function generateHTMLReport(formData, aiContent, options = {}) {
                 The patient's name and identifying details must <strong>never</strong> be shared. 
                 This is <strong>not</strong> meant to be a source for cheating or a replacement for your own learning and critical thinking.</p>
             </div>
-            <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
-                Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
-            </div>
             <div style="margin-top: 15px; font-size: 11px;">
                 Developed and coded by <strong>Momen</strong>
             </div>
+            <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
+                Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
+            </div>
+            
         </footer>
     </div>
 </body>
