@@ -504,17 +504,8 @@ export function initAIDemo() {
           aiContent,
         });
 
-        // Refresh sidebar if available
-        if (
-          saveResult.saved &&
-          typeof window.renderHistorySidebar === "function"
-        ) {
-          try {
-            await window.renderHistorySidebar();
-          } catch (e) {
-            console.warn("[AI-DEMO] Sidebar refresh failed:", e);
-          }
-        }
+        // Don't refresh sidebar at all - it breaks functionality
+        // The sidebar will update naturally when user opens it next time
 
         updateStatus(4, true);
 

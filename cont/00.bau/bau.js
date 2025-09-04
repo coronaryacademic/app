@@ -2267,8 +2267,8 @@ async function renderHistorySidebar() {
         // Wait for deletions to settle then show message and refresh state
         await Promise.allSettled(deletions);
         sidebarMessage("All histories cleared.", "success");
-        // Optionally repopulate (no flicker since list is already empty)
-        await loadHistories();
+        // Don't refresh sidebar - it breaks functionality
+        // The sidebar will show "No saved histories" message naturally
       });
     } catch (error) {
       console.error("[BAU] Failed to clear histories:", error);
@@ -2890,7 +2890,13 @@ async function renderHistorySidebar() {
                 item.style.marginTop = "0";
                 item.style.marginBottom = "0";
                 item.style.height = "0px";
-                setTimeout(() => item.remove(), 360);
+                setTimeout(async () => {
+                  item.remove();
+                  // Refresh the entire sidebar to maintain functionality
+                  if (typeof window.renderHistorySidebar === "function") {
+                    await window.renderHistorySidebar();
+                  }
+                }, 360);
               }
             } catch (err) {
               console.error("[BAU] Failed to delete history:", err);
@@ -3057,6 +3063,25 @@ async function renderHistorySidebar() {
       return isNaN(d.getTime()) ? null : d;
     } catch {
       return null;
+    }
+  }
+
+  // Check if history list is empty and show appropriate message
+  function checkForEmptyHistoryList() {
+    const list = document.querySelector(".bau-history-list");
+    if (!list) return;
+
+    // Count actual history items (exclude "New form" item and any existing "No saved histories" message)
+    const historyItems = list.querySelectorAll(".bau-history-item");
+    const existingMessage = list.querySelector("p");
+
+    if (historyItems.length === 0 && !existingMessage) {
+      // No history items left, show the "No saved histories" message
+      const p = document.createElement("p");
+      p.textContent = "No saved histories yet.";
+      p.style.paddingLeft = "14.5px";
+      p.style.paddingTop = "14.5px";
+      list.appendChild(p);
     }
   }
 
@@ -3304,6 +3329,8 @@ async function renderHistorySidebar() {
 
 // Expose renderHistorySidebar globally so it can be called from other scripts
 window.renderHistorySidebar = renderHistorySidebar;
+// Expose loadHistories globally for refreshing just the history list
+window.loadHistories = loadHistories;
 
 // Set form fields from a saved snapshot { id/text -> value(s) }
 function applySnapshotToForm(snapshot) {
