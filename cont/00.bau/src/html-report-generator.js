@@ -1132,7 +1132,6 @@ function generateHTMLReport(formData, aiContent, options = {}) {
             : ""
         }
         
-        ${generateSOCRATESExplanation(formData)}
         
         ${isReportEmpty(formData) ? "" : "<h1>Summary:</h1>"}
         

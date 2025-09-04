@@ -157,6 +157,7 @@
     font-size: 15px;
     line-height: 1.6;
     box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+    position: relative;
   }
 
   .warning-box svg {
@@ -166,10 +167,30 @@
     fill: #dc2626;
     margin-top: 2px;
   }
+
+  .warning-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .warning-close-btn:hover {
+    background-color: rgba(220, 38, 38, 0.1);
+  }
 </style>
 
 <!-- First Warning -->
-<div class="warning-box">
+<div class="warning-box" id="warning-box">
+  <button class="warning-close-btn" onclick="document.getElementById('warning-box').style.display='none'" title="Close warning">&times;</button>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path
       d="M12 2L1 21h22L12 2zm0 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-1-7h2v5h-2V9z"
@@ -186,9 +207,8 @@
     <strong>investigation and differential diagnosis AI summary</strong> should
     not be discussed with others. Since this is an introductory course, it is
     only meant to connect history and physical exam with results, making sense
-    of the patient’s true case. It is strictly for learning and linking ideas.
+    of the patient's true case. It is strictly for learning and linking ideas.
   </span>
-  <span> </span>
 </div>
 
 <!-- Form Container -->
