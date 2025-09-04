@@ -1222,17 +1222,18 @@ function generateHTMLReport(formData, aiContent, options = {}) {
                 It is <strong>not a substitute for professional medical advice, diagnosis, or treatment</strong>. 
                 Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
                 
-                <p><strong>CONFIDENTIALITY WARNING:</strong> This report is for your <strong>personal educational use only</strong>. 
-                <strong>DO NOT</strong> share this report with faculty, tutors, or other students. 
-                It is designed to help you organize your thoughts and prepare for potential case discussions. 
-                The patient's name and identifying details must <strong>never</strong> be shared. 
+                <p><strong>Confidentiality warning:</strong> This report is for your <strong>personal educational use only</strong>. 
+                <strong>DO NOT</strong> share this report with faculty, tutors, or other students. You have to write your own history. 
+                It is only designed to help you organize your thoughts and prepare for potential case discussions. 
+                The patient's name and identifying details must <strong>never</strong> be shared, unless allowed.  
                 This is <strong>not</strong> meant to be a source for cheating or a replacement for your own learning and critical thinking.</p>
             </div>
-            <div style="margin-top: 15px; font-size: 11px;">
-                Developed and coded by <strong>Momen</strong>
-            </div>
+       
             <div style="color: #adb5bd; font-size: 20px; margin-top: 20px;">
                 Socrates<sup style="font-size: 9px; margin-left: 5px">Beta</sup>
+            </div>
+                 <div style="margin-top: 15px; font-size: 11px;">
+                Developed and coded by <strong>Momen</strong>
             </div>
             
         </footer>
