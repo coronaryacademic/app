@@ -190,7 +190,7 @@
 
 <!-- First Warning -->
 <div class="warning-box" id="warning-box">
-  <button class="warning-close-btn" onclick="document.getElementById('warning-box').style.display='none'" title="Close warning">&times;</button>
+  <button class="warning-close-btn" onclick="closeWarningBox()" title="Close warning">&times;</button>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path
       d="M12 2L1 21h22L12 2zm0 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-1-7h2v5h-2V9z"
@@ -5885,5 +5885,30 @@
 
       console.log("[SYMPTOM LINK] Symptom linking setup complete");
     }, 500);
+
+    // Warning box persistence functionality
+    function closeWarningBox() {
+      const warningBox = document.getElementById('warning-box');
+      if (warningBox) {
+        warningBox.style.display = 'none';
+        // Save the closed state to localStorage
+        localStorage.setItem('warningBoxClosed', 'true');
+      }
+    }
+
+    // Check if warning box should be hidden on page load
+    function checkWarningBoxState() {
+      const warningBox = document.getElementById('warning-box');
+      const isClosed = localStorage.getItem('warningBoxClosed') === 'true';
+      
+      if (warningBox && isClosed) {
+        warningBox.style.display = 'none';
+      }
+    }
+
+    // Initialize warning box state on page load
+    document.addEventListener('DOMContentLoaded', checkWarningBoxState);
+    // Also check immediately in case DOMContentLoaded already fired
+    checkWarningBoxState();
   </script>
 </div>
