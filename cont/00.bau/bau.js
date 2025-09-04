@@ -2547,11 +2547,11 @@ async function renderHistorySidebar() {
             ? d.createdMs
             : toMillis(d.createdAtTs) ||
               (d.createdAt ? new Date(d.createdAt).getTime() || 0 : 0);
-        docsArr.push({ id: doc.id, data: d, created });
+        docsArr.push({ id: doc.id, data: d, created, ref: doc.ref });
       });
       docsArr.sort((a, b) => (b.created || 0) - (a.created || 0));
 
-      docsArr.forEach(({ data }) => {
+      docsArr.forEach(({ data, ref }) => {
         const item = document.createElement("div");
         item.classList.add("bau-history-item");
         Object.assign(item.style, {
@@ -2875,8 +2875,8 @@ async function renderHistorySidebar() {
             if (!ok) return;
             try {
               const { deleteDoc } = window;
-              if (deleteDoc && doc.ref) {
-                await deleteDoc(doc.ref);
+              if (deleteDoc && ref) {
+                await deleteDoc(ref);
                 // Smooth collapse animation
                 const h = item.offsetHeight;
                 item.style.height = h + "px";
