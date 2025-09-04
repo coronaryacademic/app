@@ -190,7 +190,13 @@
 
 <!-- First Warning -->
 <div class="warning-box" id="warning-box">
-  <button class="warning-close-btn" onclick="closeWarningBox()" title="Close warning">&times;</button>
+  <button
+    class="warning-close-btn"
+    onclick="closeWarningBox()"
+    title="Close warning"
+  >
+    &times;
+  </button>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path
       d="M12 2L1 21h22L12 2zm0 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-1-7h2v5h-2V9z"
@@ -212,39 +218,54 @@
 </div>
 
 <!-- Form Mode Navigation -->
-<div class="form-nav-container" style="
-  width: 95%;
-  max-width: 900px;
-  margin: 20px auto 0 auto;
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 15px;
-">
-  <button class="form-nav-btn active" data-mode="static" style="
-    background-color: rgba(255, 255, 255, 0);
-    border: 2px none var(--all-text);
-    color: var(--all-text);
-    padding: 10px 20px;
-    border-radius: 23px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 17px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  ">Static Form</button>
-  <button class="form-nav-btn" data-mode="dynamic" style="
-    background-color: rgba(255, 255, 255, 0);
-    border: 2px none var(--all-text);
-    color: var(--all-text);
-    padding: 10px 20px;
-    border-radius: 23px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 17px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  ">Dynamic Chat</button>
+<div
+  class="form-nav-container"
+  style="
+    width: 95%;
+    max-width: 900px;
+    margin: 30px auto 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 30px;
+  "
+>
+  <button
+    class="form-nav-btn active"
+    data-mode="static"
+    style="
+      background-color: rgba(255, 255, 255, 0);
+      border: 2px none var(--all-text);
+      color: var(--all-text);
+      padding: 10px 20px;
+      border-radius: 23px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 17px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    "
+  >
+    Static Form
+  </button>
+  <button
+    class="form-nav-btn"
+    data-mode="dynamic"
+    style="
+      background-color: rgba(255, 255, 255, 0);
+      border: 2px none var(--all-text);
+      color: var(--all-text);
+      padding: 10px 20px;
+      border-radius: 23px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 17px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    "
+  >
+    Dynamic Chat
+  </button>
 </div>
 
 <!-- Form Container -->
@@ -5923,26 +5944,26 @@
 
     // Warning box persistence functionality
     function closeWarningBox() {
-      const warningBox = document.getElementById('warning-box');
+      const warningBox = document.getElementById("warning-box");
       if (warningBox) {
-        warningBox.style.display = 'none';
+        warningBox.style.display = "none";
         // Save the closed state to localStorage
-        localStorage.setItem('warningBoxClosed', 'true');
+        localStorage.setItem("warningBoxClosed", "true");
       }
     }
 
     // Check if warning box should be hidden on page load
     function checkWarningBoxState() {
-      const warningBox = document.getElementById('warning-box');
-      const isClosed = localStorage.getItem('warningBoxClosed') === 'true';
-      
+      const warningBox = document.getElementById("warning-box");
+      const isClosed = localStorage.getItem("warningBoxClosed") === "true";
+
       if (warningBox && isClosed) {
-        warningBox.style.display = 'none';
+        warningBox.style.display = "none";
       }
     }
 
     // Initialize warning box state on page load
-    document.addEventListener('DOMContentLoaded', checkWarningBoxState);
+    document.addEventListener("DOMContentLoaded", checkWarningBoxState);
     // Also check immediately in case DOMContentLoaded already fired
     checkWarningBoxState();
   </script>
@@ -5963,62 +5984,92 @@
     display: none;
   "
 >
-  <div class="chat-header" style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--borderbottomdark);
-  ">
-    <h2 style="margin: 0; font-size: 24px; font-weight: 600; color: var(--all-text);">Dynamic History Taking</h2>
-    <div class="chat-status" style="
-      padding: 6px 12px;
-      background: rgba(44, 201, 199, 0.1);
-      border-radius: 15px;
-      font-size: 12px;
-      color: var(--all-text);
-      font-weight: 500;
-    ">Chat Mode</div>
-  </div>
-
-  <div class="chat-instructions" style="
-    background: var(--userdiv);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    color: var(--all-text);
-    font-size: 14px;
-    line-height: 1.5;
-  ">
-    <strong>Instructions:</strong> Start by providing any information you have about the patient. The AI will ask targeted questions to build a complete history and reach a diagnosis. Your conversation won't be saved to history until you choose to generate the final report.
-  </div>
-
-  <div class="chat-messages" id="chat-messages" style="
-    height: 400px;
-    overflow-y: auto;
-    border: 1px solid var(--borderbottomdark);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: rgba(0, 0, 0, 0.02);
-  ">
-    <div class="welcome-message" style="
-      text-align: center;
-      color: var(--all-text);
-      opacity: 0.7;
-      font-style: italic;
-      padding: 20px;
-    ">
-      Welcome to Dynamic History Taking! Share any patient information to begin...
+  <div
+    class="chat-header"
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--borderbottomdark);
+    "
+  >
+    <h2
+      style="
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--all-text);
+      "
+    >
+      Dynamic History Taking
+    </h2>
+    <div
+      class="chat-status"
+      style="
+        padding: 6px 12px;
+        background: rgba(44, 201, 199, 0.1);
+        border-radius: 15px;
+        font-size: 12px;
+        color: var(--all-text);
+        font-weight: 500;
+      "
+    >
+      Chat Mode
     </div>
   </div>
 
-  <div class="chat-input-container" style="
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-  ">
+  <div
+    class="chat-instructions"
+    style="
+      background: var(--userdiv);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      color: var(--all-text);
+      font-size: 14px;
+      line-height: 1.5;
+    "
+  >
+    <strong>Instructions:</strong> Start by providing any information you have
+    about the patient. The AI will ask targeted questions to build a complete
+    history and reach a diagnosis. Your conversation won't be saved to history
+    until you choose to generate the final report.
+  </div>
+
+  <div
+    class="chat-messages"
+    id="chat-messages"
+    style="
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--borderbottomdark);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.02);
+    "
+  >
+    <div
+      class="welcome-message"
+      style="
+        text-align: center;
+        color: var(--all-text);
+        opacity: 0.7;
+        font-style: italic;
+        padding: 20px;
+      "
+    >
+      Welcome to Dynamic History Taking! Share any patient information to
+      begin...
+    </div>
+  </div>
+
+  <div
+    class="chat-input-container"
+    style="display: flex; gap: 10px; align-items: flex-end"
+  >
     <textarea
       id="chat-input"
       placeholder="Describe the patient's presenting complaint, symptoms, or any other information..."
@@ -6051,15 +6102,20 @@
         transition: all 0.3s ease;
         min-width: 80px;
       "
-    >Send</button>
+    >
+      Send
+    </button>
   </div>
 
-  <div class="chat-actions" style="
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  ">
+  <div
+    class="chat-actions"
+    style="
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    "
+  >
     <button
       id="clear-chat-btn"
       style="
@@ -6072,7 +6128,9 @@
         font-size: 12px;
         transition: all 0.3s ease;
       "
-    >Clear Chat</button>
+    >
+      Clear Chat
+    </button>
     <button
       id="generate-report-btn"
       style="
@@ -6087,7 +6145,9 @@
         transition: all 0.3s ease;
         display: none;
       "
-    >Generate Final Report</button>
+    >
+      Generate Final Report
+    </button>
   </div>
 </div>
 
