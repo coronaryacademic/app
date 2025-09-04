@@ -382,14 +382,15 @@ Start by acknowledging the information provided, then ask the most relevant foll
           chatHistory = [];
           conversationActive = false;
           chatMessages.innerHTML = `
-            <div class="welcome-message" style="
-              text-align: center;
-              color: var(--all-text);
-              opacity: 0.7;
-              font-style: italic;
-              padding: 20px;
-            ">
-              Welcome to Dynamic History Taking! Share any patient information to begin...
+            <div class="welcome-message">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#ff9800"/>
+                </svg>
+                <span style="font-weight: 600; color: #ff9800;">Dynamic History Taking</span>
+                <span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">In Development</span>
+              </div>
+              <p style="margin: 0; color: #666; line-height: 1.5;">This feature is currently under development. Share any patient information to begin testing the AI-guided history taking experience.</p>
             </div>
           `;
           if (generateBtn) generateBtn.style.display = 'none';

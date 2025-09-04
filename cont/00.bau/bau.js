@@ -5156,7 +5156,7 @@ async function loadHistories() {
   try {
     const auth = window.auth;
     const user = auth?.currentUser || null;
-    
+
     if (!user) {
       console.log("[BAU] No authenticated user for loadHistories");
       return;
@@ -5166,9 +5166,9 @@ async function loadHistories() {
     const colRef = collection(db, "users", user.uid, "histories");
     const q = query(colRef, orderBy("timestamp", "desc"), limit(50));
     const snap = await getDocs(q);
-    
+
     console.log(`[BAU] Loaded ${snap.size} histories`);
-    
+
     if (window.renderHistorySidebar) {
       window.renderHistorySidebar();
     }
@@ -5183,71 +5183,75 @@ window.loadHistories = loadHistories;
 // Add navigation initialization for the buttons we added
 function initFormNavigation() {
   console.log("[BAU] Initializing form navigation...");
-  
-  const formNavBtns = document.querySelectorAll('.form-nav-btn');
-  const staticContainer = document.getElementById('history-form-container');
-  const dynamicContainer = document.getElementById('dynamic-chat-container');
-  
+
+  const formNavBtns = document.querySelectorAll(".form-nav-btn");
+  const staticContainer = document.getElementById("history-form-container");
+  const dynamicContainer = document.getElementById("dynamic-chat-container");
+
   if (!formNavBtns.length || !staticContainer || !dynamicContainer) {
     console.warn("[BAU] Navigation elements not found, retrying in 500ms...");
     setTimeout(initFormNavigation, 500);
     return;
   }
-  
+
   console.log("[BAU] Navigation elements found, setting up event listeners...");
-  
+
   // Set default state: Static Form active, Dynamic Chat hidden
-  staticContainer.style.display = 'block';
-  dynamicContainer.style.display = 'none';
-  
+  staticContainer.style.display = "block";
+  dynamicContainer.style.display = "none";
+
   // Set Static Form button as active by default
   const staticBtn = document.querySelector('.form-nav-btn[data-mode="static"]');
-  const dynamicBtn = document.querySelector('.form-nav-btn[data-mode="dynamic"]');
-  
+  const dynamicBtn = document.querySelector(
+    '.form-nav-btn[data-mode="dynamic"]'
+  );
+
   if (staticBtn) {
-    staticBtn.classList.add('active');
-    staticBtn.style.background = 'var(--header-bg)';
-    staticBtn.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
-    staticBtn.style.fontWeight = 'bold';
+    staticBtn.classList.add("active");
+    staticBtn.style.background = "var(--header-bg)";
+    staticBtn.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+    staticBtn.style.fontWeight = "bold";
   }
-  
+
   if (dynamicBtn) {
-    dynamicBtn.classList.remove('active');
-    dynamicBtn.style.background = 'rgba(255, 255, 255, 0)';
-    dynamicBtn.style.boxShadow = 'none';
-    dynamicBtn.style.fontWeight = 'normal';
+    dynamicBtn.classList.remove("active");
+    dynamicBtn.style.background = "rgba(255, 255, 255, 0)";
+    dynamicBtn.style.boxShadow = "none";
+    dynamicBtn.style.fontWeight = "normal";
   }
 
   // Navigation button event listeners
-  formNavBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+  formNavBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
       const mode = btn.dataset.mode;
-      
+
       // Update button states
-      formNavBtns.forEach(b => {
-        b.classList.remove('active');
-        b.style.background = 'rgba(255, 255, 255, 0)';
-        b.style.boxShadow = 'none';
-        b.style.fontWeight = 'normal';
+      formNavBtns.forEach((b) => {
+        b.classList.remove("active");
+        b.style.background = "rgba(255, 255, 255, 0)";
+        b.style.boxShadow = "none";
+        b.style.fontWeight = "normal";
       });
-      
-      btn.classList.add('active');
-      btn.style.background = 'var(--header-bg)';
-      btn.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
-      btn.style.fontWeight = 'bold';
-      
+
+      btn.classList.add("active");
+      btn.style.background = "var(--header-bg)";
+      btn.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+      btn.style.fontWeight = "bold";
+
       // Show/hide containers
-      if (mode === 'static') {
-        staticContainer.style.display = 'block';
-        dynamicContainer.style.display = 'none';
-      } else if (mode === 'dynamic') {
-        staticContainer.style.display = 'none';
-        dynamicContainer.style.display = 'block';
+      if (mode === "static") {
+        staticContainer.style.display = "block";
+        dynamicContainer.style.display = "none";
+      } else if (mode === "dynamic") {
+        staticContainer.style.display = "none";
+        dynamicContainer.style.display = "block";
       }
     });
   });
-  
-  console.log("[BAU] Form navigation initialized successfully with Static Form as default");
+
+  console.log(
+    "[BAU] Form navigation initialized successfully with Static Form as default"
+  );
 }
 
 // Initialize navigation when DOM is ready
