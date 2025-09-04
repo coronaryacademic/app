@@ -621,6 +621,9 @@ function loadContent(page) {
           const scriptElement = document.createElement("script");
           scriptElement.src = scriptPath;
           scriptElement.dataset.pageScript = "true";
+          
+          // No special module handling needed for bau.js
+          
           scriptElement.onload = () => {
             console.log(`✅ ${scriptPath} loaded`);
 
