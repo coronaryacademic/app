@@ -6144,15 +6144,28 @@
       padding: 15px;
       margin-bottom: 15px;
       background: rgba(0, 0, 0, 0.02);
+      position: relative;
       display: none;
+      box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
+      animation: purpleHaze 3s ease-in-out infinite alternate;
     "
   >
+    <style>
+      @keyframes purpleHaze {
+        0% {
+          box-shadow: 0 0 30px rgba(156, 39, 176, 0.2);
+        }
+        100% {
+          box-shadow: 0 0 50px rgba(156, 39, 176, 0.4);
+        }
+      }
+    </style>
     <!-- Practice Mode Header -->
     <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--borderbottomdark);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 15px;">
         <h4 style="margin: 0; color: var(--all-text); font-size: 16px;">Case Presentation</h4>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          <!-- AI Model Selector for Practice Mode -->
+        <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;">
+          <!-- AI Model Selector -->
           <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 12px; color: var(--all-text); font-weight: 500;">AI Model:</label>
             <select
@@ -6175,6 +6188,22 @@
               <option value="github-models-gpt-4o-mini">GPT-4o Mini</option>
             </select>
           </div>
+          <!-- Difficulty Button -->
+          <button
+            id="case-difficulty-btn"
+            style="
+              padding: 8px 12px;
+              background: var(--borderbottomdark);
+              color: var(--all-text);
+              border: none;
+              border-radius: 8px;
+              font-size: 12px;
+              cursor: pointer;
+            "
+          >
+            Difficulty: Intermediate
+          </button>
+          <!-- Start New Case Button - Far Right -->
           <button
             id="start-case-btn"
             style="
@@ -6190,20 +6219,6 @@
             "
           >
             Start New Case
-          </button>
-          <button
-            id="case-difficulty-btn"
-            style="
-              padding: 8px 12px;
-              background: var(--borderbottomdark);
-              color: var(--all-text);
-              border: none;
-              border-radius: 8px;
-              font-size: 12px;
-              cursor: pointer;
-            "
-          >
-            Difficulty: Intermediate
           </button>
         </div>
       </div>
