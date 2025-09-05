@@ -44,6 +44,476 @@ async function loadHistories() {
   }
 }
 
+// Practice Mode Variables
+let currentMode = 'chat'; // 'chat' or 'practice'
+let currentCase = null;
+let practiceMessages = [];
+let caseDifficulty = 'intermediate';
+
+// Practice Mode Functions
+function switchMode(mode) {
+  currentMode = mode;
+  const chatContainer = document.getElementById('chat-mode-container');
+  const practiceContainer = document.getElementById('practice-mode-container');
+  const chatBtn = document.getElementById('chat-mode-btn');
+  const practiceBtn = document.getElementById('practice-mode-btn');
+  const modeStatus = document.getElementById('mode-status');
+  
+  // Simple direct query for chat input
+  const chatInput = document.getElementById('chat-input');
+  
+  console.log('[PRACTICE] Element check:', {
+    chatContainer: !!chatContainer,
+    practiceContainer: !!practiceContainer,
+    chatBtn: !!chatBtn,
+    practiceBtn: !!practiceBtn,
+    modeStatus: !!modeStatus,
+    chatInput: !!chatInput
+  });
+  
+  if (!chatInput) {
+    console.error('[PRACTICE] CRITICAL: Chat input element not found!');
+    return;
+  }
+  
+  // Check if other elements exist
+  if (!chatContainer || !practiceContainer || !chatBtn || !practiceBtn || !modeStatus) {
+    console.warn('[PRACTICE] Some UI elements not found, skipping mode switch');
+    return;
+  }
+  
+  if (mode === 'chat') {
+    chatContainer.style.display = 'block';
+    practiceContainer.style.display = 'none';
+    chatBtn.style.background = 'rgba(44, 201, 199, 0.9)';
+    chatBtn.style.color = 'white';
+    practiceBtn.style.background = 'transparent';
+    practiceBtn.style.color = 'var(--all-text)';
+    modeStatus.textContent = 'In Development';
+    if (chatInput) {
+      chatInput.placeholder = 'Feature under maintenance - coming soon!';
+      chatInput.disabled = true;
+    }
+    
+    // Disable send button for chat mode
+    const sendBtn = document.getElementById('send-chat-btn');
+    if (sendBtn) {
+      sendBtn.disabled = true;
+      sendBtn.style.background = '#ccc';
+      sendBtn.style.color = '#666';
+      sendBtn.style.cursor = 'not-allowed';
+    }
+  } else {
+    chatContainer.style.display = 'none';
+    practiceContainer.style.display = 'block';
+    practiceBtn.style.background = 'rgba(156, 39, 176, 0.9)';
+    practiceBtn.style.color = 'white';
+    chatBtn.style.background = 'transparent';
+    chatBtn.style.color = 'var(--all-text)';
+    modeStatus.textContent = 'Active';
+    modeStatus.style.background = 'rgba(76, 175, 80, 0.1)';
+    modeStatus.style.color = '#2e7d32';
+    if (chatInput) {
+      chatInput.placeholder = 'Ask questions about the case, request physical examination, or provide your assessment...';
+      chatInput.disabled = false;
+      chatInput.style.background = 'var(--header-bg)';
+      chatInput.style.color = 'var(--all-text)';
+      chatInput.style.cursor = 'text';
+    }
+    
+    // Enable send button for practice mode
+    const sendBtn = document.getElementById('send-chat-btn');
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.style.background = '#9c27b0';
+      sendBtn.style.color = 'white';
+      sendBtn.style.cursor = 'pointer';
+    }
+  }
+  
+  // Don't save practice mode to localStorage
+  // localStorage.setItem('practiceMode', mode);
+}
+
+async function generateNewCase() {
+  const caseContent = document.getElementById('case-content');
+  const startBtn = document.getElementById('start-case-btn');
+  
+  try {
+    startBtn.textContent = 'Generating Case...';
+    startBtn.disabled = true;
+    caseContent.style.opacity = '0.5';
+    caseContent.innerHTML = 'Generating a new case presentation...';
+    
+    // Get selected AI model from the AI demo
+    const modelSelect = document.getElementById('practice-model-select');
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini-1.5-flash';
+    
+    const casePrompt = `Generate a realistic medical case for a ${caseDifficulty} level medical student practice session. 
+
+Create a patient profile with:
+- Patient name (first and last)
+- Age and gender
+- Brief general appearance/demeanor
+- The medical condition they have (but don't reveal diagnosis)
+
+Format the response as if you're the patient introducing yourself to the doctor. Keep it very brief - just name, age, gender, and a simple greeting. Do NOT include chief complaint, history, or any medical details yet. The student will ask for those step by step.
+
+Example format: "Hello doctor, my name is [Name]. I'm a [age]-year-old [gender]. Thank you for seeing me today."`;
+    
+    let caseResult;
+    
+    // Use the same AI generation logic as the AI demo
+    if (window.firebaseAI && selectedModel.startsWith('gemini')) {
+      try {
+        const model = window.getGenerativeModel(window.firebaseAI, {
+          model: selectedModel,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 512,
+          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
+          ]
+        });
+        
+        const result = await model.generateContent(casePrompt);
+        const response = await result.response;
+        caseResult = response.text();
+        console.log('[PRACTICE] Case generated with Firebase AI:', selectedModel);
+      } catch (error) {
+        console.error('[PRACTICE] Firebase AI failed:', error);
+        throw error;
+      }
+    } else {
+      // Fallback to Vercel API
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: casePrompt }],
+          model: selectedModel,
+          temperature: 0.7,
+          max_tokens: 512
+        })
+      });
+      
+      if (!response.ok) throw new Error('Vercel API failed');
+      const data = await response.json();
+      caseResult = data.choices[0].message.content;
+      console.log('[PRACTICE] Case generated with Vercel API:', selectedModel);
+    }
+    
+    currentCase = {
+      content: caseResult,
+      difficulty: caseDifficulty,
+      timestamp: new Date().toISOString()
+    };
+    
+    caseContent.innerHTML = caseResult;
+    caseContent.style.opacity = '1';
+    
+    // Clear previous messages and add initial patient greeting
+    practiceMessages = [];
+    const messagesContainer = document.getElementById('practice-messages');
+    messagesContainer.innerHTML = '';
+    
+    // Add patient greeting from the generated case
+    await addPracticeMessage('patient', caseResult);
+    
+    // Don't save to localStorage
+    // savePracticeData();
+    
+  } catch (error) {
+    console.error('[PRACTICE] Case generation failed:', error);
+    caseContent.innerHTML = `<span style="color: #d32f2f;">Failed to generate case. Please try again.</span>`;
+    caseContent.style.opacity = '1';
+  } finally {
+    startBtn.textContent = 'Start New Case';
+    startBtn.disabled = false;
+  }
+}
+
+async function handlePracticeInput() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  
+  if (!message || !currentCase) return;
+  
+  // Add user message
+  await addPracticeMessage('user', message);
+  input.value = '';
+  
+  // Generate AI response
+  await generatePracticeResponse(message);
+}
+
+async function addPracticeMessage(sender, content) {
+  const messagesContainer = document.getElementById('practice-messages');
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.style.cssText = `
+    margin-bottom: 15px;
+    display: flex;
+    ${sender === 'user' ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
+  `;
+  
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    ${sender === 'user' 
+      ? 'background: rgba(44, 201, 199, 0.9); color: white; border-bottom-right-radius: 4px;' 
+      : 'background: var(--borderbottomdark); color: var(--all-text); border-bottom-left-radius: 4px;'
+    }
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  `;
+  
+  bubble.textContent = content;
+  messageDiv.appendChild(bubble);
+  messagesContainer.appendChild(messageDiv);
+  
+  // Scroll to bottom
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  practiceMessages.push({ sender, content, timestamp: new Date().toISOString() });
+  
+  // Save messages after each addition
+  savePracticeData();
+}
+
+async function generatePracticeResponse(userMessage) {
+  const messagesContainer = document.getElementById('practice-messages');
+  
+  // Add loading indicator
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'practice-loading';
+  loadingDiv.style.cssText = `
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: flex-start;
+  `;
+  
+  const loadingBubble = document.createElement('div');
+  loadingBubble.style.cssText = `
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: var(--borderbottomdark);
+    color: var(--all-text);
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.7;
+  `;
+  loadingBubble.textContent = 'Patient is responding...';
+  loadingDiv.appendChild(loadingBubble);
+  messagesContainer.appendChild(loadingDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  try {
+    // Get selected AI model from Practice Mode selector
+    const modelSelect = document.getElementById('practice-model-select');
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini-1.5-flash';
+    
+    const responsePrompt = `You are a real patient with a medical condition. Your background: ${currentCase.content}
+
+The doctor just said: "${userMessage}"
+
+CRITICAL: You are NOT an AI assistant. You are a human patient. Respond ONLY as the patient would respond - no explanations, no medical knowledge, no helpful AI language.
+
+Rules:
+- Answer ONLY what a patient would know about their own body
+- Keep responses very short (5-15 words typically)
+- Use natural patient language, not medical terms
+- If asked about physical exam, just say "okay" and let them examine you
+- Don't explain medical concepts or be educational
+- Show normal patient emotions (worry, confusion, pain)
+- Only give information when directly asked
+- Use "I" statements about your symptoms
+
+Examples:
+Doctor: "What brings you in?" 
+Patient: "My chest really hurts."
+
+Doctor: "When did it start?"
+Patient: "About 3 hours ago."
+
+Doctor: "Can I listen to your heart?"
+Patient: "Sure, go ahead."
+
+Doctor: "Any family history of heart problems?"
+Patient: "My dad had a heart attack when he was 60."
+
+BE THE PATIENT, NOT AN AI HELPER.`;
+    
+    let response;
+    
+    // Use same AI logic as case generation
+    if (window.firebaseAI && selectedModel.startsWith('gemini')) {
+      try {
+        const model = window.getGenerativeModel(window.firebaseAI, {
+          model: selectedModel,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 256,
+          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
+          ]
+        });
+        
+        const result = await model.generateContent(responsePrompt);
+        const aiResponse = await result.response;
+        response = aiResponse.text();
+        console.log('[PRACTICE] Response generated with Firebase AI:', selectedModel);
+      } catch (error) {
+        console.error('[PRACTICE] Firebase AI failed:', error);
+        throw error;
+      }
+    } else {
+      // Fallback to Vercel API
+      const apiResponse = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: responsePrompt }],
+          model: selectedModel,
+          temperature: 0.7,
+          max_tokens: 256
+        })
+      });
+      
+      if (!apiResponse.ok) throw new Error('Vercel API failed');
+      const data = await apiResponse.json();
+      response = data.choices[0].message.content;
+      console.log('[PRACTICE] Response generated with Vercel API:', selectedModel);
+    }
+    
+    // Remove loading indicator
+    const loading = document.getElementById('practice-loading');
+    if (loading) loading.remove();
+    
+    // Add AI response
+    await addPracticeMessage('patient', response);
+    
+  } catch (error) {
+    console.error('[PRACTICE] Response generation failed:', error);
+    
+    // Remove loading indicator
+    const loading = document.getElementById('practice-loading');
+    if (loading) loading.remove();
+    
+    // Add error message as patient would
+    await addPracticeMessage('patient', 'Sorry doctor, I didn\'t hear you clearly. Can you ask me again?');
+  }
+}
+
+function cycleDifficulty() {
+  const difficulties = ['beginner', 'intermediate', 'advanced'];
+  const currentIndex = difficulties.indexOf(caseDifficulty);
+  caseDifficulty = difficulties[(currentIndex + 1) % difficulties.length];
+  
+  const btn = document.getElementById('case-difficulty-btn');
+  btn.textContent = `Difficulty: ${caseDifficulty.charAt(0).toUpperCase() + caseDifficulty.slice(1)}`;
+}
+
+// Save/Load Practice Data Functions
+function savePracticeData() {
+  // Disabled localStorage saving for practice data
+  // const practiceData = {
+  //   currentCase,
+  //   practiceMessages,
+  //   caseDifficulty,
+  //   timestamp: new Date().toISOString()
+  // };
+  // localStorage.setItem('practiceData', JSON.stringify(practiceData));
+}
+
+function loadPracticeData() {
+  // Disabled localStorage loading for practice data
+  // try {
+  //   const saved = localStorage.getItem('practiceData');
+  //   if (saved) {
+  //     const data = JSON.parse(saved);
+  //     currentCase = data.currentCase;
+  //     practiceMessages = data.practiceMessages || [];
+  //     caseDifficulty = data.caseDifficulty || 'intermediate';
+  //     
+  //     // Update difficulty button
+  //     const btn = document.getElementById('case-difficulty-btn');
+  //     if (btn) {
+  //       btn.textContent = `Difficulty: ${caseDifficulty.charAt(0).toUpperCase() + caseDifficulty.slice(1)}`;
+  //     }
+  //     
+  //     // Update case content if we have a current case
+  //     if (currentCase) {
+  //       const caseContent = document.getElementById('case-content');
+  //       if (caseContent) {
+  //         caseContent.innerHTML = currentCase;
+  //         caseContent.style.opacity = '1';
+  //       }
+  //     }
+  //     
+  //     // Restore messages
+  //     const messagesContainer = document.getElementById('practice-messages');
+  //     if (messagesContainer && practiceMessages.length > 0) {
+  //       messagesContainer.innerHTML = '';
+  //       practiceMessages.forEach(msg => {
+  //         addPracticeMessage(msg.type, msg.content, false); // false = don't save again
+  //       });
+  //     }
+  //     
+  //     console.log('[PRACTICE] Data loaded from localStorage');
+  //   }
+  // } catch (error) {
+  //   console.error('[PRACTICE] Failed to load saved data:', error);
+  // }
+}
+
+function addPracticeMessageToDOM(sender, content) {
+  const messagesContainer = document.getElementById('practice-messages');
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.style.cssText = `
+    margin-bottom: 15px;
+    display: flex;
+    ${sender === 'user' ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
+  `;
+  
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    ${sender === 'user' 
+      ? 'background: rgba(44, 201, 199, 0.9); color: white; border-bottom-right-radius: 4px;' 
+      : 'background: var(--borderbottomdark); color: var(--all-text); border-bottom-left-radius: 4px;'
+    }
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  `;
+  
+  bubble.textContent = content;
+  messageDiv.appendChild(bubble);
+  messagesContainer.appendChild(messageDiv);
+  
+  // Scroll to bottom
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 // Main initialization function
 function initBAU() {
   try {
@@ -90,24 +560,194 @@ function initBAU() {
     // Initialize AI Demo after a short delay to ensure DOM is ready
     setTimeout(() => {
       initAIDemo();
-    }, 200);
+      enhanceSocratesSelectsInFlow();
+      initFormDataManagement();
+      initPDFGenerator();
+      
+      // Load user histories if authenticated
+      loadHistories();
+      
+      console.log("[BAU] All modules initialized successfully");
+    }, 1000);
 
-    // Initialize dropdown UI enhancements after DOM is ready
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(enhanceSocratesSelectsInFlow, 100);
-      });
-    } else {
-      setTimeout(enhanceSocratesSelectsInFlow, 100);
-    }
-
-    console.log("[BAU] Modular BAU system initialized successfully");
-  } catch (e) {
-    console.error("[BAU] Initialization error:", e);
+  } catch (error) {
+    console.error("[BAU] Initialization failed:", error);
   }
 }
 
-// Form Navigation System
+function initPracticeMode() {
+  // Check if already initialized to prevent duplicate event listeners
+  if (window.practiceInitialized) {
+    return;
+  }
+  
+  // Check if we're in the dynamic container
+  const dynamicContainer = document.getElementById('dynamic-chat-container');
+  console.log('[PRACTICE] Dynamic container check:', {
+    exists: !!dynamicContainer,
+    display: dynamicContainer?.style.display,
+    computed: dynamicContainer ? window.getComputedStyle(dynamicContainer).display : 'N/A'
+  });
+  
+  if (!dynamicContainer) {
+    console.log('[PRACTICE] Dynamic container not found, skipping initialization');
+    return;
+  }
+  
+  // Wait for DOM elements to be available with longer timeout
+  setTimeout(() => {
+    // Debug: Check all elements with chat-input id
+    const allElements = document.querySelectorAll('[id="chat-input"]');
+    console.log('[PRACTICE] All chat-input elements found:', allElements.length);
+    
+    // Try multiple ways to find the element
+    const chatInput1 = document.getElementById('chat-input');
+    const chatInput2 = document.querySelector('#chat-input');
+    const chatInput3 = dynamicContainer.querySelector('#chat-input');
+    
+    console.log('[PRACTICE] Chat input search results:', {
+      getElementById: !!chatInput1,
+      querySelector: !!chatInput2,
+      containerQuery: !!chatInput3,
+      containerHTML: dynamicContainer.innerHTML.includes('chat-input')
+    });
+    
+    let chatInput = chatInput1 || chatInput2 || chatInput3;
+    
+    if (!chatInput) {
+      console.log('[PRACTICE] Chat input not found, creating it dynamically...');
+      
+      // Create chat input container
+      const inputContainer = document.createElement('div');
+      inputContainer.style.cssText = 'margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borderbottomdark);';
+      
+      const inputWrapper = document.createElement('div');
+      inputWrapper.style.cssText = 'display: flex; gap: 10px; align-items: flex-end;';
+      
+      // Create textarea
+      chatInput = document.createElement('textarea');
+      chatInput.id = 'chat-input';
+      chatInput.placeholder = 'Ask questions about the case, request physical examination, or provide your assessment...';
+      chatInput.style.cssText = `
+        flex: 1;
+        min-height: 60px;
+        max-height: 120px;
+        padding: 12px 15px;
+        border: 1px solid var(--borderbottomdark);
+        border-radius: 12px;
+        background: var(--header-bg);
+        color: var(--all-text);
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        outline: none;
+        cursor: text;
+      `;
+      
+      // Create send button
+      const sendBtn = document.createElement('button');
+      sendBtn.id = 'send-chat-btn';
+      sendBtn.textContent = 'Send';
+      sendBtn.style.cssText = `
+        padding: 12px 20px;
+        background: #9c27b0;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-width: 80px;
+      `;
+      
+      // Assemble and append
+      inputWrapper.appendChild(chatInput);
+      inputWrapper.appendChild(sendBtn);
+      inputContainer.appendChild(inputWrapper);
+      dynamicContainer.appendChild(inputContainer);
+      
+      console.log('[PRACTICE] Chat input created successfully');
+    }
+    
+    // Mode switcher event listeners
+    const chatModeBtn = document.getElementById('chat-mode-btn');
+    const practiceModeBtn = document.getElementById('practice-mode-btn');
+    
+    if (chatModeBtn && !chatModeBtn.hasAttribute('data-practice-listener')) {
+      chatModeBtn.addEventListener('click', () => switchMode('chat'));
+      chatModeBtn.setAttribute('data-practice-listener', 'true');
+    }
+    
+    if (practiceModeBtn && !practiceModeBtn.hasAttribute('data-practice-listener')) {
+      practiceModeBtn.addEventListener('click', () => {
+        console.log('[PRACTICE] Practice mode button clicked');
+        switchMode('practice');
+      });
+      practiceModeBtn.setAttribute('data-practice-listener', 'true');
+    }
+    
+    // Practice mode controls
+    const startCaseBtn = document.getElementById('start-case-btn');
+    const difficultyBtn = document.getElementById('case-difficulty-btn');
+    
+    if (startCaseBtn && !startCaseBtn.hasAttribute('data-practice-listener')) {
+      startCaseBtn.addEventListener('click', generateNewCase);
+      startCaseBtn.setAttribute('data-practice-listener', 'true');
+    }
+    
+    if (difficultyBtn && !difficultyBtn.hasAttribute('data-practice-listener')) {
+      difficultyBtn.addEventListener('click', cycleDifficulty);
+      difficultyBtn.setAttribute('data-practice-listener', 'true');
+    }
+    
+    // Chat input for practice mode
+    const practiceInput = document.getElementById('chat-input');
+    if (practiceInput && !practiceInput.hasAttribute('data-practice-listener')) {
+      practiceInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey && currentMode === 'practice') {
+          e.preventDefault();
+          handlePracticeInput();
+        }
+      });
+      practiceInput.setAttribute('data-practice-listener', 'true');
+    }
+    
+    // Send button event listener
+    const sendBtn = document.getElementById('send-chat-btn');
+    if (sendBtn && !sendBtn.hasAttribute('data-practice-listener')) {
+      sendBtn.addEventListener('click', () => {
+        if (currentMode === 'practice') {
+          handlePracticeInput();
+        }
+      });
+      sendBtn.setAttribute('data-practice-listener', 'true');
+    }
+    
+    // Restore saved mode only if elements exist
+    const chatContainer = document.getElementById('chat-mode-container');
+    if (chatContainer) {
+      switchMode(savedMode);
+    }
+    
+    window.practiceInitialized = true;
+    console.log('[BAU] Practice Mode initialized');
+  }, 1500);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBAU);
+} else {
+  initBAU();
+}
+
+// Export for global access
+window.initBAU = initBAU;
+window.loadHistories = loadHistories;
+window.switchMode = switchMode;
+window.generateNewCase = generateNewCase;
+
 function initFormNavigation() {
   console.log("[BAU] Initializing form navigation...");
   
@@ -182,6 +822,11 @@ function initFormNavigation() {
         staticContainer.style.display = 'none';
         dynamicContainer.style.display = 'block';
         if (chatInput) chatInput.focus();
+        
+        // Initialize Practice Mode when Dynamic Form becomes visible
+        setTimeout(() => {
+          initPracticeMode();
+        }, 100);
       }
     });
   });

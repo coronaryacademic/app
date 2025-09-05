@@ -4617,7 +4617,7 @@
       console.log("[PE DEBUG] initPEAccordions called");
       const peRoot = document.getElementById("pe-content");
       if (!peRoot) {
-        console.error("[PE DEBUG] pe-content not found");
+        // console.log("[PE DEBUG] PE content not found");
         return;
       }
       console.log("[PE DEBUG] pe-content found:", peRoot);
@@ -5195,24 +5195,21 @@
       }
     };
 
-    console.log(
-      "[PE DEBUG] Global functions defined:",
-      typeof window.testPEAccordions,
-      typeof window.showPESection,
-      typeof window.toggleFirstAccordion
-    );
+    // console.log(
+    //   "[PE DEBUG] Global functions defined:",
+    //   typeof window.testPEAccordions,
+    //   typeof window.showPESection,
+    //   typeof window.toggleFirstAccordion
+    // );
 
     // Cross-form symptom linking functionality
-    console.log("[SYMPTOM LINK] About to define initSymptomLinking function");
 
     // Simple test function first
     window.testSymptomLink = function () {
-      console.log("[SYMPTOM LINK] Test function works!");
       return "Function is accessible";
     };
 
     window.initSymptomLinking = function () {
-      console.log("[SYMPTOM LINK] initSymptomLinking function called");
       const symptomMappings = {
         // Chief Complaint to ROS mappings
         "chest-pain": ["Chest pain"],
@@ -5288,7 +5285,7 @@
             subtree: true,
           });
         } catch (e) {
-          console.warn("[SYMPTOM LINK] MutationObserver error:", e);
+          // console.warn("[SYMPTOM LINK] MutationObserver error:", e);
         }
         // Global interaction hooks to catch custom UI activity before it updates the select
         const trigger = () => setTimeout(() => onChange.call(selectEl), 0);
@@ -5334,7 +5331,7 @@
       // Listen for changes in Chief Complaint
       const ccSelect = document.getElementById("chief-complaint");
       if (ccSelect) {
-        console.log("[SYMPTOM LINK] Chief Complaint select found");
+        // console.log("[SYMPTOM LINK] Chief Complaint select found");
         const onCCChange = function () {
           // Handle multiple selections via selectedOptions
           const values =
@@ -5343,31 +5340,31 @@
               : this && this.value
               ? [this.value]
               : [];
-          console.log("[SYMPTOM LINK] Chief Complaint changed to:", values);
+          // console.log("[SYMPTOM LINK] Chief Complaint changed to:", values);
           if (!values.length) return;
           values.forEach((val) => {
             if (symptomMappings[val]) {
-              console.log(
-                "[SYMPTOM LINK] Found mapping for CC:",
-                val,
-                "=>",
-                symptomMappings[val]
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] Found mapping for CC:",
+              //   val,
+              //   "=>",
+              //   symptomMappings[val]
+              // );
               checkROSSymptoms(symptomMappings[val]);
             } else {
-              console.log("[SYMPTOM LINK] No mapping found for CC:", val);
+              // console.log("[SYMPTOM LINK] No mapping found for CC:", val);
             }
           });
         };
         attachReactiveSelect(ccSelect, onCCChange);
       } else {
-        console.error("[SYMPTOM LINK] Chief Complaint select not found");
+        // console.error("[SYMPTOM LINK] Chief Complaint select not found");
       }
 
       // Listen for changes in Associated Symptoms
       const assocSelect = document.getElementById("associated");
       if (assocSelect) {
-        console.log("[SYMPTOM LINK] Associated Symptoms select found");
+        // console.log("[SYMPTOM LINK] Associated Symptoms select found");
         const onAssocChange = function () {
           const values =
             this && this.selectedOptions
@@ -5375,39 +5372,39 @@
               : this && this.value
               ? [this.value]
               : [];
-          console.log("[SYMPTOM LINK] Associated Symptoms changed to:", values);
+          // console.log("[SYMPTOM LINK] Associated Symptoms changed to:", values);
           if (!values.length) return;
           values.forEach((val) => {
             if (symptomMappings[val]) {
-              console.log(
-                "[SYMPTOM LINK] Found mapping for Associated:",
-                val,
-                "=>",
-                symptomMappings[val]
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] Found mapping for Associated:",
+              //   val,
+              //   "=>",
+              //   symptomMappings[val]
+              // );
               checkROSSymptoms(symptomMappings[val]);
             } else {
-              console.log(
-                "[SYMPTOM LINK] No mapping found for Associated:",
-                val
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] No mapping found for Associated:",
+              //   val
+              // );
             }
           });
         };
         attachReactiveSelect(assocSelect, onAssocChange);
       } else {
-        console.error("[SYMPTOM LINK] Associated Symptoms select not found");
+        // console.error("[SYMPTOM LINK] Associated Symptoms select not found");
       }
     };
 
     window.checkROSSymptoms = function checkROSSymptoms(symptoms) {
-      console.log("[SYMPTOM LINK] checkROSSymptoms called with:", symptoms);
+      // console.log("[SYMPTOM LINK] checkROSSymptoms called with:", symptoms);
       const rosCheckboxes = document.querySelectorAll(".ros");
-      console.log(
-        "[SYMPTOM LINK] Found",
-        rosCheckboxes.length,
-        "ROS checkboxes"
-      );
+      // console.log(
+      //   "[SYMPTOM LINK] Found",
+      //   rosCheckboxes.length,
+      //   "ROS checkboxes"
+      // );
 
       // Normalizer for synonyms and US/UK spellings
       const resolve = (s) => {
@@ -5444,13 +5441,13 @@
 
       symptoms.forEach((raw) => {
         const target = resolve(raw);
-        console.log(
-          "[SYMPTOM LINK] Looking for ROS checkbox with value:",
-          target,
-          "(from",
-          raw,
-          ")"
-        );
+        // console.log(
+        //   "[SYMPTOM LINK] Looking for ROS checkbox with value:",
+        //   target,
+        //   "(from",
+        //   raw,
+        //   ")"
+        // );
         let found = false;
 
         // 1) Exact
@@ -5477,12 +5474,12 @@
         if (cb) {
           // Respect manual user uncheck
           if (cb.dataset.manual === "off") {
-            console.log("[SYMPTOM LINK] Skipped (manual OFF):", cb.value);
+            // console.log("[SYMPTOM LINK] Skipped (manual OFF):", cb.value);
           } else {
-            console.log(
-              "[SYMPTOM LINK] MATCH FOUND! Checking checkbox for:",
-              cb.value
-            );
+            // console.log(
+            //   "[SYMPTOM LINK] MATCH FOUND! Checking checkbox for:",
+            //   cb.value
+            // );
             cb.checked = true;
             cb.dataset.autoAny = "1";
             found = true;
@@ -5493,20 +5490,20 @@
           }
         }
         if (!found) {
-          console.log("[SYMPTOM LINK] NO MATCH FOUND for:", target);
+          // console.log("[SYMPTOM LINK] NO MATCH FOUND for:", target);
         }
       });
     };
 
     // Initialize touch multi-select when page loads
     document.addEventListener("DOMContentLoaded", function () {
-      console.log("[PE DEBUG] DOMContentLoaded fired");
+      // console.log("[PE DEBUG] DOMContentLoaded fired");
 
       // Add a delay to ensure all elements are loaded
       setTimeout(() => {
-        console.log("[SYMPTOM LINK] About to initialize symptom linking...");
+        // console.log("[SYMPTOM LINK] About to initialize symptom linking...");
         initSymptomLinking();
-        console.log("[SYMPTOM LINK] Symptom linking initialization complete");
+        // console.log("[SYMPTOM LINK] Symptom linking initialization complete");
       }, 100);
 
       // Set initial PE section state (hidden by default)
@@ -5515,7 +5512,7 @@
         peContent.style.display = "none";
         peContent.style.opacity = "0";
         peContent.style.transition = "opacity 0.5s ease";
-        console.log("[PE DEBUG] PE content hidden by default");
+        // console.log("[PE DEBUG] PE content hidden by default");
       } else {
         console.error("[PE DEBUG] pe-content not found on DOMContentLoaded");
       }
@@ -5527,22 +5524,21 @@
     });
 
     // Test if script is executing at all
-    console.log("[SCRIPT TEST] JavaScript is executing");
+    // console.log("[SCRIPT TEST] JavaScript is executing");
     window.scriptTest = function () {
       return "Script works";
     };
 
     // Immediate test functions for console
     window.testSymptomLink = function () {
-      console.log("[SYMPTOM LINK] Test function works!");
       return "Function is accessible";
     };
 
-    console.log("[SCRIPT TEST] Test functions defined");
+    // console.log("[SCRIPT TEST] Test functions defined");
 
     // Working symptom linking functionality
     setTimeout(() => {
-      console.log("[SYMPTOM LINK] Setting up symptom linking...");
+      // console.log("[SYMPTOM LINK] Setting up symptom linking...");
 
       const symptomMap = {
         nausea: "Nausea",
@@ -5673,12 +5669,12 @@
             // Only uncheck if no other source owns it
             if (cb.dataset[otherAttr] !== "1") {
               cb.checked = false;
-              console.log(
-                "[SYMPTOM LINK] Explicit uncheck (",
-                source,
-                "):",
-                cb.value
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] Explicit uncheck (",
+              //   source,
+              //   "):",
+              //   cb.value
+              // );
             }
           }
         });
@@ -5692,19 +5688,19 @@
               // Only uncheck if no other source still owns it
               if (cb.dataset[otherAttr] !== "1") {
                 cb.checked = false;
-                console.log(
-                  "[SYMPTOM LINK] Unchecked ROS (",
-                  source,
-                  "):",
-                  cb.value
-                );
+                // console.log(
+                //   "[SYMPTOM LINK] Unchecked ROS (",
+                //   source,
+                //   "):",
+                //   cb.value
+                // );
               } else {
-                console.log(
-                  "[SYMPTOM LINK] Retained ROS due to other source (",
-                  source,
-                  "):",
-                  cb.value
-                );
+                // console.log(
+                //   "[SYMPTOM LINK] Retained ROS due to other source (",
+                //   source,
+                //   "):",
+                //   cb.value
+                // );
               }
             }
           }
@@ -5719,32 +5715,32 @@
             if (now - manualAt < 1200) {
               // user just changed it; don't fight them
               cb.dataset[attr] = "1";
-              console.log("[SYMPTOM LINK] Cooldown skip for:", cb.value);
+              // console.log("[SYMPTOM LINK] Cooldown skip for:", cb.value);
             } else if (cb.dataset.manual === "off") {
               // user explicitly turned it off; keep ownership but don't flip
               cb.dataset[attr] = "1";
-              console.log(
-                "[SYMPTOM LINK] Skipped due to manual OFF:",
-                cb.value
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] Skipped due to manual OFF:",
+              //   cb.value
+              // );
             } else if (cb.dataset.manual === "on") {
               // user explicitly turned it on; just record ownership
               cb.dataset[attr] = "1";
-              console.log("[SYMPTOM LINK] Respecting manual ON:", cb.value);
+              // console.log("[SYMPTOM LINK] Respecting manual ON:", cb.value);
             } else {
               cb.checked = true;
               cb.dataset[attr] = "1";
               cb.style.backgroundColor = "lightgreen";
               setTimeout(() => (cb.style.backgroundColor = ""), 600);
-              console.log(
-                "[SYMPTOM LINK] Checked ROS (",
-                source,
-                "):",
-                cb.value
-              );
+              // console.log(
+              //   "[SYMPTOM LINK] Checked ROS (",
+              //   source,
+              //   "):",
+              //   cb.value
+              // );
             }
           } else {
-            console.log("[SYMPTOM LINK] No ROS checkbox found for:", val);
+            // console.log("[SYMPTOM LINK] No ROS checkbox found for:", val);
           }
         });
 
@@ -5800,7 +5796,7 @@
       const ccSelect = document.getElementById("chief-complaint");
       if (ccSelect) {
         ccSelect.addEventListener("change", function () {
-          console.log("[SYMPTOM LINK] CC changed to:", this.value);
+          // console.log("[SYMPTOM LINK] CC changed to:", this.value);
           const mapped = symptomMap[this.value];
           const desired = mapped ? [mapped] : [];
           syncRosForSource("cc", desired);
@@ -5823,7 +5819,7 @@
             const mapped = symptomMap[v];
             if (mapped) desired.push(mapped);
           });
-          console.log("[SYMPTOM LINK] Associated desired ROS:", desired);
+          // console.log("[SYMPTOM LINK] Associated desired ROS:", desired);
           syncRosForSource("assoc", desired);
         });
       }
@@ -6022,20 +6018,45 @@
       Dynamic History Taking
     </h2>
     <div style="display: flex; align-items: center; gap: 10px">
-      <div
-        class="chat-status"
-        style="
-          padding: 6px 12px;
-          background: rgba(44, 201, 199, 0.1);
-          border-radius: 15px;
-          font-size: 12px;
-          color: var(--all-text);
-          font-weight: 500;
-        "
-      >
-        Chat Mode
+      <!-- Mode Switcher -->
+      <div style="display: flex; background: var(--borderbottomdark); border-radius: 20px; padding: 2px;">
+        <button
+          id="chat-mode-btn"
+          class="mode-btn active"
+          style="
+            padding: 6px 12px;
+            background: rgba(44, 201, 199, 0.9);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          "
+        >
+          Chat Mode
+        </button>
+        <button
+          id="practice-mode-btn"
+          class="mode-btn"
+          style="
+            padding: 6px 12px;
+            background: transparent;
+            color: var(--all-text);
+            border: none;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          "
+        >
+          Practice Mode
+        </button>
       </div>
       <span
+        id="mode-status"
         style="
           background: #fff3cd;
           color: #856404;
@@ -6049,9 +6070,10 @@
     </div>
   </div>
 
+  <!-- Chat Mode Container -->
   <div
+    id="chat-mode-container"
     class="chat-messages"
-    id="chat-messages"
     style="
       height: 400px;
       overflow-y: auto;
@@ -6060,6 +6082,7 @@
       padding: 15px;
       margin-bottom: 15px;
       background: rgba(0, 0, 0, 0.02);
+      display: block;
     "
   >
     <div
@@ -6110,91 +6133,173 @@
     </div>
   </div>
 
+  <!-- Practice Mode Container -->
   <div
-    class="chat-input-container"
-    style="display: flex; gap: 10px; align-items: flex-end"
-  >
-    <textarea
-      id="chat-input"
-      placeholder="Feature under maintenance - coming soon!"
-      disabled
-      style="
-        flex: 1;
-        min-height: 60px;
-        max-height: 120px;
-        padding: 12px 15px;
-        border: 1px solid var(--borderbottomdark);
-        border-radius: 12px;
-        background: #f5f5f5;
-        color: #999;
-        font-size: 14px;
-        font-family: inherit;
-        resize: vertical;
-        outline: none;
-        cursor: not-allowed;
-      "
-    ></textarea>
-    <button
-      id="send-chat-btn"
-      disabled
-      style="
-        padding: 12px 20px;
-        background: #ccc;
-        color: #666;
-        border: none;
-        border-radius: 12px;
-        cursor: not-allowed;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        min-width: 80px;
-      "
-    >
-      Send
-    </button>
-  </div>
-
-  <div
-    class="chat-actions"
+    id="practice-mode-container"
     style="
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--borderbottomdark);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.02);
+      display: none;
     "
   >
-    <button
-      id="clear-chat-btn"
+    <!-- Practice Mode Header -->
+    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--borderbottomdark);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h4 style="margin: 0; color: var(--all-text); font-size: 16px;">Case Presentation</h4>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <!-- AI Model Selector for Practice Mode -->
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 12px; color: var(--all-text); font-weight: 500;">AI Model:</label>
+            <select
+              id="practice-model-select"
+              style="
+                padding: 6px 10px;
+                border: 1px solid var(--borderbottomdark);
+                border-radius: 6px;
+                background: var(--header-bg);
+                color: var(--all-text);
+                font-size: 12px;
+                cursor: pointer;
+                min-width: 140px;
+              "
+            >
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="mistral-large">Mistral Large</option>
+              <option value="github-models-gpt-4o">GPT-4o</option>
+              <option value="github-models-gpt-4o-mini">GPT-4o Mini</option>
+            </select>
+          </div>
+          <button
+            id="start-case-btn"
+            style="
+              padding: 8px 16px;
+              background: #9c27b0;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-size: 12px;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            "
+          >
+            Start New Case
+          </button>
+          <button
+            id="case-difficulty-btn"
+            style="
+              padding: 8px 12px;
+              background: var(--borderbottomdark);
+              color: var(--all-text);
+              border: none;
+              border-radius: 8px;
+              font-size: 12px;
+              cursor: pointer;
+            "
+          >
+            Difficulty: Intermediate
+          </button>
+        </div>
+      </div>
+      <div
+        id="case-content"
+        style="
+          padding: 12px;
+          background: rgba(156, 39, 176, 0.05);
+          border-radius: 8px;
+          color: var(--all-text);
+          font-style: italic;
+          opacity: 0.7;
+        "
+      >
+        Click "Start New Case" to begin a practice session
+      </div>
+    </div>
+
+    <!-- Practice Messages -->
+    <div
+      id="practice-messages"
       style="
-        padding: 8px 16px;
-        background: transparent;
-        color: var(--all-text);
-        border: 1px solid var(--borderbottomdark);
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 12px;
-        transition: all 0.3s ease;
+        height: 250px;
+        overflow-y: auto;
+        margin-bottom: 15px;
       "
     >
-      Clear Chat
-    </button>
-    <button
-      id="generate-report-btn"
-      style="
-        padding: 10px 20px;
-        background: rgba(156, 39, 176, 0.8);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: none;
-      "
-    >
-      Generate Final Report
-    </button>
+      <div
+        class="practice-welcome"
+        style="
+          text-align: center;
+          color: var(--all-text);
+          opacity: 0.7;
+          font-style: italic;
+          padding: 20px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            justify-content: center;
+          "
+        >
+          <span style="font-weight: 600; color: #9c27b0">Practice Mode</span>
+        </div>
+        <p style="margin: 0; line-height: 1.5;">
+          In practice mode, the AI will present a case and you ask questions to take history and perform PE. Start a new case to begin!
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Practice Mode Input - Always Visible -->
+  <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borderbottomdark);">
+    <div style="display: flex; gap: 10px; align-items: flex-end;">
+      <textarea
+        id="chat-input"
+        placeholder="Ask questions about the case, request physical examination, or provide your assessment..."
+        style="
+          flex: 1;
+          min-height: 60px;
+          max-height: 120px;
+          padding: 12px 15px;
+          border: 1px solid var(--borderbottomdark);
+          border-radius: 12px;
+          background: var(--header-bg);
+          color: var(--all-text);
+          font-size: 14px;
+          font-family: inherit;
+          resize: vertical;
+          outline: none;
+          cursor: text;
+        "
+      ></textarea>
+      <button
+        id="send-chat-btn"
+        style="
+          padding: 12px 20px;
+          background: #9c27b0;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          min-width: 80px;
+        "
+      >
+        Send
+      </button>
+    </div>
   </div>
 </div>
 
