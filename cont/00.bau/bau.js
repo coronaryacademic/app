@@ -1606,25 +1606,6 @@ async function renderHistorySidebar() {
           <i class="fa fa-tachometer" style="width: 16px;"></i>
           Dashboard
         </button>
-        <button id="sidebarThemeBtn" style="
-          width: 100%;
-          padding: 12px 16px;
-          border: none;
-          background: transparent;
-          color: var(--all-text);
-          cursor: pointer;
-          text-align: left;
-          border-radius: 8px;
-          font-size: 14px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          transition: background 0.2s ease;
-        " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
-          <i class="fa fa-palette" style="width: 16px;"></i>
-          <span>Theme: <span id="currentThemeText">...</span></span>
-        </button>
-        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 16px;"></div>
         <button id="sidebarLogoutBtn" style="
           width: 100%;
           padding: 12px 16px;
@@ -1995,7 +1976,6 @@ async function renderHistorySidebar() {
 
     console.log("[BAU] User menu elements found, setting up...");
     const sidebarDashboardBtn = document.getElementById("sidebarDashboardBtn");
-    const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
     const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 
     // Initialize menu as hidden
@@ -2008,7 +1988,6 @@ async function renderHistorySidebar() {
       toggle: !!sidebarUserToggle,
       menu: !!sidebarUserMenu,
       dashboard: !!sidebarDashboardBtn,
-      theme: !!sidebarThemeBtn,
       logout: !!sidebarLogoutBtn,
     });
 
@@ -2132,17 +2111,7 @@ async function renderHistorySidebar() {
       });
     }
 
-    // Theme button
-    if (sidebarThemeBtn) {
-      sidebarThemeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        console.log("[BAU] Theme toggle clicked from sidebar");
-        if (window.toggleTheme) {
-          window.toggleTheme();
-        }
-        // Don't close the menu when toggling theme
-      });
-    }
+    // Theme button functionality removed - now in dashboard settings
 
     // Logout button
     if (sidebarLogoutBtn) {
@@ -2173,27 +2142,7 @@ async function renderHistorySidebar() {
       });
     }
 
-    // Update theme button text when theme changes
-    const updateThemeButtonText = () => {
-      const currentTheme =
-        document.documentElement.getAttribute("data-theme") || "light";
-      const themeText = document.getElementById("currentThemeText");
-      if (themeText) {
-        themeText.textContent = currentTheme === "dark" ? "Dark" : "Light";
-      }
-    };
-
-    // Initial theme button text
-    updateThemeButtonText();
-
-    // Listen for theme changes
-    const observer = new MutationObserver(() => {
-      updateThemeButtonText();
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
+    // Theme button text functionality removed - theme selection now in dashboard settings
   };
 
   // Start waiting for user menu elements

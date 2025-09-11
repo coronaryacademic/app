@@ -90,6 +90,287 @@
   --report: white;
 }
 
+
+/* Purple-Light Blue theme variables */
+[data-theme="purple-blue"] {
+  --bg-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text-color: #ffffff;
+  --specific-text-color: rgba(255, 255, 255, 1);
+  --quote: rgba(255, 255, 255, 0.9);
+  --header-bg: rgba(102, 126, 234, 0.95);
+  --link-color: #ffffff;
+  --link-hover-color: #a8edea;
+  --bottom-border-color: rgba(255, 255, 255, 0.4);
+  --header-shadow: rgba(0, 0, 0, 0.3);
+  --header-border: 1px solid rgba(255, 255, 255, 0.3);
+  --lang-bg: rgba(118, 75, 162, 0.9);
+  --lang-txt: rgba(255, 255, 255, 1);
+  --lang-hover: rgba(255, 255, 255, 0.25);
+  --nav-hover: rgba(255, 255, 255, 0.15);
+  --drop-down: rgba(255, 255, 255, 0.2);
+  --selc-la: rgba(255, 255, 255, 0.3);
+  --button-pdf: rgba(255, 255, 255, 0.4);
+  --titles: rgba(255, 255, 255, 0.9);
+  --top: #ffffff;
+  --toptxt: #ffffff;
+  --grad-1: #667eea;
+  --grad-2: #764ba2;
+  --grad-3: #a8edea;
+  --grad-4: #fed6e3;
+  --grad-5: #d299c2;
+  --grad-6: #ffecd2;
+  --grad-7: #fcb69f;
+  --grad-8: #667eea;
+  --grad-9: #764ba2;
+  --all-text: rgba(255, 255, 255, 1);
+  --scrl: rgba(255, 255, 255, 0.4);
+  --navbuttons: #ffffff;
+  --borderbottom: rgba(255, 255, 255, 0.3);
+  --borderbottomdark: rgba(255, 255, 255, 0.4);
+  --userdiv: rgba(102, 126, 234, 0.4);
+  --report: #ffffff;
+}
+
+/* Sunset theme variables */
+[data-theme="sunset"] {
+  --bg-color: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #ffd1ff 100%);
+  --text-color: #1a0d3d;
+  --specific-text-color: rgba(26, 13, 61, 1);
+  --quote: rgba(26, 13, 61, 0.9);
+  --header-bg: rgba(255, 154, 158, 0.95);
+  --link-color: #1a0d3d;
+  --link-hover-color: #ff6b6b;
+  --bottom-border-color: rgba(26, 13, 61, 0.4);
+  --header-shadow: rgba(255, 154, 158, 0.4);
+  --header-border: 1px solid rgba(254, 207, 239, 0.6);
+  --lang-bg: rgba(254, 207, 239, 0.9);
+  --lang-txt: rgba(26, 13, 61, 1);
+  --lang-hover: rgba(255, 154, 158, 0.4);
+  --nav-hover: rgba(255, 154, 158, 0.25);
+  --drop-down: rgba(254, 207, 239, 0.5);
+  --selc-la: rgba(255, 154, 158, 0.4);
+  --button-pdf: rgba(26, 13, 61, 0.3);
+  --titles: rgba(26, 13, 61, 0.9);
+  --top: #1a0d3d;
+  --toptxt: #1a0d3d;
+  --grad-1: #ff9a9e;
+  --grad-2: #fad0c4;
+  --grad-3: #ffd1ff;
+  --grad-4: #ffa726;
+  --grad-5: #ffcc02;
+  --grad-6: #ff8a65;
+  --grad-7: #f8bbd9;
+  --grad-8: #e1bee7;
+  --grad-9: #ff9a9e;
+  --all-text: rgba(26, 13, 61, 1);
+  --scrl: rgba(255, 154, 158, 0.5);
+  --navbuttons: #1a0d3d;
+  --borderbottom: rgba(26, 13, 61, 0.3);
+  --borderbottomdark: rgba(26, 13, 61, 0.4);
+  --userdiv: rgba(254, 207, 239, 0.7);
+  --report: #1a0d3d;
+}
+
+/* Winter theme variables */
+[data-theme="winter"] {
+  --bg-color: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 50%, #ffffff 100%);
+  --text-color: #0f172a;
+  --specific-text-color: rgba(15, 23, 42, 1);
+  --quote: rgba(15, 23, 42, 0.9);
+  --header-bg: rgba(230, 243, 255, 0.98);
+  --link-color: #0f172a;
+  --link-hover-color: #3b82f6;
+  --bottom-border-color: rgba(15, 23, 42, 0.3);
+  --header-shadow: rgba(59, 130, 246, 0.2);
+  --header-border: 1px solid rgba(147, 197, 253, 0.4);
+  --lang-bg: rgba(240, 248, 255, 0.95);
+  --lang-txt: rgba(15, 23, 42, 1);
+  --lang-hover: rgba(147, 197, 253, 0.4);
+  --nav-hover: rgba(147, 197, 253, 0.25);
+  --drop-down: rgba(230, 243, 255, 0.9);
+  --selc-la: rgba(147, 197, 253, 0.5);
+  --button-pdf: rgba(15, 23, 42, 0.2);
+  --titles: rgba(15, 23, 42, 0.9);
+  --top: #0f172a;
+  --toptxt: #0f172a;
+  --grad-1: #e6f3ff;
+  --grad-2: #dbeafe;
+  --grad-3: #93c5fd;
+  --grad-4: #60a5fa;
+  --grad-5: #3b82f6;
+  --grad-6: #f0f9ff;
+  --grad-7: #e0f2fe;
+  --grad-8: #b3e5fc;
+  --grad-9: #81d4fa;
+  --all-text: rgba(15, 23, 42, 1);
+  --scrl: rgba(147, 197, 253, 0.5);
+  --navbuttons: #0f172a;
+  --borderbottom: rgba(15, 23, 42, 0.2);
+  --borderbottomdark: rgba(15, 23, 42, 0.3);
+  --userdiv: rgba(230, 243, 255, 0.9);
+  --report: #0f172a;
+}
+
+/* Cosmic theme variables */
+[data-theme="cosmic"] {
+  --bg-color: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #533483 100%);
+  --text-color: #e8e8ff;
+  --specific-text-color: rgba(232, 232, 255, 1);
+  --quote: rgba(232, 232, 255, 0.9);
+  --header-bg: rgba(15, 15, 35, 0.95);
+  --link-color: #a663cc;
+  --link-hover-color: #7209b7;
+  --bottom-border-color: rgba(232, 232, 255, 0.3);
+  --header-shadow: rgba(114, 9, 183, 0.4);
+  --header-border: 1px solid rgba(166, 99, 204, 0.5);
+  --lang-bg: rgba(15, 15, 35, 0.9);
+  --lang-txt: rgba(232, 232, 255, 1);
+  --lang-hover: rgba(114, 9, 183, 0.4);
+  --nav-hover: rgba(114, 9, 183, 0.25);
+  --drop-down: rgba(15, 15, 35, 0.8);
+  --selc-la: rgba(114, 9, 183, 0.4);
+  --button-pdf: rgba(232, 232, 255, 0.2);
+  --titles: rgba(232, 232, 255, 0.9);
+  --top: #e8e8ff;
+  --toptxt: #e8e8ff;
+  --grad-1: #0f0f23;
+  --grad-2: #1a1a2e;
+  --grad-3: #16213e;
+  --grad-4: #0f3460;
+  --grad-5: #533483;
+  --grad-6: #7209b7;
+  --grad-7: #a663cc;
+  --grad-8: #4c956c;
+  --grad-9: #0f0f23;
+  --all-text: rgba(232, 232, 255, 1);
+  --scrl: rgba(166, 99, 204, 0.6);
+  --navbuttons: #e8e8ff;
+  --borderbottom: rgba(232, 232, 255, 0.2);
+  --borderbottomdark: rgba(232, 232, 255, 0.3);
+  --userdiv: rgba(15, 15, 35, 0.8);
+  --report: #7209b7;
+}
+
+/* Medical theme variables */
+[data-theme="medical"] {
+  --bg-color: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 50%, #ffffff 100%);
+  --text-color: #2c5530;
+  --specific-text-color: rgba(44, 85, 48, 1);
+  --quote: rgba(44, 85, 48, 0.9);
+  --header-bg: rgba(232, 245, 232, 0.95);
+  --link-color: #2c5530;
+  --link-hover-color: #4caf50;
+  --bottom-border-color: rgba(44, 85, 48, 0.3);
+  --header-shadow: rgba(76, 175, 80, 0.2);
+  --header-border: 1px solid rgba(165, 214, 167, 0.4);
+  --lang-bg: rgba(232, 245, 232, 0.9);
+  --lang-txt: rgba(44, 85, 48, 1);
+  --lang-hover: rgba(165, 214, 167, 0.4);
+  --nav-hover: rgba(165, 214, 167, 0.25);
+  --drop-down: rgba(232, 245, 232, 0.8);
+  --selc-la: rgba(165, 214, 167, 0.5);
+  --button-pdf: rgba(44, 85, 48, 0.2);
+  --titles: rgba(44, 85, 48, 0.9);
+  --top: #2c5530;
+  --toptxt: #2c5530;
+  --grad-1: #e8f5e8;
+  --grad-2: #c8e6c9;
+  --grad-3: #a5d6a7;
+  --grad-4: #81c784;
+  --grad-5: #66bb6a;
+  --grad-6: #4caf50;
+  --grad-7: #43a047;
+  --grad-8: #388e3c;
+  --grad-9: #2e7d32;
+  --all-text: rgba(44, 85, 48, 1);
+  --scrl: rgba(76, 175, 80, 0.5);
+  --navbuttons: #2c5530;
+  --borderbottom: rgba(44, 85, 48, 0.2);
+  --borderbottomdark: rgba(44, 85, 48, 0.3);
+  --userdiv: rgba(232, 245, 232, 0.8);
+  --report: #4caf50;
+}
+
+/* ICU theme variables */
+[data-theme="icu"] {
+  --bg-color: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%);
+  --text-color: #1f2937;
+  --specific-text-color: rgba(31, 41, 55, 1);
+  --quote: rgba(31, 41, 55, 0.9);
+  --header-bg: rgba(243, 244, 246, 0.95);
+  --link-color: #1f2937;
+  --link-hover-color: #6b7280;
+  --bottom-border-color: rgba(31, 41, 55, 0.3);
+  --header-shadow: rgba(107, 114, 128, 0.2);
+  --header-border: 1px solid rgba(209, 213, 219, 0.6);
+  --lang-bg: rgba(243, 244, 246, 0.9);
+  --lang-txt: rgba(31, 41, 55, 1);
+  --lang-hover: rgba(209, 213, 219, 0.4);
+  --nav-hover: rgba(209, 213, 219, 0.25);
+  --drop-down: rgba(243, 244, 246, 0.8);
+  --selc-la: rgba(209, 213, 219, 0.5);
+  --button-pdf: rgba(31, 41, 55, 0.2);
+  --titles: rgba(31, 41, 55, 0.9);
+  --top: #1f2937;
+  --toptxt: #1f2937;
+  --grad-1: #f9fafb;
+  --grad-2: #f3f4f6;
+  --grad-3: #e5e7eb;
+  --grad-4: #d1d5db;
+  --grad-5: #9ca3af;
+  --grad-6: #6b7280;
+  --grad-7: #4b5563;
+  --grad-8: #374151;
+  --grad-9: #1f2937;
+  --all-text: rgba(31, 41, 55, 1);
+  --scrl: rgba(107, 114, 128, 0.5);
+  --navbuttons: #1f2937;
+  --borderbottom: rgba(31, 41, 55, 0.2);
+  --borderbottomdark: rgba(31, 41, 55, 0.3);
+  --userdiv: rgba(243, 244, 246, 0.8);
+  --report: #6b7280;
+}
+
+/* Emergency theme variables */
+[data-theme="emergency"] {
+  --bg-color: linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+  --text-color: #7f1d1d;
+  --specific-text-color: rgba(127, 29, 29, 1);
+  --quote: rgba(127, 29, 29, 0.9);
+  --header-bg: rgba(254, 242, 242, 0.95);
+  --link-color: #7f1d1d;
+  --link-hover-color: #dc2626;
+  --bottom-border-color: rgba(127, 29, 29, 0.4);
+  --header-shadow: rgba(220, 38, 38, 0.3);
+  --header-border: 1px solid rgba(252, 165, 165, 0.5);
+  --lang-bg: rgba(254, 242, 242, 0.9);
+  --lang-txt: rgba(127, 29, 29, 1);
+  --lang-hover: rgba(252, 165, 165, 0.4);
+  --nav-hover: rgba(252, 165, 165, 0.25);
+  --drop-down: rgba(254, 242, 242, 0.8);
+  --selc-la: rgba(252, 165, 165, 0.5);
+  --button-pdf: rgba(127, 29, 29, 0.2);
+  --titles: rgba(127, 29, 29, 0.9);
+  --top: #7f1d1d;
+  --toptxt: #7f1d1d;
+  --grad-1: #fef2f2;
+  --grad-2: #fee2e2;
+  --grad-3: #fecaca;
+  --grad-4: #fca5a5;
+  --grad-5: #f87171;
+  --grad-6: #ef4444;
+  --grad-7: #dc2626;
+  --grad-8: #b91c1c;
+  --grad-9: #991b1b;
+  --all-text: rgba(127, 29, 29, 1);
+  --scrl: rgba(220, 38, 38, 0.5);
+  --navbuttons: #7f1d1d;
+  --borderbottom: rgba(127, 29, 29, 0.3);
+  --borderbottomdark: rgba(127, 29, 29, 0.4);
+  --userdiv: rgba(254, 242, 242, 0.8);
+  --report: #dc2626;
+}
+
 .timeline-label::before,
 .timeline-line {
   background-color: var(--text-color);
@@ -110,9 +391,52 @@
 
 /* Apply the theme variables */
 body {
-  background-color: var(--bg-color);
+  background: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+  transition: background 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+
+/* Purple-Blue theme gradient background */
+[data-theme="purple-blue"] body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+}
+
+/* Sunset theme gradient background */
+[data-theme="sunset"] body {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+  background-attachment: fixed;
+}
+
+/* Winter theme gradient background */
+[data-theme="winter"] body {
+  background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 50%, #ffffff 100%);
+  background-attachment: fixed;
+}
+
+/* Cosmic theme gradient background */
+[data-theme="cosmic"] body {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #533483 100%);
+  background-attachment: fixed;
+}
+
+/* Medical theme gradient background */
+[data-theme="medical"] body {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 50%, #ffffff 100%);
+  background-attachment: fixed;
+}
+
+/* ICU theme gradient background */
+[data-theme="icu"] body {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%);
+  background-attachment: fixed;
+}
+
+/* Emergency theme gradient background */
+[data-theme="emergency"] body {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+  background-attachment: fixed;
 }
 
 /* Header container styles */
@@ -247,8 +571,10 @@ a:hover {
 
 #theme-dropdown {
   right: auto;
-  left: -210px;
-  width: 190px;
+  left: -250px;
+  width: 230px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .nested-dropdown-content button {
@@ -270,7 +596,8 @@ a:hover {
 
 @media (max-width: 650px) {
   #theme-dropdown {
-    left: 159px;
+    left: 120px;
+    width: 200px;
   }
 
   .nested-dropdown-content {

@@ -82,6 +82,26 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(150, 150, 150, 0.5) transparent;
   }
+
+  /* Animation for dynamic form elements */
+  @keyframes fadeSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-on-load {
+    animation-name: fadeSlideIn;
+    animation-fill-mode: forwards;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    opacity: 0; /* start hidden, animation fades it in */
+  }
 </style>
 
 <script type="module" src="cont/00.bau/bau-new.js"></script>
@@ -4311,7 +4331,7 @@
           margin-top: 15px auto;
           margin-bottom: -27px;
           background: var(--report) !important ;
-          color: var(--scrl);
+          color: white;
           border: 1px dashed var(--all-text);
           border-radius: 20px;
           font-size: 14px;
@@ -6019,7 +6039,14 @@
     </h2>
     <div style="display: flex; align-items: center; gap: 10px">
       <!-- Mode Switcher -->
-      <div style="display: flex; background: var(--borderbottomdark); border-radius: 20px; padding: 2px;">
+      <div
+        style="
+          display: flex;
+          background: var(--borderbottomdark);
+          border-radius: 20px;
+          padding: 2px;
+        "
+      >
         <button
           id="chat-mode-btn"
           class="mode-btn active"
@@ -6081,7 +6108,7 @@
       border-radius: 12px;
       padding: 15px;
       margin-bottom: 15px;
-      background: rgba(0, 0, 0, 0.02);
+      background: var(--header-bg);
       display: block;
     "
   >
@@ -6143,7 +6170,7 @@
       border-radius: 12px;
       padding: 15px;
       margin-bottom: 15px;
-      background: rgba(0, 0, 0, 0.02);
+      background: var(--header-bg);
       position: relative;
       display: none;
       box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
@@ -6161,13 +6188,40 @@
       }
     </style>
     <!-- Practice Mode Header -->
-    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--borderbottomdark);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 15px;">
-        <h4 style="margin: 0; color: var(--all-text); font-size: 16px;">Case Presentation</h4>
-        <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;">
+    <div
+      style="
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--borderbottomdark);
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          gap: 15px;
+        "
+      >
+        <h4 style="margin: 0; color: var(--all-text); font-size: 16px">
+          Case Presentation
+        </h4>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            justify-content: flex-end;
+          "
+        >
           <!-- AI Model Selector -->
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-size: 12px; color: var(--all-text); font-weight: 500;">AI Model:</label>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <label
+              style="font-size: 12px; color: var(--all-text); font-weight: 500"
+              >AI Model:</label
+            >
             <select
               id="practice-model-select"
               style="
@@ -6226,7 +6280,7 @@
         id="case-content"
         style="
           padding: 12px;
-          background: rgba(156, 39, 176, 0.05);
+          background: var(--header-bg);
           border-radius: 8px;
           color: var(--all-text);
           font-style: italic;
@@ -6240,11 +6294,7 @@
     <!-- Practice Messages -->
     <div
       id="practice-messages"
-      style="
-        height: 250px;
-        overflow-y: auto;
-        margin-bottom: 15px;
-      "
+      style="height: 250px; overflow-y: auto; margin-bottom: 15px"
     >
       <div
         class="practice-welcome"
@@ -6267,17 +6317,23 @@
         >
           <span style="font-weight: 600; color: #9c27b0">Practice Mode</span>
         </div>
-        <p style="margin: 0; line-height: 1.5;">
-          In practice mode, the AI will present a case and you ask questions to take history and perform PE. Start a new case to begin!
+        <p style="margin: 0; line-height: 1.5">
+          In practice mode, the AI will present a case and you ask questions to
+          take history and perform PE. Start a new case to begin!
         </p>
       </div>
     </div>
   </div>
 
-
   <!-- Practice Mode Input - Always Visible -->
-  <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borderbottomdark);">
-    <div style="display: flex; gap: 10px; align-items: flex-end;">
+  <div
+    style="
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--borderbottomdark);
+    "
+  >
+    <div style="display: flex; gap: 10px; align-items: flex-end">
       <textarea
         id="chat-input"
         placeholder="Ask questions about the case, request physical examination, or provide your assessment..."

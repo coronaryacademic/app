@@ -117,6 +117,14 @@ function switchMode(mode) {
       chatInput.placeholder = 'Ask questions about the case, request physical examination, or provide your assessment...';
       chatInput.disabled = false;
       chatInput.style.background = 'var(--header-bg)';
+    }
+    
+    // Animate practice mode elements when switching to practice mode
+    setTimeout(() => {
+      animatePracticeModeElements();
+    }, 100);
+    
+    if (chatInput) {
       chatInput.style.color = 'var(--all-text)';
       chatInput.style.cursor = 'text';
     }
@@ -727,6 +735,7 @@ function initPracticeMode() {
     // Restore saved mode only if elements exist
     const chatContainer = document.getElementById('chat-mode-container');
     if (chatContainer) {
+      const savedMode = localStorage.getItem('practiceMode') || 'chat';
       switchMode(savedMode);
     }
     
@@ -742,8 +751,67 @@ if (document.readyState === 'loading') {
   initBAU();
 }
 
-// Export for global access
-window.initBAU = initBAU;
+// Animation function for dynamic form elements
+function animateDynamicFormElements(container) {
+  if (!container) return;
+  
+  // Get elements to animate (excluding hidden containers)
+  const elementsToAnimate = [
+    container.querySelector('.chat-header'),
+    container.querySelector('#chat-mode-container'),
+    container.querySelector('.chat-input-container'),
+    ...container.querySelectorAll('.mode-btn')
+  ].filter(Boolean);
+  
+  // Reset animation state
+  elementsToAnimate.forEach((el) => {
+    el.classList.remove('animate-on-load');
+    el.style.opacity = '0';
+    el.style.animationDelay = '';
+  });
+  
+  // Trigger animation with staggered delays
+  elementsToAnimate.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('animate-on-load');
+      el.style.animationDelay = `${i * 0.1}s`;
+    }, 50);
+  });
+}
+
+// Separate animation function for practice mode elements
+function animatePracticeModeElements() {
+  const practiceContainer = document.getElementById('practice-mode-container');
+  if (!practiceContainer || practiceContainer.style.display === 'none') return;
+  
+  const practiceElements = [
+    practiceContainer.querySelector('#practice-model-select'),
+    practiceContainer.querySelector('#case-difficulty-btn'),
+    practiceContainer.querySelector('#start-case-btn'),
+    practiceContainer.querySelector('#case-content'),
+    practiceContainer.querySelector('.chat-input-container')
+  ].filter(Boolean);
+  
+  // Reset animation state
+  practiceElements.forEach((el) => {
+    el.classList.remove('animate-on-load');
+    el.style.opacity = '0';
+    el.style.animationDelay = '';
+  });
+  
+  // Trigger animation with staggered delays
+  practiceElements.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('animate-on-load');
+      el.style.animationDelay = `${i * 0.1}s`;
+    }, 50);
+  });
+}
+
+// Expose functions globally for external script access
+window.initFormNavigation = initFormNavigation;
+window.animateDynamicFormElements = animateDynamicFormElements;
+window.animatePracticeModeElements = animatePracticeModeElements;
 window.loadHistories = loadHistories;
 window.switchMode = switchMode;
 window.generateNewCase = generateNewCase;
@@ -821,6 +889,10 @@ function initFormNavigation() {
       } else if (mode === 'dynamic') {
         staticContainer.style.display = 'none';
         dynamicContainer.style.display = 'block';
+        
+        // Trigger animation for dynamic form elements
+        animateDynamicFormElements(dynamicContainer);
+        
         if (chatInput) chatInput.focus();
         
         // Initialize Practice Mode when Dynamic Form becomes visible

@@ -328,6 +328,91 @@ function getTodoContent() {
 }
 
 // =====================
+// Settings Section Content
+// =====================
+function getSettingsContent() {
+  return `
+  <div
+    class="progress"
+    style="
+      flex: 0 0 calc(60% - 12px);
+      padding: 40px;
+      border: none;
+      max-width: 80%;
+      margin: 4px auto;
+      border-radius: 25px;
+      border: none;
+      background-color: var(--header-bg);
+      border: 1px solid var(--borderbottomdark);
+    "
+  >
+    <p
+      style="
+        font-family: Arial;
+        text-align: left;
+        margin-bottom: 30px;
+        font-weight: 600;
+        font-size: 40px;
+      "
+    >
+      Themes
+    </p>
+    
+    <div style="text-align: left">
+      <p style="
+        font-size: 16px;
+        margin-bottom: 25px;
+        color: var(--text-color);
+        opacity: 0.8;
+        line-height: 1.4;
+      ">Choose your preferred theme for the application. Changes will be applied immediately.</p>
+      
+      <div id="theme-settings-container">
+        <!-- Theme selection UI will be injected here -->
+      </div>
+    </div>
+  </div>`;
+}
+
+// =====================
+// Settings Logic (Dashboard)
+// =====================
+function initSettingsSection() {
+  const container = document.getElementById('theme-settings-container');
+  if (!container) return;
+  
+  // Check if the global theme function is available
+  if (typeof window.createThemeSettingsUI === 'function') {
+    const themeUI = window.createThemeSettingsUI();
+    container.appendChild(themeUI);
+  } else {
+    // Fallback if theme.js hasn't loaded yet
+    container.innerHTML = `
+      <div style="
+        padding: 20px;
+        background: var(--lang-bg);
+        border-radius: 12px;
+        border: 1px solid var(--borderbottom);
+        text-align: center;
+      ">
+        <p style="color: var(--text-color); margin: 0;">
+          Theme settings are loading...
+        </p>
+      </div>
+    `;
+    
+    // Try again after a short delay
+    setTimeout(() => {
+      if (typeof window.createThemeSettingsUI === 'function') {
+        const themeUI = window.createThemeSettingsUI();
+        container.innerHTML = '';
+        container.appendChild(themeUI);
+      }
+    }, 500);
+  }
+}
+
+// =====================
 // To-Do Logic (Dashboard)
 // =====================
 function initTodoDashboard() {
@@ -2165,6 +2250,8 @@ function initDashboard() {
       html = getPostsContent(isAdmin);
     } else if (sectionName === "todo") {
       html = getTodoContent();
+    } else if (sectionName === "settings") {
+      html = getSettingsContent();
     } else {
       html = "<p>Unknown section</p>";
     }
@@ -2182,6 +2269,11 @@ function initDashboard() {
     // Initialize To-Do when section is shown
     if (sectionName === "todo") {
       initTodoDashboard();
+    }
+
+    // Initialize Settings when section is shown
+    if (sectionName === "settings") {
+      initSettingsSection();
     }
 
     // Save current section in localStorage
@@ -2330,7 +2422,7 @@ function initDashboard() {
 
       // Load last viewed section from localStorage or default to profile
       const savedSection = localStorage.getItem("dashboardCurrentSection");
-      const validSections = ["profile", "files", "posts", "todo"];
+      const validSections = ["profile", "files", "posts", "todo", "settings"];
       const sectionToShow = validSections.includes(savedSection)
         ? savedSection
         : "profile";
