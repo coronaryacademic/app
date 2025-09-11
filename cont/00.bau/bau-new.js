@@ -878,39 +878,95 @@ function initFormNavigation() {
   let chatHistory = [];
   let conversationActive = false;
 
+  // iPad detection for backdrop filter fixes
+  const isIpad = navigator.userAgent.includes('iPad') || 
+                 (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+  
+  // Fix backdrop filter issues on iPad
+  if (isIpad) {
+    formNavBtns.forEach(btn => {
+      btn.style.backdropFilter = 'none';
+      btn.style.webkitBackdropFilter = 'none';
+      // Use solid background instead for iPad
+      btn.style.background = 'var(--header-bg)';
+      btn.style.opacity = '0.9';
+    });
+  }
+
   // Navigation button event listeners
   formNavBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       console.log(`[BAU] Navigation button clicked: ${btn.getAttribute('data-mode')}`);
       
+      // Force repaint to prevent background glitches on iPad
+      if (isIpad) {
+        document.body.style.transform = 'translateZ(0)';
+        setTimeout(() => {
+          document.body.style.transform = '';
+        }, 10);
+      }
+      
       // Remove active class from all buttons
       formNavBtns.forEach(b => {
         b.classList.remove('active');
-        b.style.background = 'rgba(255, 255, 255, 0)';
+        if (isIpad) {
+          b.style.background = 'var(--header-bg)';
+          b.style.opacity = '0.6';
+        } else {
+          b.style.background = 'rgba(255, 255, 255, 0)';
+        }
         b.style.boxShadow = 'none';
         b.style.fontWeight = 'normal';
       });
       
       // Add active class to clicked button
       btn.classList.add('active');
-      btn.style.background = 'var(--header-bg)';
+      if (isIpad) {
+        btn.style.background = 'var(--header-bg)';
+        btn.style.opacity = '1';
+      } else {
+        btn.style.background = 'var(--header-bg)';
+      }
       btn.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
       btn.style.fontWeight = 'bold';
       
       const mode = btn.getAttribute('data-mode');
       
       if (mode === 'static') {
-        staticContainer.style.display = 'block';
-        dynamicContainer.style.display = 'none';
+        // Smooth transition for iPad
+        if (isIpad) {
+          dynamicContainer.style.opacity = '0';
+          setTimeout(() => {
+            staticContainer.style.display = 'block';
+            dynamicContainer.style.display = 'none';
+            staticContainer.style.opacity = '1';
+          }, 100);
+        } else {
+          staticContainer.style.display = 'block';
+          dynamicContainer.style.display = 'none';
+        }
       } else if (mode === 'dynamic') {
-        staticContainer.style.display = 'none';
-        dynamicContainer.style.display = 'block';
-        
-        // Trigger animation for dynamic form elements
-        animateDynamicFormElements(dynamicContainer);
+        // Smooth transition for iPad
+        if (isIpad) {
+          staticContainer.style.opacity = '0';
+          setTimeout(() => {
+            staticContainer.style.display = 'none';
+            dynamicContainer.style.display = 'block';
+            dynamicContainer.style.opacity = '1';
+            
+            // Trigger animation for dynamic form elements
+            animateDynamicFormElements(dynamicContainer);
+          }, 100);
+        } else {
+          staticContainer.style.display = 'none';
+          dynamicContainer.style.display = 'block';
+          
+          // Trigger animation for dynamic form elements
+          animateDynamicFormElements(dynamicContainer);
+        }
         
         // Disable auto-focus on iPad to prevent keyboard opening
-        if (chatInput && !navigator.userAgent.includes('iPad')) {
+        if (chatInput && !isIpad) {
           chatInput.focus();
         }
         
