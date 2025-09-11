@@ -2,10 +2,7 @@
 const AVAILABLE_THEMES = {
   light: { name: 'Light', icon: '🌞' },
   dark: { name: 'Dark', icon: '🌙' },
-  'purple-blue': { name: 'Purple-Light Blue', icon: '🌈' },
-  sunset: { name: 'Sunset', icon: '🌅' },
   winter: { name: 'Winter', icon: '❄️' },
-  cosmic: { name: 'Cosmic', icon: '🌌' },
   medical: { name: 'Medical', icon: '🏥' },
   icu: { name: 'ICU', icon: '🩺' },
   emergency: { name: 'Emergency', icon: '🚨' }
@@ -66,8 +63,6 @@ function updateThemeIcon(theme) {
     // Use different icons based on theme
     if (theme === "dark") {
       themeIcon.src = "icons/LMI.svg";
-    } else if (theme === "glassy") {
-      themeIcon.src = "icons/DMI.svg"; // Use light icon for glassy
     } else {
       themeIcon.src = "icons/DMI.svg";
     }
@@ -82,7 +77,7 @@ function updateAllLogos(theme) {
   const aboutLogo = document.querySelector(".logo-aboutus");
 
   // Use dark logos for dark themes, light logos for light themes
-  const isDarkTheme = theme === "dark" || theme === "purple-blue";
+  const isDarkTheme = theme === "dark";
 
   if (mainLogo) {
     mainLogo.src = isDarkTheme ? "icons/dark-logo.webp" : "icons/header-logo-2.webp";
@@ -101,7 +96,7 @@ function updateAllLogos(theme) {
 function updateDiagnosisIcon(theme) {
   const diagnosisIcon = document.getElementById("diagnosis-icon");
   if (diagnosisIcon) {
-    const isDarkTheme = theme === "dark" || theme === "purple-blue";
+    const isDarkTheme = theme === "dark";
     diagnosisIcon.src = isDarkTheme ? "icons/diagnosis_white.png" : "icons/diagnosis.png";
   }
 }

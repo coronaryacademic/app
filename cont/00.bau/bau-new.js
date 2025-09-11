@@ -3,6 +3,7 @@
 
 // Import all modules
 import { initAIDemo } from "./src/ai-demo.js";
+import { initAIModelAndToken } from "./src/ai-model.js";
 import { enhanceSocratesSelectsInFlow } from "./src/dropdown-ui.js";
 import { initFormDataManagement } from "./src/form-data.js";
 import { initPDFGenerator } from "./src/pdf-generator.js";
@@ -568,12 +569,16 @@ function initBAU() {
     // Initialize AI Demo after a short delay to ensure DOM is ready
     setTimeout(() => {
       initAIDemo();
+      initAIModelAndToken(); // Initialize AI model dropdown
       enhanceSocratesSelectsInFlow();
       initFormDataManagement();
       initPDFGenerator();
       
       // Load user histories if authenticated
       loadHistories();
+      
+      // Initialize practice mode early to ensure models are loaded
+      initPracticeMode();
       
       console.log("[BAU] All modules initialized successfully");
     }, 1000);
@@ -589,18 +594,17 @@ function initPracticeMode() {
     return;
   }
   
-  // Check if we're in the dynamic container
+  // Always initialize practice mode regardless of container visibility
+  // This ensures models are loaded and ready when user switches to dynamic form
+  console.log('[PRACTICE] Initializing practice mode...');
+  
+  // Check if we're in the dynamic container (but don't require it for initialization)
   const dynamicContainer = document.getElementById('dynamic-chat-container');
   console.log('[PRACTICE] Dynamic container check:', {
     exists: !!dynamicContainer,
     display: dynamicContainer?.style.display,
     computed: dynamicContainer ? window.getComputedStyle(dynamicContainer).display : 'N/A'
   });
-  
-  if (!dynamicContainer) {
-    console.log('[PRACTICE] Dynamic container not found, skipping initialization');
-    return;
-  }
   
   // Wait for DOM elements to be available with longer timeout
   setTimeout(() => {
@@ -622,7 +626,7 @@ function initPracticeMode() {
     
     let chatInput = chatInput1 || chatInput2 || chatInput3;
     
-    if (!chatInput) {
+    if (!chatInput && dynamicContainer) {
       console.log('[PRACTICE] Chat input not found, creating it dynamically...');
       
       // Create chat input container
@@ -632,10 +636,22 @@ function initPracticeMode() {
       const inputWrapper = document.createElement('div');
       inputWrapper.style.cssText = 'display: flex; gap: 10px; align-items: flex-end;';
       
-      // Create textarea
+      // Create textarea with iPad-specific attributes
       chatInput = document.createElement('textarea');
       chatInput.id = 'chat-input';
       chatInput.placeholder = 'Ask questions about the case, request physical examination, or provide your assessment...';
+      
+      // Add iPad-specific attributes to prevent auto-zoom and keyboard issues
+      if (navigator.userAgent.includes('iPad')) {
+        chatInput.setAttribute('readonly', 'readonly');
+        chatInput.addEventListener('touchstart', function() {
+          this.removeAttribute('readonly');
+        });
+        chatInput.addEventListener('blur', function() {
+          this.setAttribute('readonly', 'readonly');
+        });
+      }
+      
       chatInput.style.cssText = `
         flex: 1;
         min-height: 60px;
@@ -645,7 +661,7 @@ function initPracticeMode() {
         border-radius: 12px;
         background: var(--header-bg);
         color: var(--all-text);
-        font-size: 14px;
+        font-size: 16px;
         font-family: inherit;
         resize: vertical;
         outline: none;
@@ -893,12 +909,16 @@ function initFormNavigation() {
         // Trigger animation for dynamic form elements
         animateDynamicFormElements(dynamicContainer);
         
-        if (chatInput) chatInput.focus();
+        // Disable auto-focus on iPad to prevent keyboard opening
+        if (chatInput && !navigator.userAgent.includes('iPad')) {
+          chatInput.focus();
+        }
         
         // Initialize Practice Mode when Dynamic Form becomes visible
+        // Use longer delay to ensure all elements are properly loaded
         setTimeout(() => {
           initPracticeMode();
-        }, 100);
+        }, 500);
       }
     });
   });
