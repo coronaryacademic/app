@@ -283,13 +283,13 @@
       position: relative;
     "
   >
-    Dynamic Form
+    MCQ Generator
     <span
       style="
         position: absolute;
         top: -4px;
         right: -8px;
-        background: #ff4444;
+        background: #2196f3;
         color: white;
         font-size: 10px;
         font-weight: bold;
@@ -4303,11 +4303,14 @@
       <option value="" disabled selected>
         Select AI model - If no model is selected, AI will remain off
       </option>
-      <option value="gemini-1.5-flash">
-        Gemini 1.5 Flash (Recommended - Free Tier)
+      <option value="gemini-2.0-flash-exp">
+        Gemini 2.0 Flash (Recommended - Free Tier)
       </option>
-      <option value="gemini-1.5-pro">
-        Gemini 1.5 Pro (Advanced - Limited Quota)
+      <option value="gemini-1.5-flash-002">
+        Gemini 1.5 Flash-002 (Stable)
+      </option>
+      <option value="gemini-1.5-pro-002">
+        Gemini 1.5 Pro-002 (Advanced - Limited Quota)
       </option>
       <option value="gemini-1.0-pro">Gemini 1.0 Pro (Legacy)</option>
     </select>
@@ -4328,8 +4331,8 @@
           padding: 12px;
           margin-top: 15px auto;
           margin-bottom: -27px;
-          background: var(--report) !important ;
-          color: white;
+          background: var(--lang-bg) !important ;
+          color: var (--all-text) !important;
           border: 1px dashed var(--all-text);
           border-radius: 20px;
           font-size: 14px;
@@ -6015,7 +6018,7 @@
   "
 >
   <div
-    class="chat-header"
+    class="mcq-header"
     style="
       display: flex;
       justify-content: space-between;
@@ -6025,136 +6028,386 @@
       border-bottom: 1px solid var(--borderbottomdark);
     "
   >
-    <h2
-      style="
-        margin: 0;
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--all-text);
-      "
-    >
-      Dynamic History Taking
-    </h2>
-    <div style="display: flex; align-items: center; gap: 10px">
-      <!-- Mode Switcher -->
-      <div
+    <div>
+      <h2
         style="
-          display: flex;
-          background: var(--borderbottomdark);
-          border-radius: 20px;
-          padding: 2px;
+          margin: 0 0 8px 0;
+          font-size: 24px;
+          font-weight: 600;
+          color: var(--all-text);
         "
       >
-        <button
-          id="chat-mode-btn"
-          class="mode-btn active"
-          style="
-            padding: 6px 12px;
-            background: rgba(44, 201, 199, 0.9);
-            color: white;
-            border: none;
-            border-radius: 18px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          "
+        MCQ Generator
+      </h2>
+      <p
+        style="
+          margin: 0 0 8px 0;
+          font-size: 14px;
+          opacity: 0.8;
+          color: var(--all-text);
+          line-height: 1.4;
+        "
+      >
+        Upload documents (PDF, DOC, TXT) or code files and let AI generate
+        multiple choice questions for study and assessment
+      </p>
+      <p
+        style="
+          margin: 0;
+          font-size: 12px;
+          opacity: 0.6;
+          color: var(--all-text);
+          font-style: italic;
+        "
+      >
+        Workflow: Upload File → AI Generates Questions → Answer MCQs → View
+        Results (all on same page)
+      </p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px">
+      <!-- AI Model Selector -->
+      <div style="display: flex; align-items: center; gap: 8px">
+        <label style="font-size: 12px; color: var(--all-text); font-weight: 500"
+          >AI Model:</label
         >
-          Chat Mode
-        </button>
-        <button
-          id="practice-mode-btn"
-          class="mode-btn"
+        <select
+          id="mcq-model-select"
           style="
-            padding: 6px 12px;
-            background: transparent;
+            padding: 6px 10px;
+            border: 1px solid var(--borderbottomdark);
+            border-radius: 6px;
+            background: var(--header-bg);
             color: var(--all-text);
-            border: none;
-            border-radius: 18px;
             font-size: 12px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            min-width: 140px;
           "
         >
-          Practice Mode
-        </button>
+          <optgroup label="Google Firebase">
+            <option value="gemini-2.0-flash-exp" selected>
+              Gemini 2.0 Flash (Recommended)
+            </option>
+            <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+            <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
+          </optgroup>
+          <optgroup label="GitHub Models">
+            <option value="github-models-gpt-4o">GPT-4o</option>
+            <option value="github-models-gpt-4o-mini">GPT-4o Mini</option>
+          </optgroup>
+          <optgroup label="Mistral">
+            <option value="mistral-large">Mistral Large</option>
+          </optgroup>
+        </select>
       </div>
       <span
-        id="mode-status"
+        id="mcq-status"
         style="
-          background: #fff3cd;
-          color: #856404;
-          padding: 2px 8px;
+          background: rgba(33, 150, 243, 0.1);
+          color: #1976d2;
+          padding: 4px 12px;
           border-radius: 12px;
           font-size: 12px;
           font-weight: 500;
         "
-        >In Development</span
+        >Ready</span
       >
     </div>
   </div>
 
-  <!-- Chat Mode Container -->
+  <!-- File Upload Mode Container -->
   <div
-    id="chat-mode-container"
-    class="chat-messages"
+    id="file-upload-container"
+    class="file-upload-section"
     style="
-      height: 400px;
-      overflow-y: auto;
       border: 1px solid var(--borderbottomdark);
       border-radius: 12px;
-      padding: 15px;
+      padding: 20px;
       margin-bottom: 15px;
       background: var(--header-bg);
       display: block;
     "
   >
     <div
-      class="welcome-message"
+      class="upload-header"
       style="
-        text-align: center;
-        color: var(--all-text);
-        opacity: 0.7;
-        font-style: italic;
-        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        justify-content: center;
       "
     >
-      <div
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+          fill="#2196F3"
+        />
+      </svg>
+      <h3
         style="
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 8px;
-          justify-content: center;
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--all-text);
         "
       >
+        Upload Document for MCQ Generation
+      </h3>
+    </div>
+
+    <!-- File Upload Area -->
+    <div
+      id="file-drop-zone"
+      style="
+        border: 2px dashed var(--borderbottomdark);
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(33, 150, 243, 0.05);
+      "
+    >
+      <input
+        type="file"
+        id="file-input"
+        accept=".pdf,.doc,.docx,.txt,.md,.py,.js,.html,.css,.java,.cpp,.c,.json,.xml"
+        style="display: none"
+      />
+      <div style="margin-bottom: 15px">
         <svg
-          width="24"
-          height="24"
+          width="48"
+          height="48"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          style="opacity: 0.6"
         >
           <path
-            d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
-            fill="#ff9800"
+            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+            fill="var(--all-text)"
           />
         </svg>
-        <span style="font-weight: 600; color: #ff9800"
-          >Dynamic History Taking</span
-        >
       </div>
       <p
         style="
-          margin: 0;
+          margin: 0 0 10px 0;
+          font-size: 16px;
+          font-weight: 500;
           color: var(--all-text);
-          line-height: 1.5;
-          text-align: center;
         "
       >
-        This feature is currently under development.
+        Drop your file here or click to browse
       </p>
+      <p
+        style="
+          margin: 0 0 8px 0;
+          font-size: 14px;
+          opacity: 0.7;
+          color: var(--all-text);
+        "
+      >
+        Documents: PDF, DOC, DOCX, TXT, MD
+      </p>
+      <p
+        style="margin: 0; font-size: 14px; opacity: 0.7; color: var(--all-text)"
+      >
+        Code Files: Python, JavaScript, HTML, CSS, Java, C++, JSON, XML
+      </p>
+    </div>
+
+    <!-- File Info Display -->
+    <div
+      id="file-info"
+      style="
+        margin-top: 15px;
+        padding: 12px;
+        background: rgba(76, 175, 80, 0.1);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-radius: 8px;
+        display: none;
+      "
+    >
+      <div style="display: flex; align-items: center; gap: 10px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M9,16.17L4.83,12L3.41,13.41L9,19L21,7L19.59,5.59L9,16.17Z"
+            fill="#4CAF50"
+          />
+        </svg>
+        <span
+          id="file-name"
+          style="font-weight: 500; color: var(--all-text)"
+        ></span>
+        <span
+          id="file-size"
+          style="opacity: 0.7; color: var(--all-text)"
+        ></span>
+      </div>
+    </div>
+
+    <!-- Custom AI Instructions -->
+    <div
+      id="ai-instructions-section"
+      style="
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid var(--borderbottomdark);
+        border-radius: 8px;
+        background: rgba(33, 150, 243, 0.02);
+        display: block;
+      "
+    >
+      <label
+        for="ai-instructions"
+        style="
+          display: block;
+          margin-bottom: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--all-text);
+        "
+      >
+        Custom Instructions for AI (Optional)
+      </label>
+      <textarea
+        id="ai-instructions"
+        placeholder="Example for medical students: Focus on clinical examination techniques, differential diagnosis, patient assessment skills, practical medical knowledge, case-based scenarios..."
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          min-height: 80px;
+          padding: 10px;
+          border: 1px solid var(--borderbottomdark);
+          border-radius: 6px;
+          background: var(--header-bg);
+          color: var(--all-text);
+          font-size: 13px;
+          font-family: inherit;
+          resize: vertical;
+          outline: none;
+        "
+      ></textarea>
+      <p
+        style="
+          margin: 8px 0 0 0;
+          font-size: 12px;
+          opacity: 0.7;
+          color: var(--all-text);
+        "
+      >
+        Tell the AI how to generate questions for your medical studies. The AI
+        will read your file content and create questions following your
+        instructions.
+      </p>
+    </div>
+
+    <!-- Generate Questions Button -->
+    <div style="text-align: center; margin-top: 20px">
+      <button
+        id="generate-questions-btn"
+        style="
+          padding: 12px 24px;
+          background: #2196f3;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: none;
+        "
+        disabled
+      >
+        Generate MCQ Questions
+      </button>
+    </div>
+  </div>
+
+  <!-- MCQ Questions Container -->
+  <div
+    id="mcq-container"
+    style="
+      border: 1px solid var(--borderbottomdark);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      background: var(--header-bg);
+      display: none;
+    "
+  >
+    <div
+      class="mcq-header"
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--borderbottomdark);
+      "
+    >
+      <h3
+        style="
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--all-text);
+        "
+      >
+        Generated Questions
+      </h3>
+      <div style="display: flex; gap: 10px">
+        <button
+          id="submit-answers-btn"
+          style="
+            padding: 8px 16px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          Submit Answers
+        </button>
+        <button
+          id="reset-quiz-btn"
+          style="
+            padding: 8px 16px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+          "
+        >
+          Reset Quiz
+        </button>
+      </div>
+    </div>
+
+    <!-- Questions will be dynamically inserted here -->
+    <div id="questions-list"></div>
+
+    <!-- Results Section -->
+    <div
+      id="quiz-results"
+      style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none"
+    >
+      <h4 style="margin: 0 0 10px 0; color: var(--all-text)">Quiz Results</h4>
+      <div id="results-content"></div>
     </div>
   </div>
 
@@ -6233,8 +6486,9 @@
                 min-width: 140px;
               "
             >
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
+              <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+              <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
               <option value="mistral-large">Mistral Large</option>
               <option value="github-models-gpt-4o">GPT-4o</option>
               <option value="github-models-gpt-4o-mini">GPT-4o Mini</option>
@@ -6320,54 +6574,6 @@
           take history and perform PE. Start a new case to begin!
         </p>
       </div>
-    </div>
-  </div>
-
-  <!-- Practice Mode Input - Always Visible -->
-  <div
-    style="
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid var(--borderbottomdark);
-    "
-  >
-    <div style="display: flex; gap: 10px; align-items: flex-end">
-      <textarea
-        id="chat-input"
-        placeholder="Ask questions about the case, request physical examination, or provide your assessment..."
-        style="
-          flex: 1;
-          min-height: 60px;
-          max-height: 120px;
-          padding: 12px 15px;
-          border: 1px solid var(--borderbottomdark);
-          border-radius: 12px;
-          background: var(--header-bg);
-          color: var(--all-text);
-          font-size: 14px;
-          font-family: inherit;
-          resize: vertical;
-          outline: none;
-          cursor: text;
-        "
-      ></textarea>
-      <button
-        id="send-chat-btn"
-        style="
-          padding: 12px 20px;
-          background: #9c27b0;
-          color: white;
-          border: none;
-          border-radius: 12px;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          min-width: 80px;
-        "
-      >
-        Send
-      </button>
     </div>
   </div>
 </div>

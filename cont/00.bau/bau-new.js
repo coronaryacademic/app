@@ -7,6 +7,7 @@ import { initAIModelAndToken } from "./src/ai-model.js";
 import { enhanceSocratesSelectsInFlow } from "./src/dropdown-ui.js";
 import { initFormDataManagement } from "./src/form-data.js";
 import { initPDFGenerator } from "./src/pdf-generator.js";
+import { initFileMCQ } from "./src/file-mcq.js";
 
 // Import Firebase modules for history functionality
 import {
@@ -156,7 +157,7 @@ async function generateNewCase() {
     
     // Get selected AI model from the AI demo
     const modelSelect = document.getElementById('practice-model-select');
-    const selectedModel = modelSelect ? modelSelect.value : 'gemini-1.5-flash';
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini-2.0-flash-exp';
     
     const casePrompt = `Generate a realistic medical case for a ${caseDifficulty} level medical student practice session. 
 
@@ -329,7 +330,7 @@ async function generatePracticeResponse(userMessage) {
   try {
     // Get selected AI model from Practice Mode selector
     const modelSelect = document.getElementById('practice-model-select');
-    const selectedModel = modelSelect ? modelSelect.value : 'gemini-1.5-flash';
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini-2.0-flash-exp';
     
     const responsePrompt = `You are a real patient with a medical condition. Your background: ${currentCase.content}
 
@@ -580,6 +581,9 @@ function initBAU() {
       // Initialize practice mode early to ensure models are loaded
       initPracticeMode();
       
+      // Initialize File MCQ functionality
+      initFileMCQ();
+      
       console.log("[BAU] All modules initialized successfully");
     }, 1000);
 
@@ -626,73 +630,16 @@ function initPracticeMode() {
     
     let chatInput = chatInput1 || chatInput2 || chatInput3;
     
-    if (!chatInput && dynamicContainer) {
-      console.log('[PRACTICE] Chat input not found, creating it dynamically...');
-      
-      // Create chat input container
-      const inputContainer = document.createElement('div');
-      inputContainer.style.cssText = 'margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--borderbottomdark);';
-      
-      const inputWrapper = document.createElement('div');
-      inputWrapper.style.cssText = 'display: flex; gap: 10px; align-items: flex-end;';
-      
-      // Create textarea with iPad-specific attributes
-      chatInput = document.createElement('textarea');
-      chatInput.id = 'chat-input';
-      chatInput.placeholder = 'Ask questions about the case, request physical examination, or provide your assessment...';
-      
-      // Add iPad-specific attributes to prevent auto-zoom and keyboard issues
-      if (navigator.userAgent.includes('iPad')) {
-        chatInput.setAttribute('readonly', 'readonly');
-        chatInput.addEventListener('touchstart', function() {
-          this.removeAttribute('readonly');
-        });
-        chatInput.addEventListener('blur', function() {
-          this.setAttribute('readonly', 'readonly');
-        });
+    // Remove any existing chat inputs - we don't need them for MCQ generator
+    const existingChatInputs = document.querySelectorAll('#chat-input');
+    existingChatInputs.forEach(input => {
+      const parent = input.parentElement;
+      if (parent && parent.parentElement) {
+        parent.parentElement.removeChild(parent);
+      } else if (parent) {
+        parent.removeChild(input);
       }
-      
-      chatInput.style.cssText = `
-        flex: 1;
-        min-height: 60px;
-        max-height: 120px;
-        padding: 12px 15px;
-        border: 1px solid var(--borderbottomdark);
-        border-radius: 12px;
-        background: var(--header-bg);
-        color: var(--all-text);
-        font-size: 16px;
-        font-family: inherit;
-        resize: vertical;
-        outline: none;
-        cursor: text;
-      `;
-      
-      // Create send button
-      const sendBtn = document.createElement('button');
-      sendBtn.id = 'send-chat-btn';
-      sendBtn.textContent = 'Send';
-      sendBtn.style.cssText = `
-        padding: 12px 20px;
-        background: #9c27b0;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        min-width: 80px;
-      `;
-      
-      // Assemble and append
-      inputWrapper.appendChild(chatInput);
-      inputWrapper.appendChild(sendBtn);
-      inputContainer.appendChild(inputWrapper);
-      dynamicContainer.appendChild(inputContainer);
-      
-      console.log('[PRACTICE] Chat input created successfully');
-    }
+    });
     
     // Mode switcher event listeners
     const chatModeBtn = document.getElementById('chat-mode-btn');
@@ -725,28 +672,7 @@ function initPracticeMode() {
       difficultyBtn.setAttribute('data-practice-listener', 'true');
     }
     
-    // Chat input for practice mode
-    const practiceInput = document.getElementById('chat-input');
-    if (practiceInput && !practiceInput.hasAttribute('data-practice-listener')) {
-      practiceInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey && currentMode === 'practice') {
-          e.preventDefault();
-          handlePracticeInput();
-        }
-      });
-      practiceInput.setAttribute('data-practice-listener', 'true');
-    }
-    
-    // Send button event listener
-    const sendBtn = document.getElementById('send-chat-btn');
-    if (sendBtn && !sendBtn.hasAttribute('data-practice-listener')) {
-      sendBtn.addEventListener('click', () => {
-        if (currentMode === 'practice') {
-          handlePracticeInput();
-        }
-      });
-      sendBtn.setAttribute('data-practice-listener', 'true');
-    }
+    // MCQ Generator doesn't need chat input - removed for clean UI
     
     // Restore saved mode only if elements exist
     const chatContainer = document.getElementById('chat-mode-container');
@@ -847,7 +773,7 @@ function initFormNavigation() {
   
   console.log("[BAU] Navigation elements found, setting up event listeners...");
   
-  // Set default state: Static Form active, Dynamic Chat hidden
+  // Set default state: Static Form active, MCQ Generator hidden
   staticContainer.style.display = 'block';
   dynamicContainer.style.display = 'none';
   
@@ -868,12 +794,42 @@ function initFormNavigation() {
     dynamicBtn.style.boxShadow = 'none';
     dynamicBtn.style.fontWeight = 'normal';
   }
+
+  // Add navigation event listeners
+  formNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      
+      // Update button states
+      formNavBtns.forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'rgba(255, 255, 255, 0)';
+        b.style.boxShadow = 'none';
+        b.style.fontWeight = 'normal';
+      });
+      
+      btn.classList.add('active');
+      btn.style.background = 'var(--header-bg)';
+      btn.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
+      btn.style.fontWeight = 'bold';
+      
+      // Switch containers
+      if (mode === 'static') {
+        staticContainer.style.display = 'block';
+        dynamicContainer.style.display = 'none';
+      } else if (mode === 'dynamic') {
+        staticContainer.style.display = 'none';
+        dynamicContainer.style.display = 'block';
+        
+        // Initialize MCQ functionality when switching to dynamic mode
+        setTimeout(() => {
+          initFileMCQ();
+        }, 100);
+      }
+    });
+  });
   
-  const chatMessages = document.getElementById('chat-messages');
-  const chatInput = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('send-chat-btn');
-  const clearBtn = document.getElementById('clear-chat-btn');
-  const generateBtn = document.getElementById('generate-report-btn');
+  // MCQ Generator - no chat elements needed
   
   let chatHistory = [];
   let conversationActive = false;
@@ -1115,7 +1071,7 @@ Start by acknowledging the information provided, then ask the most relevant foll
 
         // Get the selected AI model from the form
         const aiModelSelect = document.getElementById('ai-model');
-        const selectedModel = aiModelSelect ? aiModelSelect.value : 'gemini-1.5-flash';
+        const selectedModel = aiModelSelect ? aiModelSelect.value : 'gemini-2.0-flash-exp';
 
         // Use the existing Firebase AI service
         if (window.firebaseAI && window.firebaseAI.generateContent) {
@@ -1251,7 +1207,7 @@ Only include sections where information was provided. Use 'Not discussed' for mi
         
         // Get AI model and generate summary
         const aiModelSelect = document.getElementById('ai-model');
-        const selectedModel = aiModelSelect ? aiModelSelect.value : 'gemini-1.5-flash';
+        const selectedModel = aiModelSelect ? aiModelSelect.value : 'gemini-2.0-flash-exp';
         
         if (window.firebaseAI && window.firebaseAI.generateContent) {
           const result = await window.firebaseAI.generateContent(
