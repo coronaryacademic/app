@@ -665,7 +665,6 @@ Patient Information:
       if (data.medications) prompt += `Medications: ${data.medications}\n`;
       if (data.allergies) prompt += `Allergies: ${data.allergies}\n`;
         prompt += `\nPlease consider the student's notes and reasoning above when providing your analysis.\n`;
-      }
 
       prompt += `\nPlease provide:\n1. Most likely differential diagnoses (top 3-5)\n2. Recommended investigations\n3. Initial management approach\n4. Red flags to watch for\n\nPlease format your response clearly with headings.`;
 
