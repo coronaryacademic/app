@@ -360,3 +360,11 @@ nav {
 .svg-secondBar-white {
   fill: rgb(243, 243, 243) !important;
 }
+
+.hide-on-scroll {
+  transform: translateY(-100%);
+}
+
+.show-on-scroll {
+  transform: translateY(0);
+}

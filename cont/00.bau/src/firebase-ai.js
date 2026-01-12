@@ -28,6 +28,13 @@ export class FirebaseAIService {
       },
       // Google Gemini Models
       {
+        value: "gemini-2.0-flash-exp",
+        text: "Gemini 2.0 Flash (New & Free)",
+        type: "google",
+        provider: "google",
+        apiKey: GOOGLE_API_KEY
+      },
+      {
         value: "gemini-1.5-flash",
         text: "Gemini 1.5 Flash",
         type: "google",
