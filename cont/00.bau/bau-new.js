@@ -765,6 +765,11 @@ function initFormNavigation() {
   const staticContainer = document.getElementById('history-form-container');
   const dynamicContainer = document.getElementById('dynamic-chat-container');
   
+  // Chat elements
+  const chatMessages = document.getElementById('chat-messages');
+  const chatInput = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-msg-btn');
+  
   if (!formNavBtns.length || !staticContainer || !dynamicContainer) {
     console.warn("[BAU] Navigation elements not found, retrying in 500ms...");
     setTimeout(initFormNavigation, 500);
