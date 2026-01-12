@@ -17,3 +17,5 @@ yarn-error.log*
 
 # Node
 node_modules/
+
+cont/00.bau/src/ai-config.js

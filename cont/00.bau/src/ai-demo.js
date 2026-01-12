@@ -611,68 +611,59 @@ export function initAIDemo() {
     }
 
     function buildAIPrompt(data) {
-      // Use the clinical tutor prompt from the HTML report generator
-      if (typeof window.generateClinicalTutorPrompt === "function") {
-        try {
-          return window.generateClinicalTutorPrompt(data);
-        } catch (e) {
-          console.warn(
-            "[AI-DEMO] Failed to use clinical tutor prompt, falling back to basic prompt:",
-            e
-          );
-        }
-      }
+      let prompt = `Please generate a medical SOAP note for the following patient.
 
-      // Fallback to basic prompt if clinical tutor prompt is not available
-      let prompt = `Please analyze this patient case and provide clinical insights:\n\n`;
+Format the note with these sections:
 
-      if (data.patientAge) {
-        prompt += `Patient: ${data.patientAge} year old\n`;
-      }
+## Subjective
+[Narrative summary of the patient's history]
 
-      if (data.chiefComplaint) {
-        prompt += `Chief Complaint: ${data.chiefComplaint}\n`;
-      }
+## Objective  
+[Physical exam findings and any investigations performed]
 
-      if (data.site || data.onset || data.character) {
-        prompt += `\nPresenting Complaint Details:\n`;
-        if (data.site) prompt += `- Site: ${data.site}\n`;
-        if (data.onset) prompt += `- Onset: ${data.onset}\n`;
-        if (data.character) prompt += `- Character: ${data.character}\n`;
-        if (data.radiation) prompt += `- Radiation: ${data.radiation}\n`;
-        if (data.associatedSymptoms)
-          prompt += `- Associated symptoms: ${data.associatedSymptoms}\n`;
-        if (data.timing) prompt += `- Timing: ${data.timing}\n`;
-        if (data.exacerbating)
-          prompt += `- Exacerbating factors: ${data.exacerbating}\n`;
-        if (data.relieving)
-          prompt += `- Relieving factors: ${data.relieving}\n`;
-        if (data.severity) prompt += `- Severity: ${data.severity}\n`;
-      }
+## Assessment
 
-      if (data.pastMedicalHistory)
-        prompt += `\nPast Medical History: ${data.pastMedicalHistory}\n`;
+**Differential Diagnoses:**
+1. [Primary diagnosis with reasoning]
+2. [Alternative diagnosis with reasoning]  
+3. [Additional diagnosis with reasoning]
+4. [Further consideration with reasoning]
+5. [Other possibility with reasoning]
+
+## Management
+
+### Investigations
+• **Investigation name**: Rationale
+• **Investigation name**: Rationale
+• **Investigation name**: Rationale
+• **Investigation name**: Rationale
+
+### Treatment  
+• **Intervention**: Rationale
+• **Intervention**: Rationale
+• **Intervention**: Rationale
+• **Intervention**: Rationale
+
+### Follow-Up
+[Follow-up recommendations]
+
+Patient Information:
+`;
+
+      if (data.patientAge) prompt += `${data.patientAge}yo ${data.gender || 'male'}\n`;
+      if (data.chiefComplaint) prompt += `Chief Complaint: ${data.chiefComplaint}\n`;
+      if (data.site) prompt += `Site: ${data.site}; `;
+      if (data.onset) prompt += `Onset: ${data.onset}; `;
+      if (data.character) prompt += `Character: ${data.character}; `;
+      if (data.radiation) prompt += `Radiation: ${data.radiation}; `;
+      if (data.associatedSymptoms) prompt += `Associated: ${data.associatedSymptoms}; `;
+      if (data.timing) prompt += `Timing: ${data.timing}; `;
+      if (data.exacerbating) prompt += `Worse with: ${data.exacerbating}; `;
+      if (data.relieving) prompt += `Better with: ${data.relieving}; `;
+      if (data.severity) prompt += `Severity: ${data.severity}\n`;
+      if (data.pastMedicalHistory) prompt += `Past Medical History: ${data.pastMedicalHistory}\n`;
       if (data.medications) prompt += `Medications: ${data.medications}\n`;
       if (data.allergies) prompt += `Allergies: ${data.allergies}\n`;
-      if (data.familyHistory)
-        prompt += `Family History: ${data.familyHistory}\n`;
-
-      if (data.smoking || data.alcohol || data.occupation) {
-        prompt += `\nSocial History:\n`;
-        if (data.smoking) prompt += `- Smoking: ${data.smoking}\n`;
-        if (data.alcohol) prompt += `- Alcohol: ${data.alcohol}\n`;
-        if (data.occupation) prompt += `- Occupation: ${data.occupation}\n`;
-        if (data.living) prompt += `- Living situation: ${data.living}\n`;
-        if (data.travel) prompt += `- Travel: ${data.travel}\n`;
-      }
-
-      if (data.examination)
-        prompt += `\nExamination findings: ${data.examination}\n`;
-      if (data.investigations)
-        prompt += `Investigations: ${data.investigations}\n`;
-
-      if (data.studentNotes) {
-        prompt += `\nStudent Notes & Clinical Reasoning: ${data.studentNotes}\n`;
         prompt += `\nPlease consider the student's notes and reasoning above when providing your analysis.\n`;
       }
 

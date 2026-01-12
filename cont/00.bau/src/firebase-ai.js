@@ -9,22 +9,22 @@ export class FirebaseAIService {
     try {
       if (!window.firebaseAI || !window.getGenerativeModel) {
         throw new Error(
-          "Firebase AI Logic not available. Make sure Firebase is properly initialized."
-        );
-      }
-
-      this.firebaseAI = window.firebaseAI;
-      this.isInitialized = true;
-      console.log("[Firebase AI] Service initialized successfully");
-      return true;
-    } catch (error) {
-      console.error("[Firebase AI] Initialization failed:", error);
-      throw error;
-    }
-  }
-
-  getAvailableModels() {
-    return [
+    this.models = [
+      // GitHub Models
+      {
+        value: "DeepSeek-R1",
+        text: "DeepSeek R1",
+        type: "github",
+        provider: "deepseek",
+        token: DEEPSEEK_TOKEN
+      },
+      {
+        value: "gpt-4o",
+        text: "ChatGPT 4o",
+        type: "github",
+        provider: "openai",
+        token: CHATGPT_TOKEN
+      },
       // Vercel API models
       {
         value: "mistral/mistral-medium",
@@ -34,15 +34,6 @@ export class FirebaseAIService {
         apiBase: "https://coronaryacademic.vercel.app/api/ai/chat",
         // API key will be injected from the server-side
         apiKey: window.ENV?.MISTRAL_API_KEY || "",
-      },
-      {
-        value: "github/model",
-        text: "Chat GPT5 (via Vercel)",
-        type: "vercel",
-        provider: "github",
-        apiBase: "https://coronaryacademic.vercel.app/api/ai/chat",
-        // API key will be injected from the server-side
-        apiKey: window.ENV?.GITHUB_MODELS_TOKEN || "",
       },
       // Fallback to Firebase models if Vercel API is not available
       {
